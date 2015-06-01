@@ -219,16 +219,22 @@ em {
 table {
   width: 100%;
   border: 1px solid #ebebeb;
+  background-color: white;
 }
 
 th {
-  font-weight: 500;
+  font-weight: 700;
+  padding: 10px 0;
 }
 
 td {
   font-weight: 300;
-  text-align: center;
   border: 1px solid #ebebeb;
+  padding: 10px;
+}
+
+table tr:nth-child(2n) {
+  background-color: #f8f8f8;
 }
 
 form {
@@ -339,6 +345,24 @@ footer a:hover {
 * html .clearfix {height: 1%;}
 .clearfix {display: block;}
 
+.inner-progress-bar {
+    min-width: 80px;
+    line-height: 16px;
+    position:relative;
+    float: left;
+    box-shadow: inset 0 1px rgba(255, 255, 255, 0.3), 0 1px 2px rgba(0, 0, 0, 0.2);
+    height: 18px;
+    text-align: right;
+    margin: 0 -1px;
+    border: 1px solid;
+    border-color: #bfbfbf #b3b3b3 #9e9e9e;
+    border-radius: 10px;
+    background-image: -webkit-linear-gradient(top, #b7dc8e, #99ce5f 70%, #85c440);
+    background-image: -moz-linear-gradient(top, #b7dc8e, #99ce5f 70%, #85c440);
+    background-image: -o-linear-gradient(top, #b7dc8e, #99ce5f 70%, #85c440);
+    background-image: linear-gradient(to bottom, #b7dc8e, #99ce5f 70%, #85c440);
+}
+
 /* #Media Queries
 ================================================== */
 
@@ -371,3 +395,4 @@ footer a:hover {
 
 /* Mobile Portrait Size to Mobile Landscape Size (devices and browsers) */
 @media only screen and (max-width: 479px) { }
+

@@ -67,7 +67,7 @@
 
       <h2>Basic features</h2>
 
-      First of all, I have to reimplement all important features of the current lobby.
+      <p>First of all, I have to reimplement all important features of the current lobby.</p>
 
       <div class="outer-progress-bar">
         <div style="width: 50%;" class="inner-progress-bar progress-bar-label">50%</div>
@@ -102,27 +102,9 @@
           <td>Done</td>
         </tr>
         <tr>
-          <td><strong>Chat user categories</strong></td>
-          <td>Categorizing users by friend/foe/moderators/others/IRC only</td>
-          <td>3/5</td>
-          <td>Done</td>
-        </tr>
-        <tr>
           <td><strong>Private messages</strong></td>
           <td>Sending and receiving private messages</td>
           <td>1/5</td>
-          <td>Done</td>
-        </tr>
-        <tr>
-          <td><strong>FAF reconnection</strong></td>
-          <td>Automatic reconnection to FAF if connection has been lost</td>
-          <td>2/5</td>
-          <td>Done</td>
-        </tr>
-        <tr>
-          <td><strong>IRC reconnection</strong></td>
-          <td>Automatic reconnection to IRC if connection has been lost</td>
-          <td>2/5</td>
           <td>Done</td>
         </tr>
         <tr>
@@ -139,7 +121,7 @@
         </tr>
         <tr>
           <td><strong>Proxy support</strong></td>
-          <td>Allows indirect connection to other peers. *Implemented but untested</td>
+          <td>Allows indirect connection to other peers. *Tests pending</td>
           <td>4/5</td>
           <td>In progress*</td>
         </tr>
@@ -148,12 +130,6 @@
           <td>Connects the game with the FAF server in order to report lobby status etc</td>
           <td>3/5</td>
           <td>Done</td>
-        </tr>
-        <tr>
-          <td><strong>Port check</strong></td>
-          <td>Checks whether your game port is reachable. *Needs server-side support</td>
-          <td>1/5</td>
-          <td>Done*</td>
         </tr>
         <tr>
           <td><strong>Create new game</strong></td>
@@ -166,12 +142,6 @@
           <td>Patching of ForgedAlliance.exe and some DLL-Files</td>
           <td>3/5</td>
           <td>Done</td>
-        </tr>
-        <tr>
-          <td><strong>Log rotation</strong></td>
-          <td>No more super large log files; automatic log file rotation (limits log file size)</td>
-          <td>1/5</td>
-          <td>Open</td>
         </tr>
         <tr>
           <td><strong>Auto-Update</strong></td>
@@ -267,6 +237,105 @@
       </table>
 
       <p></p>
+
+      <h2>Extended features</h2>
+
+      <p>My client will contain a lot of improvements compared to the current lobby. This list is steadily growing.</p>
+
+      <div class="outer-progress-bar">
+        <div style="width: 30%;" class="inner-progress-bar progress-bar-label">30%</div>
+      </div>
+
+      <table>
+        <thead>
+        <tr>
+          <th>Feature</th>
+          <th>Description</th>
+          <th>Complexity</th>
+          <th>Status</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+          <td><strong>FAF reconnection</strong></td>
+          <td>Automatic reconnection to FAF if connection has been lost</td>
+          <td>2/5</td>
+          <td>Done</td>
+        </tr>
+        <tr>
+          <td><strong>IRC reconnection</strong></td>
+          <td>Automatic reconnection to IRC if connection has been lost</td>
+          <td>2/5</td>
+          <td>Done</td>
+        </tr>
+        <tr>
+          <td><strong>Background tasks</strong></td>
+          <td>Executing tasks in background instead of blocking the UI</td>
+          <td>3/5</td>
+          <td>Done</td>
+        </tr>
+        <tr>
+          <td><strong>Log rotation</strong></td>
+          <td>No more super large log files; automatic log file rotation (limits log file size)</td>
+          <td>1/5</td>
+          <td>Done</td>
+        </tr>
+        <tr>
+          <td><strong>Port check</strong></td>
+          <td>Checks whether your game port is reachable. *Needs server-side support</td>
+          <td>1/5</td>
+          <td>Done*</td>
+        </tr>
+        <tr>
+          <td><strong>Grouping chat users</strong></td>
+          <td>Grouping users by friend/foe/moderators/others/IRC only. *Moderators are not yet correctly detected</td>
+          <td>3/5</td>
+          <td>Done*</td>
+        </tr>
+        <tr>
+          <td><strong>Notification system</strong></td>
+          <td>Notifying the user about important events</td>
+          <td>3/5</td>
+          <td>In progress</td>
+        </tr>
+        <tr>
+          <td><strong>Status bar</strong></td>
+          <td>Telling you what's going on right now</td>
+          <td>2/5</td>
+          <td>In progress</td>
+        </tr>
+        <tr>
+          <td><strong>Game suggestion</strong></td>
+          <td>Notify the user about games he might want to join</td>
+          <td>3/5</td>
+          <td>Open</td>
+        </tr>
+        <tr>
+          <td><strong>Beginners guide</strong></td>
+          <td>No more superfluous wiki pages; the client guides beginners.</td>
+          <td>3/5</td>
+          <td>Open</td>
+        </tr>
+        <tr>
+          <td><strong>Various chat improvements</strong></td>
+          <td>Highlight users, paste images, preview links</td>
+          <td>3/5</td>
+          <td>Open</td>
+        </tr>
+        <tr>
+          <td><strong>Improved replay vault</strong></td>
+          <td>Rate, commend and share replays. <strong>Search by ID</strong> and <strong>filter by names</strong>. Lol.</td>
+          <td>3/5</td>
+          <td>Open</td>
+        </tr>
+        <tr>
+          <td><strong>Achievements</strong></td>
+          <td>Not yet clear what can be implemented, but it is doable</td>
+          <td>4/5</td>
+          <td>Open</td>
+        </tr>
+        </tbody>
+      </table>
 
       <h2>Mobile app</h2>
 
@@ -381,8 +450,10 @@
 
     <footer>
       <p>Downlord's FAF Client is maintained by <a href="https://github.com/micheljung">micheljung</a><br></p>
+
       <p>Powered by YourKit. YourKit supports open source projects with its full-featured Java Profiler.
-        YourKit, LLC is the creator of <a href="https://www.yourkit.com/java/profiler/index.jsp">YourKit Java Profiler</a>
+        YourKit, LLC is the creator of <a href="https://www.yourkit.com/java/profiler/index.jsp">YourKit Java
+          Profiler</a>
         and <a href="https://www.yourkit.com/.net/profiler/index.jsp">YourKit .NET Profiler</a>,
         innovative and intelligent tools for profiling Java and .NET applications.
       </p>

@@ -229,6 +229,10 @@ table tr:nth-child(2n) {
   background-color: #f8f8f8;
 }
 
+table td:nth-child(4n) {
+  text-align: center;
+}
+
 
 /* GENERAL ELEMENT TYPE STYLES */
 

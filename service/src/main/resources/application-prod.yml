@@ -23,3 +23,4 @@ sh-client:
     exe-url: http://content.supcomhub.org/faf/updaterNew/updates_faf_files/ForgedAlliance.exe
 
   use-remote-preferences: true
+  status-page-url: http://statuspage.faforever.com

@@ -1,14 +1,12 @@
 package com.faforever.client.remote;
 
 import com.faforever.client.fa.relay.GpgGameMessage;
+import com.faforever.client.fa.relay.ice.IceServer;
 import com.faforever.client.game.Faction;
-import com.faforever.client.game.NewGameInfo;
+import com.faforever.client.game.HostGameRequest;
+import com.faforever.client.game.StartGameProcessMessage;
 import com.faforever.client.net.ConnectionState;
-import com.faforever.client.remote.domain.Avatar;
-import com.faforever.client.remote.domain.GameLaunchMessage;
-import com.faforever.client.remote.domain.IceServersServerMessage.IceServer;
-import com.faforever.client.remote.domain.LoginMessage;
-import com.faforever.client.remote.domain.ServerMessage;
+import com.faforever.client.player.PlayerServerMessage;
 import javafx.beans.property.ReadOnlyObjectProperty;
 
 import java.net.URL;
@@ -29,11 +27,11 @@ public interface FafServerAccessor {
 
   ReadOnlyObjectProperty<ConnectionState> connectionStateProperty();
 
-  CompletableFuture<LoginMessage> connectAndLogIn(String username, String password);
+  CompletableFuture<PlayerServerMessage> connectAndLogIn(String username, String password);
 
-  CompletableFuture<GameLaunchMessage> requestHostGame(NewGameInfo newGameInfo);
+  void requestHostGame(HostGameRequest hostGameRequest);
 
-  CompletableFuture<GameLaunchMessage> requestJoinGame(int gameId, String password);
+  void requestJoinGame(int gameId, String password);
 
   void disconnect();
 
@@ -43,7 +41,7 @@ public interface FafServerAccessor {
 
   void addFoe(int playerId);
 
-  CompletableFuture<GameLaunchMessage> startSearchLadder1v1(Faction faction);
+  CompletableFuture<StartGameProcessMessage> startSearchLadder1v1(Faction faction);
 
   void stopSearchingRanked();
 
@@ -54,8 +52,6 @@ public interface FafServerAccessor {
   void removeFoe(int playerId);
 
   void selectAvatar(URL url);
-
-  List<Avatar> getAvailableAvatars();
 
   CompletableFuture<List<IceServer>> getIceServers();
 

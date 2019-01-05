@@ -77,7 +77,7 @@ public class OnGameFullNotifier {
     }
 
     notificationService.addNotification(new TransientNotification(i18n.get("game.full"), i18n.get("game.full.action"),
-        mapService.loadPreview(currentGame.getMapFolderName(), PreviewSize.SMALL),
+        mapService.loadPreview(currentGame.getMapName(), PreviewSize.SMALL),
         v -> platformService.focusWindow(faWindowTitle)));
   }
 }

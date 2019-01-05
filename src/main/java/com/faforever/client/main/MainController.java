@@ -9,6 +9,7 @@ import com.faforever.client.fx.JavaFxUtil;
 import com.faforever.client.fx.PlatformService;
 import com.faforever.client.game.GamePathHandler;
 import com.faforever.client.game.GameService;
+import com.faforever.client.game.MatchAvailableNotification;
 import com.faforever.client.i18n.I18n;
 import com.faforever.client.login.LoginController;
 import com.faforever.client.main.event.NavigateEvent;
@@ -69,6 +70,7 @@ import javafx.util.Duration;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
@@ -274,7 +276,8 @@ public class MainController implements Controller<Node> {
     }
   }
 
-  private void onMatchmakerMessage(MatchmakerMessage message) {
+  @EventListener
+  public void onMatchmakerMessage(MatchAvailableNotification message) {
     if (message.getQueues() == null
         || gameService.gameRunningProperty().get()
         || !preferencesService.getPreferences().getNotification().getLadder1v1ToastEnabled()

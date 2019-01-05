@@ -1,6 +1,7 @@
 package com.faforever.client.api;
 
 import com.faforever.client.api.dto.AchievementDefinition;
+import com.faforever.client.api.dto.Avatar;
 import com.faforever.client.api.dto.Clan;
 import com.faforever.client.api.dto.CoopMission;
 import com.faforever.client.api.dto.CoopResult;
@@ -128,4 +129,6 @@ public interface FafApiAccessor {
   List<MapVersion> getOwnedMaps(int playerId, int loadMoreCount, int page);
 
   void updateMapVersion(String id, MapVersion mapVersion);
+
+  List<Avatar> getAvailableAvatars();
 }

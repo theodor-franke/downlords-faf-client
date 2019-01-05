@@ -371,7 +371,7 @@ public class CreateGameController implements Controller<Pane> {
         .map(ModVersion::getUid)
         .collect(Collectors.toSet());
 
-    NewGameInfo newGameInfo = new NewGameInfo(
+    HostGameRequest hostGameRequest = new HostGameRequest(
         titleTextField.getText(),
         Strings.emptyToNull(passwordTextField.getText()),
         featuredModListView.getSelectionModel().getSelectedItem(),
@@ -379,7 +379,7 @@ public class CreateGameController implements Controller<Pane> {
         simMods,
         onlyForFriendsCheckBox.isSelected() ? GameVisibility.PRIVATE : GameVisibility.PUBLIC);
 
-    gameService.hostGame(newGameInfo).exceptionally(throwable -> {
+    gameService.hostGame(hostGameRequest).exceptionally(throwable -> {
       logger.warn("Game could not be hosted", throwable);
       notificationService.addNotification(
           new ImmediateErrorNotification(

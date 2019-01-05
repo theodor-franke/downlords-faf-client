@@ -223,7 +223,7 @@ public class ReplayService {
         .scheme(FAF_LIFE_PROTOCOL)
         .host(clientProperties.getReplay().getRemoteHost())
         .path("/" + gameId + "/" + playerId + SUP_COM_REPLAY_FILE_ENDING)
-        .queryParam("map", UrlEscapers.urlFragmentEscaper().escape(game.getMapFolderName()))
+        .queryParam("map", UrlEscapers.urlFragmentEscaper().escape(game.getMapName()))
         .queryParam("mod", game.getFeaturedMod())
         .build()
         .toUri();

@@ -262,11 +262,14 @@ dependencies {
   compile("org.springframework.boot:spring-boot-starter")
   compile("org.springframework.boot:spring-boot-starter-cache")
   compile("org.springframework.boot:spring-boot-starter-logging")
+  compile("org.springframework.boot:spring-boot-starter-websocket")
+  compile("org.springframework.boot:spring-boot-starter-integration")
+  compile("org.springframework.integration:spring-integration-ip")
+  compile("org.springframework.integration:spring-integration-websocket")
   compile("org.springframework.security.oauth.boot:spring-security-oauth2-autoconfigure:${springSecurityOauth2AutoconfigureVersion}")
   compile("org.springframework:spring-web")
 
   compile("com.github.FAForever:faf-java-commons:${fafCommonsVersion}")
-  compile("com.google.code.gson:gson:2.8.5")
   compile("com.github.micheljung:pircbotx:18481dcbfd") {
     exclude module: 'guava'
   }

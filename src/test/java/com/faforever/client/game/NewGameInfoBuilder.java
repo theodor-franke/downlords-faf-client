@@ -4,10 +4,10 @@ import java.util.HashSet;
 
 public class NewGameInfoBuilder {
 
-  private final NewGameInfo newGameInfo;
+  private final HostGameRequest hostGameRequest;
 
   private NewGameInfoBuilder() {
-    newGameInfo = new NewGameInfo();
+    hostGameRequest = new HostGameRequest();
   }
 
   public static NewGameInfoBuilder create() {
@@ -15,11 +15,11 @@ public class NewGameInfoBuilder {
   }
 
   public NewGameInfoBuilder defaultValues() {
-    newGameInfo.setMap("map");
-    newGameInfo.setFeaturedMod(FeaturedModBeanBuilder.create().defaultValues().get());
-    newGameInfo.setPassword("password");
-    newGameInfo.setTitle("title");
-    newGameInfo.setSimMods(new HashSet<String>() {{
+    hostGameRequest.setMap("map");
+    hostGameRequest.setFeaturedMod(FeaturedModBeanBuilder.create().defaultValues().get());
+    hostGameRequest.setPassword("password");
+    hostGameRequest.setTitle("title");
+    hostGameRequest.setSimMods(new HashSet<String>() {{
       add("111-456-789");
       add("222-456-789");
       add("333-456-789");
@@ -27,8 +27,8 @@ public class NewGameInfoBuilder {
     return this;
   }
 
-  public NewGameInfo get() {
-    return newGameInfo;
+  public HostGameRequest get() {
+    return hostGameRequest;
   }
 
 

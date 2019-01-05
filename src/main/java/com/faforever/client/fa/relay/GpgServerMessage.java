@@ -1,21 +1,20 @@
 package com.faforever.client.fa.relay;
 
-import com.faforever.client.remote.domain.MessageTarget;
-import com.faforever.client.remote.domain.SerializableMessage;
-import com.faforever.client.remote.domain.ServerMessage;
+
+import com.faforever.client.remote.ServerMessage;
+import lombok.Getter;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
 /**
  * Represents a message received from the relay server (deserialized from JSON).
  */
-public class GpgServerMessage implements SerializableMessage, ServerMessage {
+public class GpgServerMessage implements ServerMessage {
 
+  @Getter
   private GpgServerMessageType command;
-  private MessageTarget target;
   private List<Object> args;
 
   protected GpgServerMessage(GpgServerMessageType command, int numberOfArgs) {
@@ -42,24 +41,5 @@ public class GpgServerMessage implements SerializableMessage, ServerMessage {
   @SuppressWarnings("unchecked")
   protected <T> T getObject(int index) {
     return (T) args.get(index);
-  }
-
-  @Override
-  public Collection<String> getStringsToMask() {
-    return Collections.emptyList();
-  }
-
-  @Override
-  public GpgServerMessageType getMessageType() {
-    return command;
-  }
-
-  @Override
-  public MessageTarget getTarget() {
-    return target;
-  }
-
-  public void setTarget(MessageTarget target) {
-    this.target = target;
   }
 }

@@ -98,8 +98,8 @@ public class GamesTableController implements Controller<Node> {
     passwordProtectionColumn.setCellFactory(param -> passwordIndicatorColumn());
     mapPreviewColumn.setCellFactory(param -> new MapPreviewTableCell(uiService));
     mapPreviewColumn.setCellValueFactory(param -> Bindings.createObjectBinding(
-        () -> mapService.loadPreview(param.getValue().getMapFolderName(), PreviewSize.SMALL),
-        param.getValue().mapFolderNameProperty()
+        () -> mapService.loadPreview(param.getValue().getMapName(), PreviewSize.SMALL),
+        param.getValue().mapNameProperty()
     ));
 
     gameTitleColumn.setCellValueFactory(param -> param.getValue().titleProperty());

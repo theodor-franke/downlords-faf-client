@@ -142,15 +142,15 @@ public class GameDetailController implements Controller<Pane> {
 
     gameTitleLabel.textProperty().bind(game.titleProperty());
     hostLabel.textProperty().bind(game.hostProperty());
-    mapLabel.textProperty().bind(game.mapFolderNameProperty());
+    mapLabel.textProperty().bind(game.mapNameProperty());
     numberOfPlayersLabel.textProperty().bind(createStringBinding(
         () -> i18n.get("game.detail.players.format", game.getNumPlayers(), game.getMaxPlayers()),
         game.numPlayersProperty(),
         game.maxPlayersProperty()
     ));
     mapImageView.imageProperty().bind(createObjectBinding(
-        () -> mapService.loadPreview(game.getMapFolderName(), PreviewSize.LARGE),
-        game.mapFolderNameProperty()
+        () -> mapService.loadPreview(game.getMapName(), PreviewSize.LARGE),
+        game.mapNameProperty()
     ));
 
     featuredModInvalidationListener = observable -> modService.getFeaturedMod(game.getFeaturedMod())

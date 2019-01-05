@@ -3,8 +3,9 @@ package com.faforever.client.remote;
 import com.faforever.client.FafClientApplication;
 import com.faforever.client.fa.relay.GpgGameMessage;
 import com.faforever.client.game.Faction;
+import com.faforever.client.game.HostGameRequest;
 import com.faforever.client.game.KnownFeaturedMod;
-import com.faforever.client.game.NewGameInfo;
+import com.faforever.client.game.StartGameProcessMessage;
 import com.faforever.client.i18n.I18n;
 import com.faforever.client.net.ConnectionState;
 import com.faforever.client.notification.Action;
@@ -16,14 +17,12 @@ import com.faforever.client.rankedmatch.MatchmakerMessage.MatchmakerQueue;
 import com.faforever.client.remote.domain.Avatar;
 import com.faforever.client.remote.domain.GameAccess;
 import com.faforever.client.remote.domain.GameInfoMessage;
-import com.faforever.client.remote.domain.GameLaunchMessage;
 import com.faforever.client.remote.domain.GameStatus;
 import com.faforever.client.remote.domain.IceServersServerMessage.IceServer;
 import com.faforever.client.remote.domain.LoginMessage;
 import com.faforever.client.remote.domain.Player;
 import com.faforever.client.remote.domain.PlayersMessage;
 import com.faforever.client.remote.domain.RatingRange;
-import com.faforever.client.remote.domain.ServerMessage;
 import com.faforever.client.task.CompletableTask;
 import com.faforever.client.task.TaskService;
 import com.faforever.client.user.event.LoginSuccessEvent;
@@ -196,33 +195,33 @@ public class MockFafServerAccessor implements FafServerAccessor {
   }
 
   @Override
-  public CompletableFuture<GameLaunchMessage> requestHostGame(NewGameInfo newGameInfo) {
-    return taskService.submitTask(new CompletableTask<GameLaunchMessage>(HIGH) {
+  public void requestHostGame(HostGameRequest hostGameRequest) {
+    return taskService.submitTask(new CompletableTask<StartGameProcessMessage>(HIGH) {
       @Override
-      protected GameLaunchMessage call() throws Exception {
+      protected StartGameProcessMessage call() throws Exception {
         updateTitle("Hosting game");
 
-        GameLaunchMessage gameLaunchMessage = new GameLaunchMessage();
-        gameLaunchMessage.setArgs(Arrays.asList("/ratingcolor d8d8d8d8", "/numgames 1234"));
-        gameLaunchMessage.setMod("faf");
-        gameLaunchMessage.setUid(1234);
-        return gameLaunchMessage;
+        StartGameProcessMessage startGameProcessMessage = new StartGameProcessMessage();
+        startGameProcessMessage.setArgs(Arrays.asList("/ratingcolor d8d8d8d8", "/numgames 1234"));
+        startGameProcessMessage.setMod("faf");
+        startGameProcessMessage.setUid(1234);
+        return startGameProcessMessage;
       }
     }).getFuture();
   }
 
   @Override
-  public CompletableFuture<GameLaunchMessage> requestJoinGame(int gameId, String password) {
-    return taskService.submitTask(new CompletableTask<GameLaunchMessage>(HIGH) {
+  public void requestJoinGame(int gameId, String password) {
+    return taskService.submitTask(new CompletableTask<StartGameProcessMessage>(HIGH) {
       @Override
-      protected GameLaunchMessage call() throws Exception {
+      protected StartGameProcessMessage call() throws Exception {
         updateTitle("Joining game");
 
-        GameLaunchMessage gameLaunchMessage = new GameLaunchMessage();
-        gameLaunchMessage.setArgs(Arrays.asList("/ratingcolor d8d8d8d8", "/numgames 1234"));
-        gameLaunchMessage.setMod("faf");
-        gameLaunchMessage.setUid(1234);
-        return gameLaunchMessage;
+        StartGameProcessMessage startGameProcessMessage = new StartGameProcessMessage();
+        startGameProcessMessage.setArgs(Arrays.asList("/ratingcolor d8d8d8d8", "/numgames 1234"));
+        startGameProcessMessage.setMod("faf");
+        startGameProcessMessage.setUid(1234);
+        return startGameProcessMessage;
       }
     }).getFuture();
   }
@@ -248,12 +247,12 @@ public class MockFafServerAccessor implements FafServerAccessor {
   }
 
   @Override
-  public CompletableFuture<GameLaunchMessage> startSearchLadder1v1(Faction faction) {
+  public CompletableFuture<StartGameProcessMessage> startSearchLadder1v1(Faction faction) {
     logger.debug("Searching 1v1 match with faction: {}", faction);
-    GameLaunchMessage gameLaunchMessage = new GameLaunchMessage();
-    gameLaunchMessage.setUid(123);
-    gameLaunchMessage.setMod(KnownFeaturedMod.DEFAULT.getTechnicalName());
-    return CompletableFuture.completedFuture(gameLaunchMessage);
+    StartGameProcessMessage startGameProcessMessage = new StartGameProcessMessage();
+    startGameProcessMessage.setUid(123);
+    startGameProcessMessage.setMod(KnownFeaturedMod.DEFAULT.getTechnicalName());
+    return CompletableFuture.completedFuture(startGameProcessMessage);
   }
 
   @Override

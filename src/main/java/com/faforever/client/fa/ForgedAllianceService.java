@@ -21,7 +21,8 @@ import static com.faforever.client.preferences.PreferencesService.FORGED_ALLIANC
 
 /**
  * Knows how to starts/stop Forged Alliance with proper parameters. Downloading maps, mods and updates as well as
- * notifying the server about whether the preferences is running or not is <strong>not</strong> this service's responsibility.
+ * notifying the server about whether the preferences is running or not is <strong>not</strong> this service's
+ * responsibility.
  */
 @Lazy
 @Service
@@ -36,22 +37,28 @@ public class ForgedAllianceService {
     this.preferencesService = preferencesService;
   }
 
-  
-  public Process startGame(int uid, @Nullable Faction faction, @Nullable List<String> additionalArgs,
-                           RatingMode ratingMode, int gpgPort, int localReplayPort, boolean rehost, Player currentPlayer) throws IOException {
+
+  public Process startGame(int uid,
+                           @Nullable Faction faction,
+                           RatingMode ratingMode,
+                           int gpgPort,
+                           int localReplayPort,
+                           boolean rehost,
+                           Player currentPlayer,
+                           int team,
+                           Integer expectedPlayers
+  ) throws IOException {
     Path executable = getExecutable();
 
     float deviation;
     float mean;
 
-    switch (ratingMode) {
-      case LADDER_1V1:
-        deviation = currentPlayer.getLeaderboardRatingDeviation();
-        mean = currentPlayer.getLeaderboardRatingMean();
-        break;
-      default:
-        deviation = currentPlayer.getGlobalRatingDeviation();
-        mean = currentPlayer.getGlobalRatingMean();
+    if (ratingMode == RatingMode.LADDER_1V1) {
+      deviation = currentPlayer.getLeaderboardRatingDeviation();
+      mean = currentPlayer.getLeaderboardRatingMean();
+    } else {
+      deviation = currentPlayer.getGlobalRatingDeviation();
+      mean = currentPlayer.getGlobalRatingMean();
     }
 
     List<String> launchCommand = defaultLaunchCommand()
@@ -63,17 +70,18 @@ public class ForgedAllianceService {
         .deviation(deviation)
         .mean(mean)
         .username(currentPlayer.getUsername())
-        .additionalArgs(additionalArgs)
         .logFile(preferencesService.getFafLogDirectory().resolve("game.log"))
         .localGpgPort(gpgPort)
         .localReplayPort(localReplayPort)
         .rehost(rehost)
+        .team(team)
+        .expectedPlayers(expectedPlayers)
         .build();
 
     return launch(executable, launchCommand);
   }
 
-  
+
   public Process startReplay(Path path, @Nullable Integer replayId) throws IOException {
     Path executable = getExecutable();
 
@@ -87,7 +95,7 @@ public class ForgedAllianceService {
     return launch(executable, launchCommand);
   }
 
-  
+
   public Process startReplay(URI replayUri, Integer replayId, Player currentPlayer) throws IOException {
     Path executable = getExecutable();
 

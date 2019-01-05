@@ -1,8 +1,6 @@
 package com.faforever.client.game;
 
 import com.faforever.client.fx.JavaFxUtil;
-import com.faforever.client.remote.domain.GameInfoMessage;
-import com.faforever.client.remote.domain.GameStatus;
 import com.faforever.client.remote.domain.VictoryCondition;
 import com.faforever.client.util.TimeUtil;
 import javafx.beans.property.BooleanProperty;
@@ -35,7 +33,7 @@ public class Game {
 
   private final StringProperty host;
   private final StringProperty title;
-  private final StringProperty mapFolderName;
+  private final StringProperty mapName;
   private final StringProperty featuredMod;
   private final IntegerProperty id;
   private final IntegerProperty numPlayers;
@@ -67,7 +65,7 @@ public class Game {
     id = new SimpleIntegerProperty();
     host = new SimpleStringProperty();
     title = new SimpleStringProperty();
-    mapFolderName = new SimpleStringProperty();
+    mapName = new SimpleStringProperty();
     featuredMod = new SimpleStringProperty();
     numPlayers = new SimpleIntegerProperty();
     maxPlayers = new SimpleIntegerProperty();
@@ -100,7 +98,7 @@ public class Game {
     id.set(gameInfoMessage.getUid());
     host.set(gameInfoMessage.getHost());
     title.set(StringEscapeUtils.unescapeHtml4(gameInfoMessage.getTitle()));
-    mapFolderName.set(gameInfoMessage.getMapname());
+    mapName.set(gameInfoMessage.getMapname());
     featuredMod.set(gameInfoMessage.getFeaturedMod());
     numPlayers.setValue(gameInfoMessage.getNumPlayers());
     maxPlayers.setValue(gameInfoMessage.getMaxPlayers());
@@ -207,16 +205,16 @@ public class Game {
     return title;
   }
 
-  public String getMapFolderName() {
-    return mapFolderName.get();
+  public String getMapName() {
+    return mapName.get();
   }
 
-  public void setMapFolderName(String mapFolderName) {
-    this.mapFolderName.set(mapFolderName);
+  public void setMapName(String mapName) {
+    this.mapName.set(mapName);
   }
 
-  public StringProperty mapFolderNameProperty() {
-    return mapFolderName;
+  public StringProperty mapNameProperty() {
+    return mapName;
   }
 
   public String getFeaturedMod() {

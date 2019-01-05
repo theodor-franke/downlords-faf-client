@@ -24,7 +24,6 @@ public class LaunchCommandBuilder {
   private String username;
   private Integer uid;
   private Path executable;
-  private List<String> additionalArgs;
   private Integer localGpgPort;
   private Path logFile;
   private Path replayFile;
@@ -34,6 +33,8 @@ public class LaunchCommandBuilder {
   private String executableDecorator;
   private boolean rehost;
   private Integer localReplayPort;
+  private Integer team;
+  private Integer expectedPlayers;
 
   public static LaunchCommandBuilder create() {
     return new LaunchCommandBuilder();
@@ -98,11 +99,6 @@ public class LaunchCommandBuilder {
     return this;
   }
 
-  public LaunchCommandBuilder additionalArgs(List<String> additionalArgs) {
-    this.additionalArgs = additionalArgs;
-    return this;
-  }
-
   public LaunchCommandBuilder replayId(Integer replayId) {
     this.replayId = replayId;
     return this;
@@ -125,6 +121,16 @@ public class LaunchCommandBuilder {
 
   public LaunchCommandBuilder rehost(boolean rehost) {
     this.rehost = rehost;
+    return this;
+  }
+
+  public LaunchCommandBuilder team(int team) {
+    this.team = team;
+    return this;
+  }
+
+  public LaunchCommandBuilder expectedPlayers(Integer expectedPlayers) {
+    this.expectedPlayers = expectedPlayers;
     return this;
   }
 
@@ -207,8 +213,14 @@ public class LaunchCommandBuilder {
       command.add("/rehost");
     }
 
-    if (additionalArgs != null) {
-      command.addAll(additionalArgs);
+    if (team != null) {
+      command.add("/team");
+      command.add(String.valueOf(team));
+    }
+
+    if (expectedPlayers != null) {
+      command.add("/players");
+      command.add(String.valueOf(expectedPlayers));
     }
 
     return command;

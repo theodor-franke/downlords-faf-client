@@ -91,10 +91,10 @@ public class GameTileController implements Controller<Node> {
     hostLabel.setText(game.getHost());
 
     StringBinding mapNameBinding = createStringBinding(
-        () -> mapService.getMapLocallyFromName(game.getMapFolderName())
+        () -> mapService.getMapLocallyFromName(game.getMapName())
             .map(MapBean::getDisplayName)
-            .orElse(game.getMapFolderName()),
-        game.mapFolderNameProperty());
+            .orElse(game.getMapName()),
+        game.mapNameProperty());
 
     JavaFxUtil.bind(gameMapLabel.textProperty(), mapNameBinding);
     numberOfPlayersLabel.textProperty().bind(createStringBinding(
@@ -103,8 +103,8 @@ public class GameTileController implements Controller<Node> {
         game.maxPlayersProperty()
     ));
     mapImageView.imageProperty().bind(createObjectBinding(
-        () -> mapService.loadPreview(game.getMapFolderName(), PreviewSize.SMALL),
-        game.mapFolderNameProperty()
+        () -> mapService.loadPreview(game.getMapName(), PreviewSize.SMALL),
+        game.mapNameProperty()
     ));
 
     ObservableMap<String, String> simMods = game.getSimMods();
@@ -112,8 +112,8 @@ public class GameTileController implements Controller<Node> {
 
     // TODO display "unknown map" image first since loading may take a while
     mapImageView.imageProperty().bind(createObjectBinding(
-        () -> mapService.loadPreview(game.getMapFolderName(), PreviewSize.SMALL),
-        game.mapFolderNameProperty()
+        () -> mapService.loadPreview(game.getMapName(), PreviewSize.SMALL),
+        game.mapNameProperty()
     ));
 
     lockIconLabel.visibleProperty().bind(game.passwordProtectedProperty());

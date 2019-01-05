@@ -1,5 +1,6 @@
 package com.faforever.client.fa.relay;
 
+import com.faforever.client.game.HostGameMessage;
 import com.faforever.client.remote.domain.IceServerMessage;
 import com.faforever.client.remote.domain.ServerMessage;
 import com.faforever.client.remote.domain.ServerMessageType;

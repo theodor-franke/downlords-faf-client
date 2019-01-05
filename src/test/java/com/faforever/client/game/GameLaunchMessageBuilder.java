@@ -1,15 +1,13 @@
 package com.faforever.client.game;
 
-import com.faforever.client.remote.domain.GameLaunchMessage;
-
 import java.util.Arrays;
 
 public class GameLaunchMessageBuilder {
 
-  private final GameLaunchMessage gameLaunchMessage;
+  private final StartGameProcessMessage startGameProcessMessage;
 
   public GameLaunchMessageBuilder() {
-    gameLaunchMessage = new GameLaunchMessage();
+    startGameProcessMessage = new StartGameProcessMessage();
   }
 
   public static GameLaunchMessageBuilder create() {
@@ -17,13 +15,13 @@ public class GameLaunchMessageBuilder {
   }
 
   public GameLaunchMessageBuilder defaultValues() {
-    gameLaunchMessage.setUid(1);
-    gameLaunchMessage.setMod(KnownFeaturedMod.DEFAULT.getTechnicalName());
-    gameLaunchMessage.setArgs(Arrays.asList("/ratingcolor red", "/clan foo"));
+    startGameProcessMessage.setUid(1);
+    startGameProcessMessage.setMod(KnownFeaturedMod.DEFAULT.getTechnicalName());
+    startGameProcessMessage.setArgs(Arrays.asList("/ratingcolor red", "/clan foo"));
     return this;
   }
 
-  public GameLaunchMessage get() {
-    return gameLaunchMessage;
+  public StartGameProcessMessage get() {
+    return startGameProcessMessage;
   }
 }

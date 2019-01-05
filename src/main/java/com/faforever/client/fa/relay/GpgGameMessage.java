@@ -1,19 +1,15 @@
 package com.faforever.client.fa.relay;
 
 
-import com.faforever.client.remote.domain.MessageTarget;
-import com.faforever.client.remote.domain.SerializableMessage;
-
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
 
-public class GpgGameMessage implements SerializableMessage {
+public class GpgGameMessage {
 
   private String command;
   private List<Object> args;
-  private MessageTarget target = MessageTarget.GAME;
 
   public GpgGameMessage(GpgClientCommand command, List<Object> args) {
     this(command.getString(), args);
@@ -34,14 +30,6 @@ public class GpgGameMessage implements SerializableMessage {
 
   public Collection<String> getStringsToMask() {
     return Collections.emptyList();
-  }
-
-  public MessageTarget getTarget() {
-    return target;
-  }
-
-  public void setTarget(MessageTarget target) {
-    this.target = target;
   }
 
   protected int getInt(int index) {

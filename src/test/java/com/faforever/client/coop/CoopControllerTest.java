@@ -4,7 +4,7 @@ import com.faforever.client.fx.WebViewConfigurer;
 import com.faforever.client.game.FeaturedModBeanBuilder;
 import com.faforever.client.game.GameService;
 import com.faforever.client.game.GamesTableController;
-import com.faforever.client.game.NewGameInfo;
+import com.faforever.client.game.HostGameRequest;
 import com.faforever.client.i18n.I18n;
 import com.faforever.client.map.MapService;
 import com.faforever.client.mod.ModService;
@@ -94,11 +94,11 @@ public class CoopControllerTest extends AbstractPlainJavaFxTest {
     WaitForAsyncUtils.waitForFxEvents();
     instance.onPlayButtonClicked();
 
-    ArgumentCaptor<NewGameInfo> captor = ArgumentCaptor.forClass(NewGameInfo.class);
+    ArgumentCaptor<HostGameRequest> captor = ArgumentCaptor.forClass(HostGameRequest.class);
     verify(gameService).hostGame(captor.capture());
 
-    NewGameInfo newGameInfo = captor.getValue();
-    assertThat(newGameInfo.getFeaturedMod().getTechnicalName(), is("coop"));
+    HostGameRequest hostGameRequest = captor.getValue();
+    assertThat(hostGameRequest.getFeaturedMod().getTechnicalName(), is("coop"));
   }
 
   @Test

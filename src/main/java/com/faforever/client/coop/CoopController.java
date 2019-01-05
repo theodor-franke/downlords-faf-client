@@ -12,7 +12,7 @@ import com.faforever.client.fx.WebViewConfigurer;
 import com.faforever.client.game.Game;
 import com.faforever.client.game.GameService;
 import com.faforever.client.game.GamesTableController;
-import com.faforever.client.game.NewGameInfo;
+import com.faforever.client.game.HostGameRequest;
 import com.faforever.client.i18n.I18n;
 import com.faforever.client.map.MapService;
 import com.faforever.client.map.MapService.PreviewSize;
@@ -259,7 +259,7 @@ public class CoopController extends AbstractViewController<Node> {
 
   public void onPlayButtonClicked() {
     modService.getFeaturedMod(COOP.getTechnicalName())
-        .thenAccept(featuredModBean -> gameService.hostGame(new NewGameInfo(titleTextField.getText(),
+        .thenAccept(featuredModBean -> gameService.hostGame(new HostGameRequest(titleTextField.getText(),
             Strings.emptyToNull(passwordTextField.getText()), featuredModBean, getSelectedMission().getMapFolderName(),
             emptySet())));
   }

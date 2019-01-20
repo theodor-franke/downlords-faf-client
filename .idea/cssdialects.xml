@@ -2,6 +2,6 @@
 <project version="4">
   <component name="CssDialectMappings">
     <file url="file://$PROJECT_DIR$" dialect="JavaFX" />
-    <file url="file://$PROJECT_DIR$/src/main/resources/theme/style-webview.css" dialect="CLASSIC" />
+    <file url="file://$PROJECT_DIR$/ui/src/main/resources/theme/style-webview.css" dialect="CLASSIC" />
   </component>
 </project>

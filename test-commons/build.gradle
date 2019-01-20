@@ -1,0 +1,15 @@
+plugins {
+  id 'java'
+}
+
+apply plugin: 'io.spring.dependency-management'
+apply plugin: 'org.springframework.boot'
+
+dependencies {
+  compile project(":commons")
+  compile("org.springframework.boot:spring-boot-starter-test")
+  compile("org.testfx:testfx-junit:${testfxVersion}")
+  compile("org.testfx:testfx-core:4.0.8-alpha") {
+    exclude module: 'guava'
+  }
+}

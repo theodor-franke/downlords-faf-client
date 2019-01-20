@@ -1,0 +1,22 @@
+plugins {
+  id 'java'
+}
+
+apply plugin: 'io.spring.dependency-management'
+apply plugin: 'org.springframework.boot'
+
+
+dependencies {
+  compile("com.jfoenix:jfoenix:${jfoenixVersion}")
+  compile("com.github.micheljung:FX-BorderlessScene:3.5.0")
+  compile project(":service")
+
+  testCompile project(":test-commons")
+  testCompile("org.springframework.boot:spring-boot-starter-test")
+  testCompile("org.testfx:testfx-junit:${testfxVersion}")
+  testCompile("org.testfx:testfx-core:${testfxVersion}") {
+    exclude module: 'guava'
+  }
+  testCompile("com.natpryce.hamcrest:hamcrest-reflection:0.1-2")
+  testCompile("org.springframework.boot:spring-boot-starter-test")
+}

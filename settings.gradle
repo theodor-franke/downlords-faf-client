@@ -1,3 +1,7 @@
 rootProject.name = 'downlords-faf-client'
 include 'webview-patch'
+include 'service'
+include 'ui'
+include 'test-commons'
+include 'commons'
 

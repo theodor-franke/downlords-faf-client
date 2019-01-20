@@ -1,0 +1,55 @@
+plugins {
+  id 'java'
+}
+
+apply plugin: 'io.spring.dependency-management'
+apply plugin: 'org.springframework.boot'
+
+dependencies {
+  compile("org.springframework.boot:spring-boot-starter")
+  compile("org.springframework.boot:spring-boot-starter-cache")
+  compile("org.springframework.boot:spring-boot-starter-logging")
+  compile("org.springframework.boot:spring-boot-starter-websocket")
+  compile("org.springframework.boot:spring-boot-starter-integration")
+  compile("org.springframework.integration:spring-integration-ip")
+  compile("org.springframework.integration:spring-integration-websocket")
+  compile("org.springframework.security.oauth.boot:spring-security-oauth2-autoconfigure:${springSecurityOauth2AutoconfigureVersion}")
+  compile("org.springframework:spring-web")
+
+  compile("com.github.ben-manes.caffeine:caffeine")
+  compile("org.apache.httpcomponents:httpclient")
+
+  compile("com.google.guava:guava:${guavaVersion}")
+  compile("com.github.FAForever:faf-java-commons:${fafCommonsVersion}")
+  compile("com.github.jasminb:jsonapi-converter:${jsonapiConverterVersion}")
+  compile("com.github.rutledgepaulv:q-builders:${qBuildersVersion}")
+  compileOnly("com.install4j:install4j-runtime:${install4jRuntimeVersion}")
+
+  compile project(":commons")
+  compile("org.mapstruct:mapstruct-jdk8:${mapstructVersion}")
+  compileOnly("org.mapstruct:mapstruct-processor:${mapstructVersion}")
+  annotationProcessor("org.mapstruct:mapstruct-processor:${mapstructVersion}")
+
+  // TODO externalize versions
+  compile("net.sf.jtidy:jtidy:r938")
+  compile("com.neovisionaries:nv-i18n:1.23")
+  compile("com.rometools:rome:1.11.1")
+  compile("org.jsoup:jsoup:1.11.3")
+  compile("org.luaj:luaj-jse:3.0.1")
+  compile("com.github.micheljung:JJsonRpc:01a7fba5f4")
+  compile("com.github.micheljung:pircbotx:18481dcbfd") {
+    exclude module: 'guava'
+  }
+
+  testCompile project(":test-commons")
+  testCompile("org.springframework.boot:spring-boot-starter-test")
+  testCompile("org.testfx:testfx-junit:${testfxVersion}")
+  testCompile("org.testfx:testfx-core:${testfxVersion}") {
+    exclude module: 'guava'
+  }
+  testCompile("com.natpryce.hamcrest:hamcrest-reflection:0.1-2")
+
+  // TODO remove after going public with the project
+  compile files("C:\\Users\\Downlord\\git\\sh-java-api\\sh-api-java-dto\\build\\libs\\sh-api-java-dto.jar")
+  compile files("C:\\Users\\Downlord\\git\\sh-server\\sh-server-protocol-v2\\build\\libs\\sh-server-protocol-v2-snapshot.jar")
+}

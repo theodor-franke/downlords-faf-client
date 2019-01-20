@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+<VBox xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.clan.ClanTooltipController"
+      fx:id="clanTooltipRoot"
+      maxHeight="600" maxWidth="300" minHeight="-Infinity" minWidth="-Infinity"
+      xmlns="http://javafx.com/javafx/8">
+    <children>
+        <Label text="%clan.clanName" underline="true">
+            <font>
+                <Font size="9.0"/>
+            </font>
+        </Label>
+        <Label fx:id="nameLabel"/>
+        <Label text="%clan.clanMembers" underline="true">
+            <font>
+                <Font size="9.0"/>
+            </font>
+        </Label>
+        <Label fx:id="membersLabel"/>
+        <Label fx:id="descriptionTitleLabel" text="%clan.description" underline="true">
+            <font>
+                <Font size="9.0"/>
+            </font>
+        </Label>
+        <Label fx:id="descriptionLabel" maxWidth="300" wrapText="true"/>
+        <Label text="%clan.leader" underline="true">
+            <font>
+                <Font size="9.0"/>
+            </font>
+        </Label>
+        <Label fx:id="leaderLabel"/>
+    </children>
+</VBox>

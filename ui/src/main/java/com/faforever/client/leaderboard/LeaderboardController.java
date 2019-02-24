@@ -62,16 +62,16 @@ public class LeaderboardController extends AbstractViewController<Node> {
     rankColumn.setCellValueFactory(param -> param.getValue().positionProperty());
     rankColumn.setCellFactory(param -> new StringCell<>(rank -> i18n.number(rank.intValue())));
 
-    nameColumn.setCellValueFactory(param -> param.getValue().usernameProperty());
+    nameColumn.setCellValueFactory(param -> param.getValue().playerNameProperty());
     nameColumn.setCellFactory(param -> new StringCell<>(name -> name));
 
     winLossColumn.setCellValueFactory(param -> new SimpleFloatProperty(param.getValue().getWinLossRatio()));
     winLossColumn.setCellFactory(param -> new StringCell<>(number -> i18n.get("percentage", number.floatValue() * 100)));
 
-    gamesPlayedColumn.setCellValueFactory(param -> param.getValue().gamesPlayedProperty());
+    gamesPlayedColumn.setCellValueFactory(param -> param.getValue().totalGamesProperty());
     gamesPlayedColumn.setCellFactory(param -> new StringCell<>(count -> i18n.number(count.intValue())));
 
-    ratingColumn.setCellValueFactory(param -> param.getValue().rankProperty());
+    ratingColumn.setCellValueFactory(param -> param.getValue().ratingProperty());
     ratingColumn.setCellFactory(param -> new StringCell<>(rating -> i18n.number(rating.intValue())));
 
     contentPane.managedProperty().bind(contentPane.visibleProperty());
@@ -84,14 +84,14 @@ public class LeaderboardController extends AbstractViewController<Node> {
       } else {
         LeaderboardEntry foundPlayer = null;
         for (LeaderboardEntry leaderboardEntry : ratingTable.getItems()) {
-          if (leaderboardEntry.getUsername().toLowerCase().startsWith(newValue.toLowerCase())) {
+          if (leaderboardEntry.getPlayerName().toLowerCase().startsWith(newValue.toLowerCase())) {
             foundPlayer = leaderboardEntry;
             break;
           }
         }
         if (foundPlayer == null) {
           for (LeaderboardEntry leaderboardEntry : ratingTable.getItems()) {
-            if (leaderboardEntry.getUsername().toLowerCase().contains(newValue.toLowerCase())) {
+            if (leaderboardEntry.getPlayerName().toLowerCase().contains(newValue.toLowerCase())) {
               foundPlayer = leaderboardEntry;
               break;
             }

@@ -32,7 +32,7 @@ public class LeaderboardServiceImpl implements LeaderboardService {
   private List<RatingStat> toRankStats(List<LeaderboardEntry> entries) {
     Map<Integer, Long> totalCount = countByRank(entries.stream());
     Map<Integer, Long> countWithoutFewGames = countByRank(entries.stream()
-      .filter(entry -> entry.gamesPlayedProperty().get() >= MINIMUM_GAMES_PLAYED_TO_BE_SHOWN));
+      .filter(entry -> entry.totalGamesProperty().get() >= MINIMUM_GAMES_PLAYED_TO_BE_SHOWN));
 
     return totalCount.entrySet().stream()
       .map(entry -> new RatingStat(
@@ -43,7 +43,7 @@ public class LeaderboardServiceImpl implements LeaderboardService {
   }
 
   private Map<Integer, Long> countByRank(Stream<LeaderboardEntry> entries) {
-    return entries.collect(Collectors.groupingBy(LeaderboardEntry::getRank, Collectors.counting()));
+    return entries.collect(Collectors.groupingBy(LeaderboardEntry::getRating, Collectors.counting()));
   }
 
   @Override

@@ -6,7 +6,7 @@
 <?import javafx.scene.layout.TilePane?>
 <?import javafx.scene.layout.VBox?>
 <VBox xmlns:fx="http://javafx.com/fxml/1" fx:id="gameTooltipRoot" styleClass="game-tooltip"
-      xmlns="http://javafx.com/javafx/8.0.40" fx:controller="client.play.GameTooltipController">
+      xmlns="http://javafx.com/javafx/8.0.40" fx:controller="com.faforever.client.play.GameTooltipController">
   <children>
     <TitledPane fx:id="modsPane" collapsible="false" text="%game.mods">
          <content>

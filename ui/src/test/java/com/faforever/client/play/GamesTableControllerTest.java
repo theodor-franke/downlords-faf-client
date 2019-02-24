@@ -4,9 +4,6 @@ import com.faforever.client.game.Game;
 import com.faforever.client.game.GameState;
 import com.faforever.client.i18n.I18n;
 import com.faforever.client.map.MapPreviewService;
-import com.faforever.client.map.MapService;
-import com.faforever.client.play.GamesTableController;
-import com.faforever.client.play.JoinGameHelper;
 import com.faforever.client.preferences.Preferences;
 import com.faforever.client.preferences.PreferencesService;
 import com.faforever.client.test.AbstractPlainJavaFxTest;
@@ -58,10 +55,12 @@ public class GamesTableControllerTest extends AbstractPlainJavaFxTest {
     Game game2 = new Game();
     game2.setState(GameState.CLOSED);
 
-    instance.initializeGameTable(FXCollections.observableArrayList(
-        game1,
-        game2
-    ));
+    initializeGameTable(game1, game2);
+  }
+
+  private void initializeGameTable(Game... games) {
+    WaitForAsyncUtils.asyncFx(() -> instance.initializeGameTable(FXCollections.observableArrayList(games)));
+    WaitForAsyncUtils.waitForFxEvents();
   }
 
   @Test
@@ -72,10 +71,7 @@ public class GamesTableControllerTest extends AbstractPlainJavaFxTest {
     Game game2 = new Game();
     game2.setState(GameState.CLOSED);
 
-    instance.initializeGameTable(FXCollections.observableArrayList(
-        game1,
-        game2
-    ));
+    initializeGameTable(game1, game2);
 
     assertThat(instance.gamesTable.getSortOrder(), hasSize(1));
     assertThat(instance.gamesTable.getSortOrder().get(0).getId(), is("hostColumn"));
@@ -90,10 +86,7 @@ public class GamesTableControllerTest extends AbstractPlainJavaFxTest {
     Game game2 = new Game();
     game2.setState(GameState.CLOSED);
 
-    instance.initializeGameTable(FXCollections.observableArrayList(
-        game1,
-        game2
-    ));
+    initializeGameTable(game1, game2);
 
     TableColumn<Game, ?> column = instance.gamesTable.getColumns().get(0);
     column.setSortType(SortType.ASCENDING);
@@ -101,8 +94,8 @@ public class GamesTableControllerTest extends AbstractPlainJavaFxTest {
 
     assertThat(preferencesService.getPreferences().getGameListSorting(), hasSize(1));
     assertThat(
-        preferencesService.getPreferences().getGameListSorting().get(0),
-        equalTo(new Pair<>("passwordProtectionColumn", SortType.ASCENDING))
+      preferencesService.getPreferences().getGameListSorting().get(0),
+      equalTo(new Pair<>("passwordProtectionColumn", SortType.ASCENDING))
     );
   }
 }

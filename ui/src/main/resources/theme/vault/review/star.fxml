@@ -5,7 +5,7 @@
 <?import java.lang.String?>
 <StackPane xmlns:fx="http://javafx.com/fxml/1" styleClass="review-star" fx:id="starRoot" maxHeight="-Infinity"
            maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onMouseClicked="#onMouseClicked"
-           xmlns="http://javafx.com/javafx/8.0.111" fx:controller="client.vault.review.StarController">
+           xmlns="http://javafx.com/javafx/8.0.111" fx:controller="com.faforever.client.vault.review.StarController">
     <children>
         <Text fx:id="starBackground" boundsType="VISUAL" mouseTransparent="true" stroke="WHITE" strokeType="OUTSIDE"
               strokeWidth="0.0" text="">

@@ -99,7 +99,6 @@ public class MainController implements Controller<Node> {
   private final UiService uiService;
   private final EventBus eventBus;
   private final String mainWindowTitle;
-  private final int ratingBeta;
   private final GamePathHandler gamePathHandler;
   private final PlatformService platformService;
   public Pane mainHeaderPane;
@@ -137,7 +136,6 @@ public class MainController implements Controller<Node> {
     this.eventBus = eventBus;
 
     this.mainWindowTitle = clientProperties.getMainWindowTitle();
-    this.ratingBeta = clientProperties.getTrueSkill().getBeta();
     this.gamePathHandler = gamePathHandler;
     this.platformService = platformService;
     this.viewCache = CacheBuilder.newBuilder().build();
@@ -400,7 +398,7 @@ public class MainController implements Controller<Node> {
 
   private void restoreLastView() {
     final NavigationItem navigationItem;
-    if (preferencesService.getPreferences().getRememberLastTab()) {
+    if (preferencesService.getPreferences().isRememberLastTab()) {
       final WindowPrefs mainWindowPrefs = preferencesService.getPreferences().getMainWindow();
       navigationItem = Optional.ofNullable(NavigationItem.fromString(mainWindowPrefs.getLastView())).orElse(NavigationItem.NEWS);
     } else {

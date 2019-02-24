@@ -1,5 +1,6 @@
 package com.faforever.client.remote;
 
+import com.faforever.client.SpringProfiles;
 import com.faforever.client.avatar.SelectAvatarClientMessage;
 import com.faforever.client.game.Faction;
 import com.faforever.client.game.HostGameRequest;
@@ -20,11 +21,13 @@ import com.faforever.client.user.AccountDetailsServerMessage;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import org.springframework.context.annotation.Profile;
 import org.springframework.integration.dsl.IntegrationFlows;
 import org.springframework.integration.dsl.StandardIntegrationFlow;
 import org.springframework.integration.dsl.context.IntegrationFlowContext;
 import org.springframework.integration.websocket.ClientWebSocketContainer;
 import org.springframework.integration.websocket.inbound.WebSocketInboundChannelAdapter;
+import org.springframework.stereotype.Component;
 import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 
 import java.util.Collection;
@@ -34,6 +37,8 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
+@Component
+@Profile("!" + SpringProfiles.PROFILE_OFFLINE)
 public class V2ServerAccessor implements FafServerAccessor {
 
   private final ServerGateway serverGateway;

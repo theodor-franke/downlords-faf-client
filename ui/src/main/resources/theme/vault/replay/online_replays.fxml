@@ -13,7 +13,7 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 <StackPane xmlns:fx="http://javafx.com/fxml/1" fx:id="replayVaultRoot" xmlns="http://javafx.com/javafx/8.0.111"
-           fx:controller="client.replay.OnlineReplayVaultController">
+           fx:controller="com.faforever.client.replay.OnlineReplayVaultController">
     <children>
         <ScrollPane fx:id="scrollPane" fitToWidth="true" maxHeight="1.7976931348623157E308"
                     maxWidth="1.7976931348623157E308">

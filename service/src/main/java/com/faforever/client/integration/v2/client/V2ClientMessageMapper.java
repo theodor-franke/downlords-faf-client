@@ -18,7 +18,6 @@ import org.supcomhub.server.protocol.v2.dto.client.ListIceServersClientMessage;
 import org.supcomhub.server.protocol.v2.dto.client.RestoreGameSessionClientMessage;
 import org.supcomhub.server.protocol.v2.dto.client.SearchMatchClientMessage;
 import org.supcomhub.server.protocol.v2.dto.client.SelectAvatarClientMessage;
-import org.supcomhub.server.protocol.v2.dto.client.V2GpgClientMessage;
 
 @Mapper(config = MapStructConfig.class)
 public interface V2ClientMessageMapper {
@@ -31,7 +30,7 @@ public interface V2ClientMessageMapper {
 
   org.supcomhub.server.protocol.v2.dto.client.JoinGameClientMessage map(JoinGameClientMessage message);
 
-  V2GpgClientMessage map(GpgMessage message);
+  GenericGpgClientMessage map(GpgMessage message);
 
   RestoreGameSessionClientMessage map(RestoreGameSessionRequest message);
 

@@ -1,11 +1,15 @@
 package com.faforever.client.mod;
 
+import com.faforever.client.api.FxMapper;
+import com.faforever.client.mapstruct.MapStructConfig;
 import com.faforever.client.mod.ModVersion.ModType;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 
-@Mapper
+import java.util.UUID;
+
+@Mapper(config = MapStructConfig.class, uses = FxMapper.class)
 public interface ModInfoMapper {
 
   @Mapping(target = "displayName", source = "name")
@@ -23,10 +27,19 @@ public interface ModInfoMapper {
   @Mapping(target = "ranked", ignore = true)
   @Mapping(target = "hidden", ignore = true)
   @Mapping(target = "mod", ignore = true)
+  @Mapping(target = "likes", ignore = true)
+  @Mapping(target = "played", ignore = true)
+  @Mapping(target = "createTime", ignore = true)
+  @Mapping(target = "reviews", ignore = true)
+  @Mapping(target = "filename", ignore = true)
   ModVersion map(com.faforever.commons.mod.Mod input);
 
   @Named("uiOnlyToModType")
   default ModType map(boolean uiOnly) {
     return uiOnly ? ModType.UI : ModType.SIM;
+  }
+
+  default UUID map(String uuid) {
+    return UUID.fromString(uuid);
   }
 }

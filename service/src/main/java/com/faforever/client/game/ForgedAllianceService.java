@@ -51,7 +51,7 @@ public class ForgedAllianceService {
       .faction(faction)
       .clan(currentPlayer.getClanTag())
       .country(currentPlayer.getCountry())
-      .rank(currentPlayer.getRanks().get(leaderboardName))
+      .rank(currentPlayer.getRating().get(leaderboardName))
       .username(currentPlayer.getDisplayName())
       .logFile(preferencesService.getFafLogDirectory().resolve("game.log"))
       .localGpgPort(gpgPort)

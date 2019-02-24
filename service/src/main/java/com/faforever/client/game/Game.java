@@ -62,7 +62,7 @@ public class Game {
     visibility = new SimpleObjectProperty<>();
     simMods = new SimpleMapProperty<>(FXCollections.observableHashMap());
     teams = new SimpleMapProperty<>(FXCollections.observableHashMap());
-    state = new SimpleObjectProperty<>();
+    state = new SimpleObjectProperty<>(GameState.INITIALIZING);
     startTime = new SimpleObjectProperty<>();
     numPlayers = new SimpleIntegerProperty();
   }

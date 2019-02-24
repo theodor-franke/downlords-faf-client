@@ -5,7 +5,7 @@
 <?import javafx.scene.layout.HBox?>
 <HBox xmlns:fx="http://javafx.com/fxml/1" fx:id="logicalNodeRoot" alignment="CENTER_LEFT" maxHeight="-Infinity"
       maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" spacing="10.0"
-      xmlns="http://javafx.com/javafx/8.0.60" fx:controller="client.query.LogicalNodeController">
+      xmlns="http://javafx.com/javafx/8.0.60" fx:controller="com.faforever.client.query.LogicalNodeController">
     <children>
         <JFXComboBox fx:id="logicalOperatorField" maxHeight="1.7976931348623157E308" prefWidth="100.0"/>
         <fx:include fx:id="specification" source="specification.fxml"/>

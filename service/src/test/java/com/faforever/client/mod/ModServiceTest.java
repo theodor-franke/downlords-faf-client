@@ -105,7 +105,7 @@ public class ModServiceTest {
     instance = new ModService(taskService, fafService, preferencesService, applicationContext,
       notificationService, i18n, platformService, Mappers.getMapper(ModInfoMapper.class));
 
-    gamePrefsPath = faDataDirectory.getRoot().toPath().resolve("fa/game.prefs");
+    gamePrefsPath = faDataDirectory.getRoot().toPath().resolve("game.prefs");
 
     when(preferencesService.getPreferences()).thenReturn(preferences);
     when(preferences.getForgedAlliance()).thenReturn(forgedAlliancePrefs);
@@ -226,7 +226,10 @@ public class ModServiceTest {
 
     Set<UUID> installedModUids = instance.getInstalledModUids();
 
-    assertThat(installedModUids, containsInAnyOrder("9e8ea941-c306-4751-b367-f00000000005", "9e8ea941-c306-4751-b367-a11000000502"));
+    assertThat(installedModUids, containsInAnyOrder(
+      UUID.fromString("9e8ea941-c306-4751-b367-f00000000005"),
+      UUID.fromString("9e8ea941-c306-4751-b367-a11000000502")
+    ));
   }
 
   @Test
@@ -240,7 +243,7 @@ public class ModServiceTest {
 
     Set<UUID> installedUiModsUids = instance.getInstalledUiModsUids();
 
-    assertThat(installedUiModsUids, contains("b2cde810-15d0-4bfa-af66-ec2d6ecd561b"));
+    assertThat(installedUiModsUids, contains(UUID.fromString("b2cde810-15d0-4bfa-af66-ec2d6ecd561b")));
   }
 
   @Test
@@ -303,7 +306,7 @@ public class ModServiceTest {
     assertThat(modVersion.getImagePath(), nullValue());
     assertThat(modVersion.getSelectable(), is(true));
     assertThat(modVersion.getId(), is(nullValue()));
-    assertThat(modVersion.getUuid(), is("9e8ea941-c306-4751-b367-f00000000005"));
+    assertThat(modVersion.getUuid(), is(UUID.fromString("9e8ea941-c306-4751-b367-f00000000005")));
     assertThat(modVersion.getModType(), equalTo(ModType.SIM));
 
     modVersion = installedModVersions.get(1);
@@ -315,7 +318,7 @@ public class ModServiceTest {
     assertThat(modVersion.getImagePath(), is(modsDirectory.getRoot().toPath().resolve("BlackOpsUnleashed/icons/yoda_icon.bmp")));
     assertThat(modVersion.getSelectable(), is(true));
     assertThat(modVersion.getId(), is(nullValue()));
-    assertThat(modVersion.getUuid(), is("9e8ea941-c306-4751-b367-a11000000502"));
+    assertThat(modVersion.getUuid(), is(UUID.fromString("9e8ea941-c306-4751-b367-a11000000502")));
     assertThat(modVersion.getModType(), equalTo(ModType.SIM));
     assertThat(modVersion.getMountInfos(), hasSize(10));
     assertThat(modVersion.getMountInfos().get(3).getFile(), is(Paths.get("effects")));
@@ -331,7 +334,7 @@ public class ModServiceTest {
     assertThat(modVersion.getImagePath(), nullValue());
     assertThat(modVersion.getSelectable(), is(true));
     assertThat(modVersion.getId(), is(nullValue()));
-    assertThat(modVersion.getUuid(), is("b2cde810-15d0-4bfa-af66-ec2d6ecd561b"));
+    assertThat(modVersion.getUuid(), is(UUID.fromString("b2cde810-15d0-4bfa-af66-ec2d6ecd561b")));
     assertThat(modVersion.getModType(), equalTo(ModType.UI));
   }
 
@@ -376,7 +379,9 @@ public class ModServiceTest {
   @Test
   public void testGetPathForModUnknownModReturnsNull() {
     assertThat(instance.getInstalledModVersions(), hasSize(1));
-    assertThat(instance.getPathForMod(ModInfoBeanBuilder.create().uuid(UUID.fromString("9e8ea941-c306-4751-b367-a11000000502")).get()), Matchers.nullValue());
+    assertThat(instance.getPathForMod(ModInfoBeanBuilder.create().uuid(
+      UUID.fromString("11111111-1111-1111-1111-111111111111")
+    ).get()), Matchers.nullValue());
   }
 
   @Test

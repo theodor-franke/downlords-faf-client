@@ -5,4 +5,4 @@
 <ImageView xmlns:fx="http://javafx.com/fxml/1" fx:id="mapPreviewTableCellRoot" fitHeight="36.0" fitWidth="36.0"
            pickOnBounds="true"
            preserveRatio="true" xmlns="http://javafx.com/javafx/8.0.40"
-           fx:controller="client.vault.map.MapPreviewTableCellController"/>
+           fx:controller="com.faforever.client.vault.map.MapPreviewTableCellController"/>

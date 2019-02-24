@@ -36,7 +36,8 @@ public class AchievementImageServiceTest {
 
   @Test
   public void testLoadAndCacheImageRevealed() throws Exception {
-    Achievement achievement = new Achievement();
+    Achievement achievement = new Achievement();;
+    achievement.setRevealedIconUrl("http://example.com/revealed.png");
     Path cacheSubDir = Paths.get("achievements").resolve(REVEALED.name().toLowerCase());
     instance.getImage(achievement, REVEALED);
     Mockito.verify(assetService).loadAndCacheImage(new URL(achievement.getRevealedIconUrl()), cacheSubDir, null, 128, 128);
@@ -45,6 +46,7 @@ public class AchievementImageServiceTest {
   @Test
   public void testLoadAndCacheImageUnlocked() throws Exception {
     Achievement achievement = new Achievement();
+    achievement.setUnlockedIconUrl("http://example.com/unlocked.png");
     Path cacheSubDir = Paths.get("achievements").resolve(UNLOCKED.name().toLowerCase());
     instance.getImage(achievement, UNLOCKED);
     Mockito.verify(assetService).loadAndCacheImage(new URL(achievement.getUnlockedIconUrl()), cacheSubDir, null, 128, 128);

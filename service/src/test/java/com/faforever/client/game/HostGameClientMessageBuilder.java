@@ -13,6 +13,8 @@ public class HostGameClientMessageBuilder {
   private static String map;
   private static Set<UUID> simMods;
   private static GameVisibility gameVisibility;
+  private static Integer minRank;
+  private static Integer maxRank;
 
   private HostGameClientMessageBuilder() {
   }
@@ -32,6 +34,8 @@ public class HostGameClientMessageBuilder {
       UUID.fromString("000000000000-0000-0000-0000-00000333")
     );
     gameVisibility = GameVisibility.PUBLIC;
+    minRank = 3;
+    maxRank = 8;
 
     return this;
   }
@@ -43,7 +47,9 @@ public class HostGameClientMessageBuilder {
       featuredMod,
       map,
       simMods,
-      gameVisibility
+      gameVisibility,
+      minRank,
+      maxRank
     );
   }
 }

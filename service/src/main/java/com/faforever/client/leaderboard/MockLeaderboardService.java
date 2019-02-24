@@ -34,7 +34,7 @@ public class MockLeaderboardService implements LeaderboardService {
 
   @Override
   public CompletableFuture<LeaderboardEntry> getEntryForPlayer(int playerId, String leaderboardName) {
-    return CompletableFuture.completedFuture(createLeaderboardEntry("Player #" + playerId, 111, 222, 333, 55.55f));
+    return CompletableFuture.completedFuture(createLeaderboardEntry("Player #" + playerId, 111, 222, 333, 192));
   }
 
   @Override
@@ -51,7 +51,7 @@ public class MockLeaderboardService implements LeaderboardService {
           int gamecount = (int) (Math.random() * 10000);
           float winloss = (float) (Math.random() * 100);
 
-          list.add(createLeaderboardEntry(name, i, rating, gamecount, winloss));
+          list.add(createLeaderboardEntry(name, i, rating, gamecount, (int) (gamecount * winloss)));
 
         }
         return list;
@@ -59,13 +59,13 @@ public class MockLeaderboardService implements LeaderboardService {
     }).getFuture();
   }
 
-  private LeaderboardEntry createLeaderboardEntry(String name, int position, int rank, int gamesPlayed, float winLossRatio) {
+  private LeaderboardEntry createLeaderboardEntry(String name, int position, int rank, int totalGames, int wonGames) {
     LeaderboardEntry leaderboardEntry = new LeaderboardEntry();
-    leaderboardEntry.setUsername(name);
+    leaderboardEntry.setPlayerName(name);
     leaderboardEntry.setPosition(position);
-    leaderboardEntry.setRank(rank);
-    leaderboardEntry.setGamesPlayed(gamesPlayed);
-    leaderboardEntry.setWinLossRatio(winLossRatio);
+    leaderboardEntry.setRating(rank);
+    leaderboardEntry.setTotalGames(totalGames);
+    leaderboardEntry.setWonGames(wonGames);
 
     return leaderboardEntry;
   }

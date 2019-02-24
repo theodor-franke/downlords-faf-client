@@ -9,7 +9,7 @@
 <VBox xmlns:fx="http://javafx.com/fxml/1" maxHeight="1.7976931348623157E308" spacing="20.0" styleClass="content"
       VBox.vgrow="ALWAYS" fx:id="immediateNotificationRoot"
       xmlns="http://javafx.com/javafx/8.0.141"
-      fx:controller="client.notification.ImmediateNotificationController">
+      fx:controller="com.faforever.client.notification.ImmediateNotificationController">
     <children>
         <WebView fx:id="errorMessageView" minHeight="20.0" minWidth="100.0" prefHeight="100.0"
                  prefWidth="-1.0"/>

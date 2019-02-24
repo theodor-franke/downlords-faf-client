@@ -22,7 +22,6 @@ import com.faforever.client.preferences.PreferencesService;
 import com.faforever.client.remote.FafService;
 import com.faforever.client.replay.ReplayService;
 import com.faforever.client.reporting.ReportingService;
-import com.github.nocatch.NoCatch;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
@@ -44,6 +43,7 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -133,7 +133,7 @@ public class GameService implements InitializingBean {
     GameUpdater gameUpdater,
     NotificationService notificationService,
     I18n i18n,
-    Executor executor,
+    @Qualifier("taskExecutor") Executor executor,
     PlayerService playerService,
     ReportingService reportingService,
     EventBus eventBus,
@@ -187,20 +187,16 @@ public class GameService implements InitializingBean {
       item -> new Observable[]{item.stateProperty(), item.getTeams()}
     );
     games.addListener((ListChangeListener<Game>) change -> {
-      /* To prevent deadlocks (i.e. synchronization on the game's "teams" and on the google event subscriber), only
-      allow this to run on the application thread. */
-      JavaFxUtil.assertApplicationThread();
-
       while (change.next()) {
-        change.getRemoved().forEach(game -> eventBus.post(new GameRemovedEvent(game)));
+        change.getRemoved().forEach(game -> eventPublisher.publishEvent(new GameRemovedEvent(game)));
 
         if (change.wasUpdated()) {
           for (int i = change.getFrom(); i < change.getTo(); i++) {
-            eventBus.post(new GameUpdatedEvent(change.getList().get(i)));
+            eventPublisher.publishEvent(new GameUpdatedEvent(change.getList().get(i)));
           }
         }
 
-        change.getAddedSubList().forEach(game -> eventBus.post(new GameAddedEvent(game)));
+        change.getAddedSubList().forEach(game -> eventPublisher.publishEvent(new GameAddedEvent(game)));
       }
     });
     JavaFxUtil.attachListToMap(games, uidToGameInfoBean);
@@ -415,7 +411,6 @@ public class GameService implements InitializingBean {
    * Returns the preferences the player is currently in. Returns {@code null} if not in a preferences.
    */
   @Nullable
-
   public Game getCurrentGame() {
     synchronized (currentGame) {
       return currentGame.get();
@@ -456,9 +451,7 @@ public class GameService implements InitializingBean {
       return;
     }
 
-    synchronized (currentGame) {
-      currentGame.set(getByUid(startGameProcessMessage.getGameId()));
-    }
+    setCurrentGame(createOrUpdateGame(startGameProcessMessage.getGameId()));
 
     stopSearchLadder1v1();
     replayService.startReplayServer(startGameProcessMessage.getGameId())
@@ -467,7 +460,7 @@ public class GameService implements InitializingBean {
         return iceAdapter.start();
       })
       .thenAccept(adapterPort -> {
-        process = NoCatch.noCatch(() -> forgedAllianceService.startGame(
+        process = noCatch(() -> forgedAllianceService.startGame(
           startGameProcessMessage.getGameId(),
           faction,
           leaderboardName,
@@ -489,6 +482,7 @@ public class GameService implements InitializingBean {
           new ImmediateErrorNotification(i18n.get("errorTitle"), i18n.get("game.start.couldNotStart"), throwable, i18n, reportingService)
         );
         setGameRunning(false);
+        setCurrentGame(null);
         return null;
       });
   }
@@ -514,24 +508,27 @@ public class GameService implements InitializingBean {
         rehostRequested = false;
         int exitCode = process.waitFor();
         logger.info("Forged Alliance terminated with exit code {}", exitCode);
-
-        synchronized (currentGame) {
-          currentGame.set(null);
-        }
-
-        setGameRunning(false);
-
-        fafService.notifyGameEnded();
-        replayService.stopReplayServer();
-        iceAdapter.stop();
-
-        if (rehostRequested) {
-          rehost();
-        }
       } catch (InterruptedException e) {
         logger.warn("Error during post-game processing", e);
       }
+
+      setCurrentGame(null);
+      setGameRunning(false);
+
+      fafService.notifyGameEnded();
+      replayService.stopReplayServer();
+      iceAdapter.stop();
+
+      if (rehostRequested) {
+        rehost();
+      }
     });
+  }
+
+  private void setCurrentGame(Game game) {
+    synchronized (currentGame) {
+      currentGame.set(game);
+    }
   }
 
   private void rehost() {
@@ -545,8 +542,15 @@ public class GameService implements InitializingBean {
           featuredMod,
           game.getMapName(),
           new HashSet<>(game.getSimMods().keySet()),
-          game.getVisibility()
-        )));
+          game.getVisibility(),
+          game.getMinRank(),
+          game.getMaxRank()
+        )))
+        .exceptionally(throwable -> {
+          log.warn("Could not rehost game", throwable);
+          setCurrentGame(null);
+          return null;
+        });
     }
   }
 
@@ -611,20 +615,24 @@ public class GameService implements InitializingBean {
     JavaFxUtil.addListener(game.stateProperty(), (observable, oldValue, newValue) -> {
       if (oldValue == GameState.OPEN
         && newValue == GameState.PLAYING
-        && game.getTeams().values().stream().anyMatch(team -> playerService.getCurrentPlayer().isPresent() && team.contains(playerService.getCurrentPlayer().get().getDisplayName()))
+        && game.getTeams().values().stream().anyMatch(team -> playerService.getCurrentPlayer().isPresent() && team.contains(playerService.getCurrentPlayer().get()))
         && !platformService.isWindowFocused(faWindowTitle)) {
         platformService.focusWindow(faWindowTitle);
       }
     });
   }
 
-  private Game createOrUpdateGame(GameInfoServerMessage gameInfoMessage) {
-    Integer gameId = gameInfoMessage.getId();
+  private Game createOrUpdateGame(int gameId) {
     final Game game;
     synchronized (uidToGameInfoBean) {
       game = uidToGameInfoBean.computeIfAbsent(gameId, Game::new);
-      updateFromGameInfo(game, gameInfoMessage);
     }
+    return game;
+  }
+
+  private Game createOrUpdateGame(GameInfoServerMessage gameInfoMessage) {
+    Game game = createOrUpdateGame(gameInfoMessage.getId());
+    updateFromGameInfo(game, gameInfoMessage);
     return game;
   }
 

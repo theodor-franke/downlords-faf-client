@@ -1,11 +1,4 @@
 faf-client:
-  true-skill:
-    initialStandardDeviation: 500
-    initialMean: 1500
-    beta: 240
-    dynamic-factor: 10
-    draw-probability: 0.1
-
   vault:
    mapDownloadUrlFormat: ${faf-client.vault.base-url}/faf/vault/maps/%s.zip
    mapPreviewUrlFormat: ${faf-client.vault.base-url}/faf/vault/map_previews/%s/%s.png

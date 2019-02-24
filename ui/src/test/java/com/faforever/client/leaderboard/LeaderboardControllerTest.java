@@ -61,9 +61,9 @@ public class LeaderboardControllerTest extends AbstractPlainJavaFxTest {
   @Test
   public void testFilterByNamePlayerExactMatch() throws Exception {
     LeaderboardEntry entry1 = new LeaderboardEntry();
-    entry1.setUsername("Aa");
+    entry1.setPlayerName("Aa");
     LeaderboardEntry entry2 = new LeaderboardEntry();
-    entry2.setUsername("Ab");
+    entry2.setPlayerName("Ab");
 
     when(leaderboardService.getEntries(KnownFeaturedMod.LADDER_1V1.getTechnicalName())).thenReturn(CompletableFuture.completedFuture(Arrays.asList(
         entry1, entry2
@@ -75,15 +75,15 @@ public class LeaderboardControllerTest extends AbstractPlainJavaFxTest {
 
     instance.searchTextField.setText("aa");
     assertThat(instance.ratingTable.getItems(), hasSize(2));
-    assertThat(instance.ratingTable.getSelectionModel().getSelectedItem().getUsername(), is("Aa"));
+    assertThat(instance.ratingTable.getSelectionModel().getSelectedItem().getPlayerName(), is("Aa"));
   }
 
   @Test
   public void testFilterByNamePlayerPartialMatch() throws Exception {
     LeaderboardEntry entry1 = new LeaderboardEntry();
-    entry1.setUsername("Aa");
+    entry1.setPlayerName("Aa");
     LeaderboardEntry entry2 = new LeaderboardEntry();
-    entry2.setUsername("Ab");
+    entry2.setPlayerName("Ab");
 
     when(leaderboardService.getEntries(KnownFeaturedMod.LADDER_1V1.getTechnicalName())).thenReturn(CompletableFuture.completedFuture(Arrays.asList(
         entry1, entry2
@@ -95,7 +95,7 @@ public class LeaderboardControllerTest extends AbstractPlainJavaFxTest {
 
     instance.searchTextField.setText("b");
     assertThat(instance.ratingTable.getItems(), hasSize(2));
-    assertThat(instance.ratingTable.getSelectionModel().getSelectedItem().getUsername(), is("Ab"));
+    assertThat(instance.ratingTable.getSelectionModel().getSelectedItem().getPlayerName(), is("Ab"));
   }
 
   @Test

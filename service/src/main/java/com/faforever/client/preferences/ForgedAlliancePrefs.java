@@ -1,5 +1,6 @@
 package com.faforever.client.preferences;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.sun.jna.platform.win32.Shell32Util;
 import com.sun.jna.platform.win32.ShlObj;
 import javafx.beans.property.BooleanProperty;
@@ -12,6 +13,8 @@ import javafx.beans.property.StringProperty;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+// "port" used to be a property before ICE.
+@JsonIgnoreProperties("port")
 public class ForgedAlliancePrefs {
 
   public static final Path GPG_FA_PATH;

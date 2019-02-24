@@ -8,7 +8,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <GridPane xmlns:fx="http://javafx.com/fxml/1" fx:id="languageItemRoot" hgap="10.0" onMouseClicked="#onSelected"
           styleClass="pointable,card" xmlns="http://javafx.com/javafx/8.0.141"
-          fx:controller="client.settings.LanguageItemController">
+          fx:controller="com.faforever.client.settings.LanguageItemController">
     <rowConstraints>
         <RowConstraints minHeight="10.0" prefHeight="48.0"/>
     </rowConstraints>

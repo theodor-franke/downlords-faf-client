@@ -105,11 +105,11 @@ public class ChatUserItemController implements Controller<Node> {
   public Label statusLabel;
   public Text presenceStatusIndicator;
   @VisibleForTesting
-  protected Tooltip countryTooltip;
+  Tooltip countryTooltip;
   @VisibleForTesting
-  protected Tooltip avatarTooltip;
+  Tooltip avatarTooltip;
   @VisibleForTesting
-  protected Tooltip userTooltip;
+  Tooltip userTooltip;
   private ChatChannelUser chatUser;
   private boolean randomColorsAllowed;
 
@@ -387,7 +387,7 @@ public class ChatUserItemController implements Controller<Node> {
   private void updateNameLabelText(Player player) {
     userTooltip.setText(String.format("%s\n%s",
       // FIXME display images
-      i18n.get("userInfo.ratingFormat", player.getRanks()),
+      i18n.get("userInfo.ratingFormat", player.getRating()),
       i18n.get("userInfo.idleTimeFormat", timeService.timeAgo(player.getIdleSince()))));
   }
 

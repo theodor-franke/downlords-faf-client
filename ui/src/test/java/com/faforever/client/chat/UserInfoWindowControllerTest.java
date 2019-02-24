@@ -7,7 +7,6 @@ import com.faforever.client.achievements.AchievementService;
 import com.faforever.client.achievements.AchievementState;
 import com.faforever.client.achievements.PlayerAchievement;
 import com.faforever.client.event.EventService;
-import com.faforever.client.game.KnownFeaturedMod;
 import com.faforever.client.i18n.I18n;
 import com.faforever.client.leaderboard.LeaderboardService;
 import com.faforever.client.notification.NotificationService;
@@ -37,7 +36,6 @@ import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -154,19 +152,5 @@ public class UserInfoWindowControllerTest extends AbstractPlainJavaFxTest {
     verify(eventService).getPlayerEvents(PLAYER_ID);
 
     assertThat(instance.mostRecentAchievementPane.isVisible(), is(true));
-  }
-
-  @Test
-  public void testOnGlobalRatingButtonClicked() throws Exception {
-    testSetPlayerInfoBean();
-    instance.globalButtonClicked();
-    verify(statisticsService, times(2)).getRatingHistory(KnownFeaturedMod.FAF, PLAYER_ID);
-  }
-
-  @Test
-  public void testOn1v1RatingButtonClicked() throws Exception {
-    testSetPlayerInfoBean();
-    instance.ladder1v1ButtonClicked();
-    verify(statisticsService).getRatingHistory(KnownFeaturedMod.LADDER_1V1, PLAYER_ID);
   }
 }

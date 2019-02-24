@@ -67,12 +67,14 @@ public class AchievementItemControllerTest extends AbstractPlainJavaFxTest {
   @Test
   public void testSetPlayerAchievementStandardDoesntUpdateProgress() throws Exception {
     Achievement achievement = new Achievement();
+    achievement.setId("123");
     achievement.setType(AchievementType.STANDARD);
     instance.setAchievement(achievement);
 
     PlayerAchievement playerAchievement = new PlayerAchievement();
     playerAchievement.setState(AchievementState.UNLOCKED);
     playerAchievement.setCurrentSteps(50);
+    playerAchievement.setAchievement(achievement);
 
     instance.setPlayerAchievement(playerAchievement);
 
@@ -101,10 +103,12 @@ public class AchievementItemControllerTest extends AbstractPlainJavaFxTest {
   @Test
   public void testSetPlayerAchievementRevealed() throws Exception {
     Achievement achievement = new Achievement();
+    achievement.setId("123");
     instance.setAchievement(achievement);
 
     PlayerAchievement playerAchievement = new PlayerAchievement();
     playerAchievement.setState(AchievementState.REVEALED);
+    playerAchievement.setAchievement(achievement);
 
     instance.setPlayerAchievement(playerAchievement);
     Assert.assertThat(instance.imageView.getEffect(), CoreMatchers.is(CoreMatchers.instanceOf(ColorAdjust.class)));
@@ -113,11 +117,16 @@ public class AchievementItemControllerTest extends AbstractPlainJavaFxTest {
 
   @Test
   public void testSetPlayerAchievementUnlocked() throws Exception {
-    instance.setAchievement(new Achievement());
+    Achievement achievement = new Achievement();
+    achievement.setType(AchievementType.INCREMENTAL);
+    achievement.setTotalSteps(100);
+    achievement.setId("123");
+    instance.setAchievement(achievement);
 
     PlayerAchievement playerAchievement = new PlayerAchievement();
     playerAchievement.setState(AchievementState.UNLOCKED);
     playerAchievement.setCurrentSteps(50);
+    playerAchievement.setAchievement(achievement);
 
     instance.setPlayerAchievement(playerAchievement);
     Assert.assertThat(instance.imageView.getEffect(), CoreMatchers.is(CoreMatchers.nullValue()));

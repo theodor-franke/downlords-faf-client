@@ -31,6 +31,7 @@ public class LoginControllerTest extends AbstractPlainJavaFxTest {
   @Before
   public void setUp() throws Exception {
     ClientProperties clientProperties = new ClientProperties();
+    clientProperties.setUseRemotePreferences(true);
 
     when(preferencesService.getPreferences()).thenReturn(new Preferences());
     when(preferencesService.getRemotePreferences()).thenReturn(CompletableFuture.failedFuture(new Exception(

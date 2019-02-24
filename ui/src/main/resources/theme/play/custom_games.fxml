@@ -17,7 +17,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
-<StackPane xmlns:fx="http://javafx.com/fxml/1" fx:id="gamesRoot" alignment="TOP_CENTER" xmlns="http://javafx.com/javafx/10.0.1" fx:controller="client.play.CustomGamesController">
+<StackPane xmlns:fx="http://javafx.com/fxml/1" fx:id="gamesRoot" alignment="TOP_CENTER" xmlns="http://javafx.com/javafx/10.0.1" fx:controller="com.faforever.client.play.CustomGamesController">
    <children>
       <GridPane>
          <columnConstraints>

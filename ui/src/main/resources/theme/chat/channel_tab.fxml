@@ -12,7 +12,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.web.WebView?>
 <Tab xmlns:fx="http://javafx.com/fxml/1" fx:id="channelTabRoot" xmlns="http://javafx.com/javafx/8.0.141"
-     fx:controller="client.chat.ChannelTabController">
+     fx:controller="com.faforever.client.chat.ChannelTabController">
   <VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="0.0" minWidth="0.0" onKeyReleased="#onKeyReleased">
     <children>
       <SplitPane dividerPositions="0.8" maxWidth="1.7976931348623157E308" VBox.vgrow="ALWAYS">

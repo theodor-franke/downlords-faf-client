@@ -55,7 +55,7 @@ public class UserFilterControllerTest extends AbstractPlainJavaFxTest {
 
   @Test
   public void testIsBoundedByRatingWithinBounds() {
-    player.getRanks().put("global", 5);
+    player.getRating().put("global", 7);
 
     instance.minRankField.setText("3");
     instance.maxRankField.setText("7");
@@ -65,10 +65,10 @@ public class UserFilterControllerTest extends AbstractPlainJavaFxTest {
 
   @Test
   public void testIsBoundedByRatingNotWithinBounds() {
-    player.getRanks().put("global", 5);
+    player.getRating().put("global", 5);
 
-    instance.minRankField.setText("6");
-    instance.maxRankField.setText("3");
+    instance.minRankField.setText("2");
+    instance.maxRankField.setText("4");
 
     assertFalse(instance.isBoundByRating(chatChannelUser));
   }

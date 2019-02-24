@@ -179,10 +179,10 @@ public class FafApiAccessorImpl implements FafApiAccessor {
 
   @Cacheable(CacheNames.LEADERBOARD)
   @SneakyThrows
-  public List<LeaderboardEntry> getLeaderboard(String featuredModName) {
+  public List<LeaderboardEntry> getLeaderboard(String leaderboardName) {
     return getAll("/data/leaderboardEntry", ImmutableMap.of(
       "filter", rsql(qBuilder()
-        .string("featuredMod.technicalName").eq(featuredModName)
+        .string("leaderboard.technicalName").eq(leaderboardName)
       ),
       "sort", "-rank",
       "include", "account.id,account.displayName"
@@ -190,10 +190,11 @@ public class FafApiAccessorImpl implements FafApiAccessor {
   }
 
   @Override
-  public Optional<LeaderboardEntry> getLeaderboardEntry(int playerId, String featuredModName) {
+  public Optional<LeaderboardEntry> getLeaderboardEntry(int playerId, String leaderboardName) {
     List<LeaderboardEntry> all = getAll("/data/leaderboardEntry", ImmutableMap.of(
       "filter", rsql(qBuilder()
-        .string("featuredMod.technicalName").eq(featuredModName)
+        .string("leaderboard.technicalName").eq(leaderboardName)
+        .and().intNum("account.id").eq(playerId)
       ),
       "include", "account.id,account.displayName"
     ));

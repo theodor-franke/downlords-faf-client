@@ -7,7 +7,7 @@
 <?import javafx.scene.Group?>
 <?import javafx.scene.layout.VBox?>
 <VBox xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8.0.60"
-      fx:controller="client.vault.VaultController">
+      fx:controller="com.faforever.client.vault.VaultController">
    <children>
       <TabPane fx:id="vaultRoot" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" rotateGraphic="true" side="LEFT" tabClosingPolicy="UNAVAILABLE" tabMaxHeight="200.0" tabMinHeight="200.0">
           <tabs>

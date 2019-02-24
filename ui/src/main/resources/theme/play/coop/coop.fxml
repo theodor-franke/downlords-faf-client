@@ -20,7 +20,7 @@
 <?import java.lang.Integer?>
 <GridPane xmlns:fx="http://javafx.com/fxml/1" fx:id="coopRoot" hgap="20.0" maxHeight="1.7976931348623157E308"
           maxWidth="1.7976931348623157E308" vgap="20.0" xmlns="http://javafx.com/javafx/8.0.141"
-          fx:controller="client.coop.CoopController">
+          fx:controller="com.faforever.client.coop.CoopController">
     <columnConstraints>
         <ColumnConstraints hgrow="NEVER" minWidth="10.0" />
         <ColumnConstraints hgrow="ALWAYS" maxWidth="1.7976931348623157E308" minWidth="10.0" prefWidth="300.0" />

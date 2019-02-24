@@ -217,13 +217,13 @@ public class PlayerServiceTest {
 
   @Test
   public void onGameRemoved() {
-    Game game = new Game();
-    ObservableMap<Integer, List<Player>> teams = game.getTeams();
-    teams.put(1, Collections.singletonList(new Player("JUnit1")));
-    teams.put(2, Collections.singletonList(new Player("JUnit2")));
-
     Player player1 = instance.createAndGetPlayerForUsername("JUnit1");
     Player player2 = instance.createAndGetPlayerForUsername("JUnit2");
+
+    Game game = new Game();
+    ObservableMap<Integer, List<Player>> teams = game.getTeams();
+    teams.put(1, Collections.singletonList(player1));
+    teams.put(2, Collections.singletonList(player2));
 
     instance.onGameAdded(new GameAddedEvent(game));
 

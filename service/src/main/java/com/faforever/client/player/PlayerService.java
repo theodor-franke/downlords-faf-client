@@ -27,6 +27,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableMap;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -82,17 +83,17 @@ public class PlayerService {
     fafService.addOnMessageListener(SocialRelationsServerMessage.class, this::onFoeList);
   }
 
-  @Subscribe
+  @EventListener
   public void onGameAdded(GameAddedEvent event) {
     updateGameForPlayersInGame(event.getGame());
   }
 
-  @Subscribe
+  @EventListener
   public void onGameUpdated(GameUpdatedEvent event) {
     updateGameForPlayersInGame(event.getGame());
   }
 
-  @Subscribe
+  @EventListener
   public void onGameRemoved(GameRemovedEvent event) {
     Game game = event.getGame();
     ObservableMap<Integer, List<Player>> teams = game.getTeams();

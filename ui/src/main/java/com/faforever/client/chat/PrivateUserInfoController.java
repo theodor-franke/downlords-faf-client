@@ -128,7 +128,7 @@ public class PrivateUserInfoController implements Controller<Node> {
 
     rankInvalidationListener = (observable) -> loadReceiverRankInformation(player);
     // FIXME this property won't update when the skill class changes
-    JavaFxUtil.addListener(player.ranksProperty(), new WeakInvalidationListener(rankInvalidationListener));
+    JavaFxUtil.addListener(player.ratingProperty(), new WeakInvalidationListener(rankInvalidationListener));
     loadReceiverRankInformation(player);
 
     gameInvalidationListener = observable -> onPlayerGameChanged(player.getGame());
@@ -168,6 +168,6 @@ public class PrivateUserInfoController implements Controller<Node> {
 
   private void loadReceiverRankInformation(Player player) {
     // FIXME display icon instead, one per leaderboard
-    Platform.runLater(() -> globalRatingLabel.setText(i18n.get("chat.privateMessage.ratingFormat", player.getRanks())));
+    Platform.runLater(() -> globalRatingLabel.setText(i18n.get("chat.privateMessage.ratingFormat", player.getRating())));
   }
 }

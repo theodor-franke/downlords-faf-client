@@ -16,6 +16,7 @@ import com.faforever.client.theme.UiService;
 import com.faforever.client.ui.StageHolder;
 import com.faforever.client.ui.preferences.event.GameDirectoryChooseEvent;
 import com.google.common.eventbus.EventBus;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
@@ -60,7 +61,6 @@ public class JoinGameHelper {
 
   public void join(Game game, String password, boolean ignoreRating) {
     Player currentPlayer = playerService.getCurrentPlayer().orElseThrow(() -> new IllegalStateException("Player has not been set"));
-    int playerRank = currentPlayer.getRanks().get(game.getLeaderboardName());
 
     if (!preferencesService.isGamePathValid()) {
       CompletableFuture<Path> gameDirectoryFuture = new CompletableFuture<>();
@@ -69,9 +69,12 @@ public class JoinGameHelper {
       return;
     }
 
-    if (!ignoreRating && (playerRank < game.getMinRank() || playerRank > game.getMaxRank())) {
-      showRatingOutOfBoundsConfirmation(playerRank, game, password);
-      return;
+    if (game.getLeaderboardName() != null) {
+      Integer playerRank = currentPlayer.getRating().get(game.getLeaderboardName());
+      if (playerRank == null || !ignoreRating && (playerRank < game.getMinRank() || playerRank > game.getMaxRank())) {
+        showRatingOutOfBoundsConfirmation(playerRank, game, password);
+        return;
+      }
     }
 
     if (game.getPasswordProtected() && password == null) {
@@ -82,28 +85,29 @@ public class JoinGameHelper {
       enterPasswordController.showPasswordDialog(StageHolder.getStage());
     } else {
       gameService.joinGame(game, password)
-          .exceptionally(throwable -> {
-            logger.warn("Game could not be joined", throwable);
-            notificationService.addNotification(new ImmediateErrorNotification(
-                i18n.get("errorTitle"),
-                i18n.get("games.couldNotJoin"),
-                throwable,
-                i18n, reportingService
-            ));
-            return null;
-          });
+        .exceptionally(throwable -> {
+          logger.warn("Game could not be joined", throwable);
+          notificationService.addNotification(new ImmediateErrorNotification(
+            i18n.get("errorTitle"),
+            i18n.get("games.couldNotJoin"),
+            throwable,
+            i18n, reportingService
+          ));
+          return null;
+        });
     }
   }
 
-  private void showRatingOutOfBoundsConfirmation(int playerRating, Game game, String password) {
+  private void showRatingOutOfBoundsConfirmation(@Nullable Integer playerRating, Game game, String password) {
+    // TODO resolve rank texts
     notificationService.addNotification(new ImmediateNotification(
-        i18n.get("game.joinGameRatingConfirmation.title"),
-        i18n.get("game.joinGameRatingConfirmation.text", game.getMinRank(), game.getMaxRank(), playerRating),
-        Severity.INFO,
-        asList(
-            new Action(i18n.get("game.join"), event -> this.join(game, password, true)),
-            new Action(i18n.get("game.cancel"))
-        )
+      i18n.get("game.joinGameRatingConfirmation.title"),
+      i18n.get("game.joinGameRatingConfirmation.text", game.getMinRank(), game.getMaxRank(), playerRating),
+      Severity.INFO,
+      asList(
+        new Action(i18n.get("game.join"), event -> this.join(game, password, true)),
+        new Action(i18n.get("game.cancel"))
+      )
     ));
   }
 

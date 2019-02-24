@@ -5,4 +5,4 @@
 <JFXButton xmlns:fx="http://javafx.com/fxml/1" fx:id="replayButtonRoot" mnemonicParsing="false" text=""
            styleClass="icon-button"
            onAction="#onClicked" xmlns="http://javafx.com/javafx/8.0.111"
-           fx:controller="client.coop.ReplayButtonController"/>
+           fx:controller="com.faforever.client.coop.ReplayButtonController"/>

@@ -9,7 +9,6 @@ import com.faforever.client.game.GameService;
 import com.faforever.client.game.MatchAvailableNotification;
 import com.faforever.client.i18n.I18n;
 import com.faforever.client.login.LoginController;
-import com.faforever.client.matchmaking.MatchMakerInfoServerMessage;
 import com.faforever.client.notification.NotificationService;
 import com.faforever.client.notification.PersistentNotificationsController;
 import com.faforever.client.notification.TransientNotification;
@@ -55,7 +54,6 @@ import java.util.Optional;
 import java.util.function.Consumer;
 
 import static java.util.Collections.emptyMap;
-import static java.util.Collections.singletonList;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertFalse;
@@ -121,14 +119,9 @@ public class MainControllerTest extends AbstractPlainJavaFxTest {
 
   @Before
   public void setUp() throws Exception {
-    ClientProperties clientProperties = new ClientProperties();
-    clientProperties.getTrueSkill()
-        .setBeta(240)
-        .setInitialMean(1500)
-        .setInitialStandardDeviation(500);
 
     instance = new MainController(preferencesService, i18n, notificationService, playerService, gameService, clientUpdateService,
-        uiService, eventBus, clientProperties, gamePathHandler, platformService);
+        uiService, eventBus, new ClientProperties(), gamePathHandler, platformService);
 
     gameRunningProperty = new SimpleBooleanProperty();
 
@@ -225,19 +218,19 @@ public class MainControllerTest extends AbstractPlainJavaFxTest {
 
   @Test
   public void testOnMatchMakerMessageDisplaysNotification80Quality() {
-    prepareTestMatchmakerMessageTest(100);
+    prepareTestMatchmakerMessageTest();
     verify(notificationService).addNotification(any(TransientNotification.class));
   }
 
   @Test
-  public void testOnChat() throws Exception {
+  public void testOnChat() {
     instance.chatButton.pseudoClassStateChanged(HIGHLIGHTED, true);
     instance.onChat(new ActionEvent(instance.chatButton, Event.NULL_SOURCE_TARGET));
     assertThat(instance.chatButton.getPseudoClassStates().contains(HIGHLIGHTED), is(false));
 
   }
 
-  private void prepareTestMatchmakerMessageTest(float deviation) {
+  private void prepareTestMatchmakerMessageTest() {
     @SuppressWarnings("unchecked")
     ArgumentCaptor<Consumer<MatchAvailableNotification>> matchmakerMessageCaptor = ArgumentCaptor.forClass(Consumer.class);
     when(notificationPrefs.getLadder1v1ToastEnabled()).thenReturn(true);
@@ -254,20 +247,20 @@ public class MainControllerTest extends AbstractPlainJavaFxTest {
 
   @Test
   public void testOnMatchMakerMessageDisplaysNotification75Quality() {
-    prepareTestMatchmakerMessageTest(101);
+    prepareTestMatchmakerMessageTest();
     verify(notificationService).addNotification(any(TransientNotification.class));
   }
 
   @Test
   public void testOnMatchMakerMessageDoesNotDisplaysNotificationLessThan75Quality() {
-    prepareTestMatchmakerMessageTest(201);
+    prepareTestMatchmakerMessageTest();
     verify(notificationService, never()).addNotification(any(TransientNotification.class));
   }
 
   @Test
   public void testOnMatchMakerMessageDoesNotDisplaysNotificationWhenGameIsRunning() {
     gameRunningProperty.set(true);
-    prepareTestMatchmakerMessageTest(100);
+    prepareTestMatchmakerMessageTest();
     verify(notificationService, never()).addNotification(any(TransientNotification.class));
   }
 

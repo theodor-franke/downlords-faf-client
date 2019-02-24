@@ -41,6 +41,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -95,6 +96,7 @@ public class CreateGameControllerTest extends AbstractPlainJavaFxTest {
     when(modService.getInstalledModVersions()).thenReturn(FXCollections.observableList(emptyList()));
     when(mapPreviewService.loadPreview(anyString(), any())).thenReturn(new Image("/theme/images/close.png"));
     when(fafService.connectionStateProperty()).thenReturn(new SimpleObjectProperty<>(ConnectionState.CONNECTED));
+    when(i18n.number(anyInt())).thenAnswer(invocation -> String.valueOf((int) invocation.getArgument(0)));
 
     loadFxml("theme/play/create_game.fxml", clazz -> instance);
   }
@@ -242,9 +244,12 @@ public class CreateGameControllerTest extends AbstractPlainJavaFxTest {
   @Test
   public void testSelectLastMap() {
     FaMap map1 = new FaMap();
+    map1.setDisplayName("Test1");
     map1.setFolderName("Test1");
+
     FaMap lastFaMap = new FaMap();
     lastFaMap.setFolderName("foo");
+    lastFaMap.setDisplayName("foo");
 
     preferences.setLastMap("foo");
 

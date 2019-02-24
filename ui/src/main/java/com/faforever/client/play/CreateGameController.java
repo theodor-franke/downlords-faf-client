@@ -90,8 +90,8 @@ public class CreateGameController implements Controller<Pane> {
   public TextField titleTextField;
   public ListView<ModVersion> modListView;
   public TextField passwordTextField;
-  public TextField minRankingTextField;
-  public TextField maxRankingTextField;
+  public TextField minRankTextField;
+  public TextField maxRankTextField;
   public ListView<FeaturedMod> featuredModListView;
   public ListView<FaMap> mapListView;
   public Pane createGameRoot;
@@ -140,7 +140,7 @@ public class CreateGameController implements Controller<Pane> {
         filteredFaMaps.setPredicate(mapInfoBean -> true);
       } else {
         filteredFaMaps.setPredicate(mapInfoBean -> mapInfoBean.getDisplayName().toLowerCase().contains(newValue.toLowerCase())
-            || mapInfoBean.getFolderName().toLowerCase().contains(newValue.toLowerCase()));
+          || mapInfoBean.getFolderName().toLowerCase().contains(newValue.toLowerCase()));
       }
       if (!filteredFaMaps.isEmpty()) {
         mapListView.getSelectionModel().select(0);
@@ -167,8 +167,8 @@ public class CreateGameController implements Controller<Pane> {
 
     featuredModListView.setCellFactory(param -> new StringListCell<>(FeaturedMod::getDisplayName));
 
-    JavaFxUtil.makeNumericTextField(minRankingTextField, MAX_RATING_LENGTH);
-    JavaFxUtil.makeNumericTextField(maxRankingTextField, MAX_RATING_LENGTH);
+    JavaFxUtil.makeNumericTextField(minRankTextField, MAX_RATING_LENGTH);
+    JavaFxUtil.makeNumericTextField(maxRankTextField, MAX_RATING_LENGTH);
 
     modService.getFeaturedMods().thenAccept(featuredModBeans -> Platform.runLater(() -> {
       featuredModListView.setItems(FXCollections.observableList(featuredModBeans).filtered(FeaturedMod::isVisible));
@@ -225,15 +225,15 @@ public class CreateGameController implements Controller<Pane> {
     }, titleTextField.textProperty(), featuredModListView.getSelectionModel().selectedItemProperty(), fafService.connectionStateProperty()));
 
     createGameButton.disableProperty().bind(
-        titleTextField.textProperty().isEmpty()
-            .or(featuredModListView.getSelectionModel().selectedItemProperty().isNull().or(fafService.connectionStateProperty().isNotEqualTo(ConnectionState.CONNECTED)))
+      titleTextField.textProperty().isEmpty()
+        .or(featuredModListView.getSelectionModel().selectedItemProperty().isNull().or(fafService.connectionStateProperty().isNotEqualTo(ConnectionState.CONNECTED)))
     );
   }
 
   private void bindGameVisibility() {
     preferencesService.getPreferences()
-        .lastGameOnlyFriendsProperty()
-        .bindBidirectional(onlyForFriendsCheckBox.selectedProperty());
+      .lastGameOnlyFriendsProperty()
+      .bindBidirectional(onlyForFriendsCheckBox.selectedProperty());
     onlyForFriendsCheckBox.selectedProperty().addListener(observable -> preferencesService.storeInBackground());
   }
 
@@ -251,7 +251,7 @@ public class CreateGameController implements Controller<Pane> {
 
   private void initMapSelection() {
     filteredFaMaps = new FilteredList<>(
-        mapService.getInstalledMaps().sorted((o1, o2) -> o1.getDisplayName().compareToIgnoreCase(o2.getDisplayName()))
+      mapService.getInstalledMaps().sorted((o1, o2) -> o1.getDisplayName().compareToIgnoreCase(o2.getDisplayName()))
     );
 
     mapListView.setItems(filteredFaMaps);
@@ -272,16 +272,16 @@ public class CreateGameController implements Controller<Pane> {
 
     Image largePreview = mapPreviewService.loadPreview(newValue.getFolderName(), PreviewSize.LARGE);
     mapPreviewPane.setBackground(new Background(new BackgroundImage(largePreview, NO_REPEAT, NO_REPEAT, CENTER,
-        new BackgroundSize(BackgroundSize.AUTO, BackgroundSize.AUTO, false, false, true, false))));
+      new BackgroundSize(BackgroundSize.AUTO, BackgroundSize.AUTO, false, false, true, false))));
 
     MapSize mapSize = newValue.getSize();
     mapSizeLabel.setText(i18n.get("mapPreview.size", mapSize.getWidthInKm(), mapSize.getHeightInKm()));
     mapNameLabel.setText(newValue.getDisplayName());
     mapPlayersLabel.setText(i18n.number(newValue.getPlayers()));
     mapDescriptionLabel.setText(Optional.ofNullable(newValue.getDescription())
-        .map(Strings::emptyToNull)
-        .map(FaStrings::removeLocalizationTag)
-        .orElseGet(() -> i18n.get("map.noDescriptionAvailable")));
+      .map(Strings::emptyToNull)
+      .map(FaStrings::removeLocalizationTag)
+      .orElseGet(() -> i18n.get("map.noDescriptionAvailable")));
 
     ComparableVersion mapVersion = newValue.getVersion();
     if (mapVersion == null) {
@@ -302,14 +302,14 @@ public class CreateGameController implements Controller<Pane> {
     int lastGameMinRating = preferencesService.getPreferences().getLastGameMinRank();
     int lastGameMaxRating = preferencesService.getPreferences().getLastGameMaxRank();
 
-    minRankingTextField.setText(i18n.number(lastGameMinRating));
-    maxRankingTextField.setText(i18n.number(lastGameMaxRating));
+    minRankTextField.setText(i18n.number(lastGameMinRating));
+    maxRankTextField.setText(i18n.number(lastGameMaxRating));
 
-    minRankingTextField.textProperty().addListener((observable, oldValue, newValue) -> {
+    minRankTextField.textProperty().addListener((observable, oldValue, newValue) -> {
       preferencesService.getPreferences().setLastGameMinRank(Integer.parseInt(newValue));
       preferencesService.storeInBackground();
     });
-    maxRankingTextField.textProperty().addListener((observable, oldValue, newValue) -> {
+    maxRankTextField.textProperty().addListener((observable, oldValue, newValue) -> {
       preferencesService.getPreferences().setLastGameMaxRank(Integer.parseInt(newValue));
       preferencesService.storeInBackground();
     });
@@ -389,22 +389,25 @@ public class CreateGameController implements Controller<Pane> {
       .collect(Collectors.toSet());
 
     HostGameRequest hostGameRequest = new HostGameRequest(
-        titleTextField.getText(),
-        Strings.emptyToNull(passwordTextField.getText()),
-        featuredModListView.getSelectionModel().getSelectedItem(),
-        mapListView.getSelectionModel().getSelectedItem().getFolderName(),
-        simMods,
-        onlyForFriendsCheckBox.isSelected() ? GameVisibility.PRIVATE : GameVisibility.PUBLIC);
+      titleTextField.getText(),
+      Strings.emptyToNull(passwordTextField.getText()),
+      featuredModListView.getSelectionModel().getSelectedItem(),
+      mapListView.getSelectionModel().getSelectedItem().getFolderName(),
+      simMods,
+      onlyForFriendsCheckBox.isSelected() ? GameVisibility.PRIVATE : GameVisibility.PUBLIC,
+      Integer.parseInt(minRankTextField.getText()),
+      Integer.parseInt(maxRankTextField.getText())
+    );
 
     gameService.hostGame(hostGameRequest).exceptionally(throwable -> {
       logger.warn("Game could not be hosted", throwable);
       notificationService.addNotification(
-          new ImmediateErrorNotification(
-              i18n.get("errorTitle"),
-              i18n.get("game.create.failed"),
-              throwable,
-              i18n, reportingService
-          ));
+        new ImmediateErrorNotification(
+          i18n.get("errorTitle"),
+          i18n.get("game.create.failed"),
+          throwable,
+          i18n, reportingService
+        ));
       return null;
     });
 

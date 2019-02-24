@@ -2,8 +2,8 @@ package com.faforever.client.player;
 
 import com.faforever.client.chat.ChatChannelUser;
 import com.faforever.client.game.Game;
-import com.faforever.client.game.GameState;
 import com.faforever.client.game.PlayerStatus;
+import com.faforever.client.util.ProgrammingError;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.MapProperty;
@@ -39,7 +39,7 @@ public class Player {
   private final StringProperty avatarTooltip;
   private final ObjectProperty<SocialStatus> socialStatus;
   /** Key is the leaderboard name. */
-  private final MapProperty<String, Integer> ranks;
+  private final MapProperty<String, Integer> rating;
   private final ObjectProperty<Game> game;
   private final ObjectProperty<PlayerStatus> status;
   private final ObservableSet<ChatChannelUser> chatChannelUsers;
@@ -54,7 +54,7 @@ public class Player {
     country = new SimpleStringProperty();
     avatarUrl = new SimpleObjectProperty<>();
     avatarTooltip = new SimpleStringProperty();
-    ranks = new SimpleMapProperty<>(FXCollections.observableHashMap());
+    rating = new SimpleMapProperty<>(FXCollections.observableHashMap());
     status = new SimpleObjectProperty<>(PlayerStatus.IDLE);
     chatChannelUsers = FXCollections.observableSet();
     game = new SimpleObjectProperty<>();
@@ -201,15 +201,23 @@ public class Player {
       status.set(PlayerStatus.IDLE);
     } else {
       this.status.bind(Bindings.createObjectBinding(() -> {
-        if (getGame().getState() == GameState.OPEN) {
-          if (getGame().getHostName().equalsIgnoreCase(displayName.get())) {
-            return PlayerStatus.HOSTING;
-          }
-          return PlayerStatus.LOBBYING;
-        } else if (getGame().getState() == GameState.CLOSED) {
-          return PlayerStatus.IDLE;
+        switch (getGame().getState()) {
+          case INITIALIZING:
+            return PlayerStatus.LOBBYING;
+          case OPEN:
+            if (getGame().getHostName() != null && getGame().getHostName().equalsIgnoreCase(displayName.get())) {
+              return PlayerStatus.HOSTING;
+            }
+            return PlayerStatus.LOBBYING;
+          case PLAYING:
+            return PlayerStatus.PLAYING;
+          case ENDED:
+            return PlayerStatus.IDLE;
+          case CLOSED:
+            return PlayerStatus.IDLE;
+          default:
+            throw new ProgrammingError("Uncovered: " + getGame().getState());
         }
-        return PlayerStatus.PLAYING;
       }, game.stateProperty()));
     }
   }
@@ -234,12 +242,12 @@ public class Player {
     return chatChannelUsers;
   }
 
-  public ObservableMap<String, Integer> getRanks() {
-    return ranks.get();
+  public ObservableMap<String, Integer> getRating() {
+    return rating.get();
   }
 
-  public ReadOnlyMapProperty<String, Integer> ranksProperty() {
-    return ranks;
+  public ReadOnlyMapProperty<String, Integer> ratingProperty() {
+    return rating;
   }
 
   public void updateFrom(PlayerServerMessage player) {

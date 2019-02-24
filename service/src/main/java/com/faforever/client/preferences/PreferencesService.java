@@ -1,6 +1,18 @@
 package com.faforever.client.preferences;
 
 import com.faforever.client.config.ClientProperties;
+import com.faforever.client.preferences.jackson.BooleanPropertyAdapter;
+import com.faforever.client.preferences.jackson.DoublePropertyAdapter;
+import com.faforever.client.preferences.jackson.FloatPropertyAdapter;
+import com.faforever.client.preferences.jackson.IntegerPropertyAdapter;
+import com.faforever.client.preferences.jackson.ListPropertyAdapter;
+import com.faforever.client.preferences.jackson.LongPropertyAdapter;
+import com.faforever.client.preferences.jackson.MapPropertyAdapter;
+import com.faforever.client.preferences.jackson.ObservableListAdapter;
+import com.faforever.client.preferences.jackson.ObservableMapAdapter;
+import com.faforever.client.preferences.jackson.ObservableSetAdapter;
+import com.faforever.client.preferences.jackson.SetPropertyAdapter;
+import com.faforever.client.preferences.jackson.StringPropertyAdapter;
 import com.faforever.client.update.ClientConfiguration;
 import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -8,10 +20,20 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.sun.jna.platform.win32.Shell32Util;
 import com.sun.jna.platform.win32.ShlObj;
-import javafx.beans.property.Property;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.FloatProperty;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.ListProperty;
+import javafx.beans.property.LongProperty;
+import javafx.beans.property.MapProperty;
+import javafx.beans.property.SetProperty;
+import javafx.beans.property.StringProperty;
+import javafx.collections.ObservableList;
+import javafx.collections.ObservableMap;
+import javafx.collections.ObservableSet;
 import javafx.scene.paint.Color;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.annotation.Lazy;
@@ -21,7 +43,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.Writer;
-import java.lang.invoke.MethodHandles;
 import java.lang.ref.WeakReference;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -38,6 +59,7 @@ import java.util.concurrent.CompletableFuture;
 
 @Lazy
 @Service
+@Slf4j
 public class PreferencesService implements InitializingBean {
 
   public static final String SUPREME_COMMANDER_EXE = "SupremeCommander.exe";
@@ -48,7 +70,6 @@ public class PreferencesService implements InitializingBean {
    * depending on the operating system.
    */
   private static final Path FAF_DATA_DIRECTORY;
-  private static final Logger logger;
   private static final long STORE_DELAY = 1000;
   private static final Charset CHARSET = StandardCharsets.UTF_8;
   private static final String PREFS_FILE_NAME = "client.prefs";
@@ -76,8 +97,7 @@ public class PreferencesService implements InitializingBean {
     SLF4JBridgeHandler.removeHandlersForRootLogger();
     SLF4JBridgeHandler.install();
 
-    logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-    logger.debug("Logger initialized");
+    log.debug("Logger initialized");
   }
 
   private final Path preferencesFilePath;
@@ -104,8 +124,29 @@ public class PreferencesService implements InitializingBean {
 
   private Module jacksonModule() {
     SimpleModule module = new SimpleModule();
-    module.addSerializer(Property.class, PropertyTypeAdapter.SERIALIZER);
-    module.addDeserializer(Property.class, PropertyTypeAdapter.DESERIALIZER);
+    module.addSerializer(StringProperty.class, StringPropertyAdapter.SERIALIZER);
+    module.addSerializer(IntegerProperty.class, IntegerPropertyAdapter.SERIALIZER);
+    module.addSerializer(DoubleProperty.class, DoublePropertyAdapter.SERIALIZER);
+    module.addSerializer(LongProperty.class, LongPropertyAdapter.SERIALIZER);
+    module.addSerializer(FloatProperty.class, FloatPropertyAdapter.SERIALIZER);
+    module.addSerializer(BooleanProperty.class, BooleanPropertyAdapter.SERIALIZER);
+    module.addSerializer(MapProperty.class, MapPropertyAdapter.SERIALIZER);
+    module.addSerializer(SetProperty.class, SetPropertyAdapter.SERIALIZER);
+    module.addSerializer(ListProperty.class, ListPropertyAdapter.SERIALIZER);
+
+    module.addDeserializer(StringProperty.class, StringPropertyAdapter.DESERIALIZER);
+    module.addDeserializer(IntegerProperty.class, IntegerPropertyAdapter.DESERIALIZER);
+    module.addDeserializer(DoubleProperty.class, DoublePropertyAdapter.DESERIALIZER);
+    module.addDeserializer(LongProperty.class, LongPropertyAdapter.DESERIALIZER);
+    module.addDeserializer(FloatProperty.class, FloatPropertyAdapter.DESERIALIZER);
+    module.addDeserializer(BooleanProperty.class, BooleanPropertyAdapter.DESERIALIZER);
+    module.addDeserializer(MapProperty.class, MapPropertyAdapter.DESERIALIZER);
+    module.addDeserializer(ObservableMap.class, ObservableMapAdapter.DESERIALIZER);
+    module.addDeserializer(SetProperty.class, SetPropertyAdapter.DESERIALIZER);
+    module.addDeserializer(ObservableSet.class, ObservableSetAdapter.DESERIALIZER);
+    module.addDeserializer(ListProperty.class, ListPropertyAdapter.DESERIALIZER);
+    module.addDeserializer(ObservableList.class, ObservableListAdapter.DESERIALIZER);
+
     module.addSerializer(Color.class, ColorTypeAdapter.SERIALIZER);
     module.addDeserializer(Color.class, ColorTypeAdapter.DESERIALIZER);
     return module;
@@ -121,14 +162,16 @@ public class PreferencesService implements InitializingBean {
   public void afterPropertiesSet() throws IOException {
     if (Files.exists(preferencesFilePath)) {
       deleteFileIfEmpty();
-      readExistingFile(preferencesFilePath);
+      if (Files.exists(preferencesFilePath)) {
+        readExistingFile(preferencesFilePath);
+      }
     } else {
       preferences = new Preferences();
     }
 
     Path gamePrefs = preferences.getForgedAlliance().getPreferencesFile();
     if (Files.notExists(gamePrefs)) {
-      logger.info("Initializing game preferences file: {}", gamePrefs);
+      log.info("Initializing game preferences file: {}", gamePrefs);
       Files.createDirectories(gamePrefs.getParent());
       Files.copy(getClass().getResourceAsStream("/fa/game.prefs"), gamePrefs);
     }
@@ -139,8 +182,8 @@ public class PreferencesService implements InitializingBean {
    * migrations.
    */
   private void migratePreferences(Preferences preferences) {
-    preferences.getForgedAlliance().setInstallationPath(preferences.getForgedAlliance().getInstallationPath());
-    storeInBackground();
+    // Nothing to migrate at this time
+//    storeInBackground();
   }
 
   public static void configureLogging() {
@@ -175,10 +218,10 @@ public class PreferencesService implements InitializingBean {
     }
 
     try (Reader reader = Files.newBufferedReader(path, CHARSET)) {
-      logger.debug("Reading preferences file {}", preferencesFilePath.toAbsolutePath());
+      log.debug("Reading preferences file {}", preferencesFilePath.toAbsolutePath());
       preferences = objectMapper.readValue(reader, Preferences.class);
     } catch (IOException e) {
-      logger.warn("Preferences file " + path.toAbsolutePath() + " could not be read", e);
+      log.warn("Preferences file {} could not be read", path.toAbsolutePath(), e);
     }
 
     migratePreferences(preferences);
@@ -195,15 +238,15 @@ public class PreferencesService implements InitializingBean {
         Files.createDirectories(parent);
       }
     } catch (IOException e) {
-      logger.warn("Could not create directory " + parent.toAbsolutePath(), e);
+      log.warn("Could not create directory {}", parent.toAbsolutePath(), e);
       return;
     }
 
     try (Writer writer = Files.newBufferedWriter(preferencesFilePath, CHARSET)) {
-      logger.debug("Writing preferences file {}", preferencesFilePath.toAbsolutePath());
+      log.debug("Writing preferences file {}", preferencesFilePath.toAbsolutePath());
       objectMapper.writeValue(writer, preferences);
     } catch (IOException e) {
-      logger.warn("Preferences file " + preferencesFilePath.toAbsolutePath() + " could not be written", e);
+      log.warn("Preferences file {} could not be written", preferencesFilePath.toAbsolutePath(), e);
     }
   }
 

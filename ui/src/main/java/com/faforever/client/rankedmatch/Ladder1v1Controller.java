@@ -1,6 +1,5 @@
 package com.faforever.client.rankedmatch;
 
-import com.faforever.client.config.ClientProperties;
 import com.faforever.client.fx.AbstractViewController;
 import com.faforever.client.fx.JavaFxUtil;
 import com.faforever.client.game.Faction;
@@ -64,7 +63,6 @@ public class Ladder1v1Controller extends AbstractViewController<Node> {
   private final PlayerService playerService;
   private final LeaderboardService leaderboardService;
   private final I18n i18n;
-  private final ClientProperties clientProperties;
   public CategoryAxis ratingDistributionXAxis;
   public NumberAxis ratingDistributionYAxis;
   public BarChart<String, Integer> ratingDistributionChart;
@@ -96,14 +94,13 @@ public class Ladder1v1Controller extends AbstractViewController<Node> {
                              PreferencesService preferencesService,
                              PlayerService playerService,
                              LeaderboardService leaderboardService,
-                             I18n i18n, ClientProperties clientProperties,
+                             I18n i18n,
                              EventBus eventBus) {
     this.gameService = gameService;
     this.preferencesService = preferencesService;
     this.playerService = playerService;
     this.leaderboardService = leaderboardService;
     this.i18n = i18n;
-    this.clientProperties = clientProperties;
     this.eventBus = eventBus;
 
     random = new Random();
@@ -130,7 +127,7 @@ public class Ladder1v1Controller extends AbstractViewController<Node> {
 
     JavaFxUtil.addListener(gameService.searching1v1Property(), (observable, oldValue, newValue) -> setSearching(newValue));
 
-    ObservableList<Faction> factions = preferencesService.getPreferences().getLadder1v1Prefs().getFactions();
+    ObservableList<Faction> factions = preferencesService.getPreferences().getLadder1v1().getFactions();
     for (Faction faction : EnumSet.of(Faction.AEON, Faction.CYBRAN, Faction.UEF, Faction.SERAPHIM)) {
       factionsToButtons.get(faction).setSelected(factions.contains(faction));
     }
@@ -178,7 +175,7 @@ public class Ladder1v1Controller extends AbstractViewController<Node> {
 
     setFactionButtonsDisabled(true);
 
-    ObservableList<Faction> factions = preferencesService.getPreferences().getLadder1v1Prefs().getFactions();
+    ObservableList<Faction> factions = preferencesService.getPreferences().getLadder1v1().getFactions();
 
     Faction randomFaction = factions.get(random.nextInt(factions.size()));
     gameService.startSearchLadder1v1(randomFaction);
@@ -190,7 +187,7 @@ public class Ladder1v1Controller extends AbstractViewController<Node> {
       .map(Map.Entry::getKey)
       .collect(Collectors.toList());
 
-    preferencesService.getPreferences().getLadder1v1Prefs().getFactions().setAll(factions);
+    preferencesService.getPreferences().getLadder1v1().getFactions().setAll(factions);
     preferencesService.storeInBackground();
 
     playButton.setDisable(factions.isEmpty());
@@ -211,7 +208,7 @@ public class Ladder1v1Controller extends AbstractViewController<Node> {
   }
 
   private void updateRating(Player player) {
-    int rank = player.getRanks().get(KnownFeaturedMod.LADDER_1V1.getTechnicalName());
+    int rank = player.getRating().get(KnownFeaturedMod.LADDER_1V1.getTechnicalName());
 
     if (rank == 0) {
       // FIXME make this configurable, or better, read from server once available
@@ -248,7 +245,7 @@ public class Ladder1v1Controller extends AbstractViewController<Node> {
   private void updateOtherValues(Player currentPlayer) {
     leaderboardService.getEntryForPlayer(currentPlayer.getId(), KnownFeaturedMod.LADDER_1V1.getTechnicalName()).thenAccept(leaderboardEntryBean -> Platform.runLater(() -> {
       rankingLabel.setText(i18n.get("ranked1v1.rankingFormat", leaderboardEntryBean.getPosition()));
-      gamesPlayedLabel.setText(String.format("%d", leaderboardEntryBean.getGamesPlayed()));
+      gamesPlayedLabel.setText(String.format("%d", leaderboardEntryBean.getTotalGames()));
       winLossRationLabel.setText(i18n.get("percentage", leaderboardEntryBean.getWinLossRatio() * 100));
     })).exceptionally(throwable -> {
       // Debug instead of warn, since it's fairly common that players don't have a leaderboard entry which causes a 404
@@ -275,7 +272,7 @@ public class Ladder1v1Controller extends AbstractViewController<Node> {
   private void plotRatingDistributions(List<RatingStat> ratingStats, Player player) {
     XYChart.Series<String, Integer> series = new XYChart.Series<>();
     series.setName(i18n.get("ranked1v1.players", LeaderboardService.MINIMUM_GAMES_PLAYED_TO_BE_SHOWN));
-    int currentPlayerRank = player.getRanks().get(KnownFeaturedMod.LADDER_1V1.getTechnicalName());
+    int currentPlayerRank = player.getRating().get(KnownFeaturedMod.LADDER_1V1.getTechnicalName());
 
     series.getData().addAll(ratingStats.stream()
       .sorted(Comparator.comparingInt(RatingStat::getRating))

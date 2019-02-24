@@ -4,7 +4,7 @@
 <?import javafx.scene.control.TableView?>
 <TableView xmlns:fx="http://javafx.com/fxml/1" fx:id="gamesTable" maxHeight="1.7976931348623157E308"
            maxWidth="1.7976931348623157E308" minHeight="0.0" minWidth="0.0" xmlns="http://javafx.com/javafx/8.0.40"
-           fx:controller="client.play.GamesTableController">
+           fx:controller="com.faforever.client.play.GamesTableController">
   <columns>
     <TableColumn fx:id="passwordProtectionColumn" editable="false" maxWidth="30.0" minWidth="30.0" prefWidth="20.0"
                  resizable="false"/>

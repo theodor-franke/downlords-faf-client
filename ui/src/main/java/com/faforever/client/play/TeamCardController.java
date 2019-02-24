@@ -52,8 +52,10 @@ public class TeamCardController implements Controller<Node> {
         continue;
       }
       PlayerCardTooltipController playerCardTooltipController = uiService.loadFxml("theme/player_card_tooltip.fxml");
-      int rank = player.getRanks().get(leaderboardName);
-      totalRank += rank;
+      Integer rank = player.getRating().get(leaderboardName);
+      if (rank != null) {
+        totalRank += rank;
+      }
       playerCardTooltipController.setPlayer(player, rank);
 
       teamPane.getChildren().add(playerCardTooltipController.getRoot());
@@ -65,7 +67,7 @@ public class TeamCardController implements Controller<Node> {
     } else if (team == 0) {
       teamTitle = i18n.get("game.tooltip.observers");
     } else {
-    // TODO display average rank instead
+      // TODO display average rank instead
       teamTitle = i18n.get("game.tooltip.teamTitle", team - 1, totalRank);
     }
     teamNameLabel.setText(teamTitle);

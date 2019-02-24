@@ -5,7 +5,7 @@
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.RowConstraints?>
-<GridPane xmlns:fx="http://javafx.com/fxml/1" fx:id="newsItemRoot" hgap="20.0" maxWidth="1.7976931348623157E308" minWidth="0.0" styleClass="news-item,pointable" xmlns="http://javafx.com/javafx/8.0.141" fx:controller="client.news.NewsListItemController">
+<GridPane xmlns:fx="http://javafx.com/fxml/1" fx:id="newsItemRoot" hgap="20.0" maxWidth="1.7976931348623157E308" minWidth="0.0" styleClass="news-item,pointable" xmlns="http://javafx.com/javafx/8.0.141" fx:controller="com.faforever.client.news.NewsListItemController">
   <columnConstraints>
       <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" />
       <ColumnConstraints hgrow="ALWAYS" maxWidth="1.7976931348623157E308" minWidth="100.0" />

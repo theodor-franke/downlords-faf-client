@@ -1,6 +1,7 @@
 package com.faforever.client.preferences;
 
 import com.faforever.client.game.KnownFeaturedMod;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ListProperty;
@@ -26,6 +27,8 @@ import java.util.ArrayList;
 
 import static javafx.collections.FXCollections.observableArrayList;
 
+// Remnants of the time when ratings instead of ranks were used
+@JsonIgnoreProperties({"lastGameMinRating", "lastGameMaxRating"})
 public class Preferences {
 
   public static final String DEFAULT_THEME_NAME = "default";
@@ -87,49 +90,8 @@ public class Preferences {
     lastGameOnlyFriends = new SimpleBooleanProperty();
   }
 
-  public VaultPrefs getVaultPrefs() {
-    return vaultPrefs;
-  }
-
-
-  public TilesSortingOrder getGameTileSortingOrder() {
-    return gameTileSortingOrder.get();
-  }
-
-  public void setGameTileSortingOrder(TilesSortingOrder gameTileTilesSortingOrder) {
-    this.gameTileSortingOrder.set(gameTileTilesSortingOrder);
-  }
-
-  public ObjectProperty<TilesSortingOrder> gameTileSortingOrderProperty() {
-    return gameTileSortingOrder;
-  }
-
-  public BooleanProperty showPasswordProtectedGamesProperty() {
-    return showPasswordProtectedGames;
-  }
-
-  public BooleanProperty showModdedGamesProperty() {
-    return showModdedGames;
-  }
-
-  public String getGamesViewMode() {
-    return gamesViewMode.get();
-  }
-
-  public void setGamesViewMode(String gamesViewMode) {
-    this.gamesViewMode.set(gamesViewMode);
-  }
-
-  public StringProperty gamesViewModeProperty() {
-    return gamesViewMode;
-  }
-
   public WindowPrefs getMainWindow() {
     return mainWindow;
-  }
-
-  public LocalizationPrefs getLocalization() {
-    return localization;
   }
 
   public ForgedAlliancePrefs getForgedAlliance() {
@@ -152,99 +114,139 @@ public class Preferences {
     return themeName.get();
   }
 
-  public void setThemeName(String themeName) {
-    this.themeName.set(themeName);
-  }
-
   public StringProperty themeNameProperty() {
     return themeName;
+  }
+
+  public void setThemeName(String themeName) {
+    this.themeName.set(themeName);
   }
 
   public String getLastGameType() {
     return lastGameType.get();
   }
 
+  public StringProperty lastGameTypeProperty() {
+    return lastGameType;
+  }
+
   public void setLastGameType(String lastGameType) {
     this.lastGameType.set(lastGameType);
   }
 
-  public StringProperty lastGameTypeProperty() {
-    return lastGameType;
+  public LocalizationPrefs getLocalization() {
+    return localization;
   }
 
   public String getLastGameTitle() {
     return lastGameTitle.get();
   }
 
-  public void setLastGameTitle(String lastGameTitle) {
-    this.lastGameTitle.set(lastGameTitle);
-  }
-
   public StringProperty lastGameTitleProperty() {
     return lastGameTitle;
+  }
+
+  public void setLastGameTitle(String lastGameTitle) {
+    this.lastGameTitle.set(lastGameTitle);
   }
 
   public String getLastMap() {
     return lastMap.get();
   }
 
-  public void setLastMap(String lastMap) {
-    this.lastMap.set(lastMap);
-  }
-
   public StringProperty lastMapProperty() {
     return lastMap;
   }
 
-  public boolean getRememberLastTab() {
-    return rememberLastTab.get();
+  public void setLastMap(String lastMap) {
+    this.lastMap.set(lastMap);
   }
 
-  public void setRememberLastTab(boolean rememberLastTab) {
-    this.rememberLastTab.set(rememberLastTab);
+  public boolean isRememberLastTab() {
+    return rememberLastTab.get();
   }
 
   public BooleanProperty rememberLastTabProperty() {
     return rememberLastTab;
   }
 
-  public ObservableList<String> getIgnoredNotifications() {
-    return ignoredNotifications.get();
+  public void setRememberLastTab(boolean rememberLastTab) {
+    this.rememberLastTab.set(rememberLastTab);
   }
 
-  public void setIgnoredNotifications(ObservableList<String> ignoredNotifications) {
-    this.ignoredNotifications.set(ignoredNotifications);
+  public boolean isShowPasswordProtectedGames() {
+    return showPasswordProtectedGames.get();
+  }
+
+  public void setShowPasswordProtectedGames(boolean showPasswordProtectedGames) {
+    this.showPasswordProtectedGames.set(showPasswordProtectedGames);
+  }
+
+  public BooleanProperty showPasswordProtectedGamesProperty() {
+    return showPasswordProtectedGames;
+  }
+
+  public boolean isShowModdedGames() {
+    return showModdedGames.get();
+  }
+
+  public void setShowModdedGames(boolean showModdedGames) {
+    this.showModdedGames.set(showModdedGames);
+  }
+
+  public BooleanProperty showModdedGamesProperty() {
+    return showModdedGames;
+  }
+
+  public ObservableList<String> getIgnoredNotifications() {
+    return ignoredNotifications.get();
   }
 
   public ListProperty<String> ignoredNotificationsProperty() {
     return ignoredNotifications;
   }
 
-  public int getLastGameMinRank() {
-    return lastGameMinRank.get();
+  public void setIgnoredNotifications(ObservableList<String> ignoredNotifications) {
+    this.ignoredNotifications.set(ignoredNotifications);
   }
 
-  public void setLastGameMinRank(int lastGameMinRank) {
-    this.lastGameMinRank.set(lastGameMinRank);
+  public int getLastGameMinRank() {
+    return lastGameMinRank.get();
   }
 
   public IntegerProperty lastGameMinRankProperty() {
     return lastGameMinRank;
   }
 
-  public int getLastGameMaxRank() {
-    return lastGameMaxRank.get();
+  public void setLastGameMinRank(int lastGameMinRank) {
+    this.lastGameMinRank.set(lastGameMinRank);
   }
 
-  public void setLastGameMaxRank(int lastGameMaxRank) {
-    this.lastGameMaxRank.set(lastGameMaxRank);
+  public int getLastGameMaxRank() {
+    return lastGameMaxRank.get();
   }
 
   public IntegerProperty lastGameMaxRankProperty() {
     return lastGameMaxRank;
   }
 
-  public Ladder1v1Prefs getLadder1v1Prefs() {
+  public void setLastGameMaxRank(int lastGameMaxRank) {
+    this.lastGameMaxRank.set(lastGameMaxRank);
+  }
+
+  public String getGamesViewMode() {
+    return gamesViewMode.get();
+  }
+
+  public void setGamesViewMode(String gamesViewMode) {
+    this.gamesViewMode.set(gamesViewMode);
+  }
+
+  public StringProperty gamesViewModeProperty() {
+    return gamesViewMode;
+  }
+
+  public Ladder1v1Prefs getLadder1v1() {
     return ladder1v1;
   }
 
@@ -256,36 +258,68 @@ public class Preferences {
     return developer;
   }
 
+  public VaultPrefs getVaultPrefs() {
+    return vaultPrefs;
+  }
+
   public ObservableList<Pair<String, SortType>> getGameListSorting() {
     return gameListSorting.get();
+  }
+
+  public ListProperty<Pair<String, SortType>> gameListSortingProperty() {
+    return gameListSorting;
+  }
+
+  public void setGameListSorting(ObservableList<Pair<String, SortType>> gameListSorting) {
+    this.gameListSorting.set(gameListSorting);
+  }
+
+  public TilesSortingOrder getGameTileSortingOrder() {
+    return gameTileSortingOrder.get();
+  }
+
+  public void setGameTileSortingOrder(TilesSortingOrder gameTileSortingOrder) {
+    this.gameTileSortingOrder.set(gameTileSortingOrder);
+  }
+
+  public ObjectProperty<TilesSortingOrder> gameTileSortingOrderProperty() {
+    return gameTileSortingOrder;
   }
 
   public UnitDataBaseType getUnitDataBaseType() {
     return unitDataBaseType.get();
   }
 
-  public void setUnitDataBaseType(UnitDataBaseType unitDataBaseType) {
-    this.unitDataBaseType.set(unitDataBaseType);
-  }
-
   public ObjectProperty<UnitDataBaseType> unitDataBaseTypeProperty() {
     return unitDataBaseType;
+  }
+
+  public void setUnitDataBaseType(UnitDataBaseType unitDataBaseType) {
+    this.unitDataBaseType.set(unitDataBaseType);
   }
 
   public ObservableMap<URI, ArrayList<HttpCookie>> getStoredCookies() {
     return storedCookies.get();
   }
 
+  public MapProperty<URI, ArrayList<HttpCookie>> storedCookiesProperty() {
+    return storedCookies;
+  }
+
+  public void setStoredCookies(ObservableMap<URI, ArrayList<HttpCookie>> storedCookies) {
+    this.storedCookies.set(storedCookies);
+  }
+
   public boolean isLastGameOnlyFriends() {
     return lastGameOnlyFriends.get();
   }
 
-  public void setLastGameOnlyFriends(boolean lastGameOnlyFriends) {
-    this.lastGameOnlyFriends.set(lastGameOnlyFriends);
-  }
-
   public BooleanProperty lastGameOnlyFriendsProperty() {
     return lastGameOnlyFriends;
+  }
+
+  public void setLastGameOnlyFriends(boolean lastGameOnlyFriends) {
+    this.lastGameOnlyFriends.set(lastGameOnlyFriends);
   }
 
   public enum UnitDataBaseType {

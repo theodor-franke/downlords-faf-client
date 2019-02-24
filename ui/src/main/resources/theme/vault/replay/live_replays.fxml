@@ -2,7 +2,7 @@
 
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
-<TableView xmlns:fx="http://javafx.com/fxml/1" fx:id="liveReplayControllerRoot" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="0.0" minWidth="0.0" xmlns="http://javafx.com/javafx/8.0.141" fx:controller="client.vault.replay.LiveReplayController">
+<TableView xmlns:fx="http://javafx.com/fxml/1" fx:id="liveReplayControllerRoot" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="0.0" minWidth="0.0" xmlns="http://javafx.com/javafx/8.0.141" fx:controller="com.faforever.client.vault.replay.LiveReplayController">
     <columns>
         <TableColumn fx:id="mapPreviewColumn" editable="false" minWidth="-1.0" resizable="false" text="%game.map" />
         <TableColumn fx:id="gameTitleColumn" editable="false" minWidth="-1.0" prefWidth="200.0" text="%game.title" />

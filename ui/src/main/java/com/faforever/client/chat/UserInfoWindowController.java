@@ -41,7 +41,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
-import javafx.scene.control.ToggleButton;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
@@ -118,8 +117,6 @@ public class UserInfoWindowController implements Controller<Node> {
   public Label mostRecentAchievementNameLabel;
   public Pane lockedAchievementsContainer;
   public Pane unlockedAchievementsContainer;
-  public ToggleButton globalButton;
-  public ToggleButton ladder1v1Button;
   public NumberAxis yAxis;
   public NumberAxis xAxis;
   public LineChart<Integer, Integer> ratingHistoryChart;
@@ -215,8 +212,8 @@ public class UserInfoWindowController implements Controller<Node> {
     avatarImageView.setImage(IdenticonUtil.createIdenticon(player.getId()));
     gamesPlayedLabel.setText(i18n.number(player.getNumberOfGames()));
     // FIXME display ranks dynamically and as images
-    ratingLabelGlobal.setText(i18n.number(player.getRanks().get("global")));
-    ratingLabel1v1.setText(i18n.number(player.getRanks().get("ladder1v1")));
+    ratingLabelGlobal.setText(i18n.number(player.getRating().get("global")));
+    ratingLabel1v1.setText(i18n.number(player.getRating().get("ladder1v1")));
 
     updateNameHistory(player);
 
@@ -228,8 +225,7 @@ public class UserInfoWindowController implements Controller<Node> {
       countryLabel.setText(player.getCountry());
     }
 
-    globalButton.fire();
-    globalButton.setSelected(true);
+    loadStatistics(KnownFeaturedMod.FAF);
 
     loadAchievements();
     eventService.getPlayerEvents(player.getId())
@@ -306,7 +302,6 @@ public class UserInfoWindowController implements Controller<Node> {
     Platform.runLater(() -> factionsChart.getData().addAll(winsSeries, lossSeries));
   }
 
-  @SuppressWarnings("unchecked")
   private void plotUnitsByCategoriesChart(Map<String, PlayerEvent> playerEvents) {
     int airBuilt = playerEvents.containsKey(EVENT_BUILT_AIR_UNITS) ? playerEvents.get(EVENT_BUILT_AIR_UNITS).getCount() : 0;
     int landBuilt = playerEvents.containsKey(EVENT_BUILT_LAND_UNITS) ? playerEvents.get(EVENT_BUILT_LAND_UNITS).getCount() : 0;
@@ -319,7 +314,6 @@ public class UserInfoWindowController implements Controller<Node> {
     )));
   }
 
-  @SuppressWarnings("unchecked")
   private void plotTechBuiltChart(Map<String, PlayerEvent> playerEvents) {
     int tech1Built = playerEvents.containsKey(EVENT_BUILT_TECH_1_UNITS) ? playerEvents.get(EVENT_BUILT_TECH_1_UNITS).getCount() : 0;
     int tech2Built = playerEvents.containsKey(EVENT_BUILT_TECH_2_UNITS) ? playerEvents.get(EVENT_BUILT_TECH_2_UNITS).getCount() : 0;
@@ -332,19 +326,18 @@ public class UserInfoWindowController implements Controller<Node> {
     )));
   }
 
-  @SuppressWarnings("unchecked")
   private void plotGamesPlayedChart() {
     Player currentPlayer = playerService.getCurrentPlayer().orElseThrow(() -> new IllegalStateException("Player must be set"));
     // FIXME plot leaderboard dynamically
     leaderboardService.getEntryForPlayer(currentPlayer.getId(), "ladder1v1").thenAccept(leaderboardEntryBean -> Platform.runLater(() -> {
-      int ladderGamesCount = leaderboardEntryBean.getGamesPlayed();
+      int ladderGamesCount = leaderboardEntryBean.getTotalGames();
       int custonGamesCount = currentPlayer.getNumberOfGames();
       Platform.runLater(() -> gamesPlayedChart.setData(FXCollections.observableArrayList(
         new PieChart.Data(i18n.get("stats.custom"), custonGamesCount),
         new PieChart.Data(i18n.get("stats.ranked1v1"), ladderGamesCount)
       )));
     })).exceptionally(throwable -> {
-      log.warn("Leaderboard entry could not be read for current player: " + currentPlayer.getDisplayName(), throwable);
+      log.warn("Leaderboard entry could not be read for current player: {}", currentPlayer.getDisplayName(), throwable);
       return null;
     });
   }
@@ -397,10 +390,6 @@ public class UserInfoWindowController implements Controller<Node> {
     achievementsPane.setVisible(true);
   }
 
-  public void ladder1v1ButtonClicked() {
-    loadStatistics(KnownFeaturedMod.LADDER_1V1);
-  }
-
   private CompletableFuture<Void> loadStatistics(KnownFeaturedMod featuredMod) {
     return statisticsService.getRatingHistory(featuredMod, player.getId())
       .thenAccept(ratingHistory -> Platform.runLater(() -> plotPlayerRatingGraph(ratingHistory)))
@@ -443,10 +432,6 @@ public class UserInfoWindowController implements Controller<Node> {
         return null;
       }
     };
-  }
-
-  public void globalButtonClicked() {
-    loadStatistics(KnownFeaturedMod.FAF);
   }
 
   public void show() {

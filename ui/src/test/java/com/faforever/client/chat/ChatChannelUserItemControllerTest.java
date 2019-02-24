@@ -1,6 +1,5 @@
 package com.faforever.client.chat;
 
-import com.faforever.client.avatar.Avatar;
 import com.faforever.client.avatar.AvatarImageService;
 import com.faforever.client.clan.Clan;
 import com.faforever.client.clan.ClanService;
@@ -78,9 +77,9 @@ public class ChatChannelUserItemControllerTest extends AbstractPlainJavaFxTest {
     Preferences preferences = new Preferences();
     when(preferencesService.getPreferences()).thenReturn(preferences);
 
-    when(i18n.get(eq("user.status.hosting"), anyString())).thenReturn("Hosting");
-    when(i18n.get(eq("user.status.waiting"), anyString())).thenReturn("Waiting");
-    when(i18n.get(eq("user.status.playing"), anyString())).thenReturn("Playing");
+    when(i18n.get(eq("user.status.hosting"), any())).thenReturn("Hosting");
+    when(i18n.get(eq("user.status.waiting"), any())).thenReturn("Waiting");
+    when(i18n.get(eq("user.status.playing"), any())).thenReturn("Playing");
     testClan = new Clan();
     testClan.setTag("e");
     testClan.setLeader(new Player("test_player"));
@@ -115,6 +114,7 @@ public class ChatChannelUserItemControllerTest extends AbstractPlainJavaFxTest {
   @Test
   public void testSetChatUser() throws Exception {
     Player player = new Player("junit");
+    player.setCountry("US");
     player.setClanTag("e");
     player.setAvatarUrl(new URL("http://example.com/avatar.png"));
     player.setAvatarTooltip("dog");
@@ -152,7 +152,9 @@ public class ChatChannelUserItemControllerTest extends AbstractPlainJavaFxTest {
 
     assertThat(instance.statusLabel.getText(), is(""));
 
-    player.setGame(new Game());
+    Game game = new Game();
+    game.setState(GameState.OPEN);
+    player.setGame(game);
     WaitForAsyncUtils.waitForFxEvents();
 
     assertThat(instance.statusLabel.getText(), is("Waiting"));
@@ -172,6 +174,7 @@ public class ChatChannelUserItemControllerTest extends AbstractPlainJavaFxTest {
     Game game = new Game();
     game.setHostName("junit");
     game.setState(GameState.OPEN);
+
     player.setGame(game);
     WaitForAsyncUtils.waitForFxEvents();
 

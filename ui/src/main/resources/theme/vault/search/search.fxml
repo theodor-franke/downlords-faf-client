@@ -10,7 +10,7 @@
 <?import javafx.scene.layout.VBox?>
 <VBox xmlns:fx="http://javafx.com/fxml/1" fx:id="searchRoot" maxHeight="-Infinity" maxWidth="-Infinity"
       minHeight="-Infinity" minWidth="-Infinity" spacing="10.0" xmlns="http://javafx.com/javafx/8.0.121"
-      fx:controller="client.vault.search.SearchController">
+      fx:controller="com.faforever.client.vault.search.SearchController">
     <children>
         <VBox fx:id="criteriaPane">
             <children>

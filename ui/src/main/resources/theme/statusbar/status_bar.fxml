@@ -11,7 +11,7 @@
 <?import javafx.scene.layout.Pane?>
 <HBox xmlns:fx="http://javafx.com/fxml/1" alignment="CENTER_LEFT" maxHeight="-Infinity"
       maxWidth="1.7976931348623157E308" styleClass="status-bar" xmlns="http://javafx.com/javafx/8.0.141"
-      fx:controller="client.ui.statusbar.StatusBarController">
+      fx:controller="com.faforever.client.ui.statusbar.StatusBarController">
 
     <children>
         <Label fx:id="versionLabel" text="&lt;Version&gt;"/>

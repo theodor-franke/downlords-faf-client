@@ -81,14 +81,14 @@ public class MockFafApiAccessor implements FafApiAccessor {
   public List<Mod> getMods() {
     Account uploader = new Account();
     return Arrays.asList(
-        new org.supcomhub.api.dto.Mod("1", "Mod Number One", "Mock", uploader, Collections.emptyList(), mod()),
-        new org.supcomhub.api.dto.Mod("2", "Mod Number Two", "Mock", uploader, Collections.emptyList(), mod()),
-        new org.supcomhub.api.dto.Mod("3", "Mod Number Three", "Mock", uploader, Collections.emptyList(), mod()),
-        new org.supcomhub.api.dto.Mod("4", "Mod Number Four", "Mock", uploader, Collections.emptyList(), mod()),
-        new org.supcomhub.api.dto.Mod("5", "Mod Number Five", "Mock", uploader, Collections.emptyList(), mod()),
-        new org.supcomhub.api.dto.Mod("6", "Mod Number Six", "Mock", uploader, Collections.emptyList(), mod()),
-        new org.supcomhub.api.dto.Mod("7", "Mod Number Seven", "Mock", uploader, Collections.emptyList(), mod()),
-        new org.supcomhub.api.dto.Mod("8", "Mod Number Eight", "Mock", uploader, Collections.emptyList(), mod())
+      new org.supcomhub.api.dto.Mod("1", "Mod Number One", uploader, Collections.emptyList(), mod()),
+      new org.supcomhub.api.dto.Mod("2", "Mod Number Two", uploader, Collections.emptyList(), mod()),
+      new org.supcomhub.api.dto.Mod("3", "Mod Number Three", uploader, Collections.emptyList(), mod()),
+      new org.supcomhub.api.dto.Mod("4", "Mod Number Four", uploader, Collections.emptyList(), mod()),
+      new org.supcomhub.api.dto.Mod("5", "Mod Number Five", uploader, Collections.emptyList(), mod()),
+      new org.supcomhub.api.dto.Mod("6", "Mod Number Six", uploader, Collections.emptyList(), mod()),
+      new org.supcomhub.api.dto.Mod("7", "Mod Number Seven", uploader, Collections.emptyList(), mod()),
+      new org.supcomhub.api.dto.Mod("8", "Mod Number Eight", uploader, Collections.emptyList(), mod())
     );
   }
 

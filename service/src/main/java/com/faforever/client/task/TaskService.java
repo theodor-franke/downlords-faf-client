@@ -5,6 +5,7 @@ import javafx.collections.ObservableList;
 import javafx.concurrent.Worker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
@@ -29,7 +30,7 @@ public class TaskService {
   private ObservableList<Worker<?>> unmodifiableObservableList;
 
 
-  public TaskService(Executor executor) {
+  public TaskService(@Qualifier("taskExecutor") Executor executor) {
     this.executor = executor;
 
     activeTasks = FXCollections.synchronizedObservableList(FXCollections.observableArrayList());

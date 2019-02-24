@@ -8,7 +8,7 @@
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.RowConstraints?>
-<GridPane xmlns:fx="http://javafx.com/fxml/1" fx:id="filterUserRoot" hgap="10.0" styleClass="filter-user-root" vgap="10.0" xmlns="http://javafx.com/javafx/8.0.60" fx:controller="client.chat.UserFilterController">
+<GridPane xmlns:fx="http://javafx.com/fxml/1" fx:id="filterUserRoot" hgap="10.0" styleClass="filter-user-root" vgap="10.0" xmlns="http://javafx.com/javafx/8.0.60" fx:controller="com.faforever.client.chat.UserFilterController">
   <columnConstraints>
     <ColumnConstraints hgrow="SOMETIMES" />
   </columnConstraints>
@@ -19,10 +19,10 @@
     <RowConstraints maxHeight="25.0" minHeight="0.0" prefHeight="21.0" vgrow="SOMETIMES" />
   </rowConstraints>
   <children>
-      <JFXTextField fx:id="clanFilterField" promptText="%chat.filter.clan" GridPane.columnSpan="2147483647"/>
-      <JFXTextField fx:id="minRatingFilterField" promptText="%chat.filter.minRating" GridPane.columnSpan="2147483647"
+      <JFXTextField fx:id="clanField" promptText="%chat.filter.clan" GridPane.columnSpan="2147483647"/>
+      <JFXTextField fx:id="minRankField" promptText="%chat.filter.minRating" GridPane.columnSpan="2147483647"
                     GridPane.rowIndex="2"/>
-      <JFXTextField fx:id="maxRatingFilterField" promptText="%chat.filter.maxRating" GridPane.columnSpan="2147483647"
+      <JFXTextField fx:id="maxRankField" promptText="%chat.filter.maxRating" GridPane.columnSpan="2147483647"
                     GridPane.rowIndex="1"/>
   <MenuButton fx:id="gameStatusMenu" mnemonicParsing="false" text="%game.gameStatus" GridPane.rowIndex="3">
     <items>

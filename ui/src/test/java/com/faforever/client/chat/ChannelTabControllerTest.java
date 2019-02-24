@@ -80,8 +80,6 @@ public class ChannelTabControllerTest extends AbstractPlainJavaFxTest {
   @Mock
   private NotificationService notificationService;
   @Mock
-  private AutoCompletionHelper autoCompletionHelper;
-  @Mock
   private UiService uiService;
   @Mock
   private UserFilterController userFilterController;
@@ -108,8 +106,7 @@ public class ChannelTabControllerTest extends AbstractPlainJavaFxTest {
         preferencesService, playerService,
         audioService, timeService, i18n, imageUploadService,
         notificationService, reportingService,
-        uiService, autoCompletionHelper,
-        eventBus, webViewConfigurer, countryFlagService,
+      uiService, eventBus, webViewConfigurer, countryFlagService,
       new ObjectMapper());
 
     defaultChannel = new Channel(CHANNEL_NAME);

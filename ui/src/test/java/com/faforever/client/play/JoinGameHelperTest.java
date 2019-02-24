@@ -5,8 +5,6 @@ import com.faforever.client.game.GameService;
 import com.faforever.client.i18n.I18n;
 import com.faforever.client.notification.ImmediateNotification;
 import com.faforever.client.notification.NotificationService;
-import com.faforever.client.play.EnterPasswordController;
-import com.faforever.client.play.JoinGameHelper;
 import com.faforever.client.player.Player;
 import com.faforever.client.player.PlayerService;
 import com.faforever.client.preferences.PreferencesService;
@@ -63,7 +61,7 @@ public class JoinGameHelperTest extends AbstractPlainJavaFxTest {
     instance = new JoinGameHelper(i18n, playerService, gameService, preferencesService, notificationService, reportingService, uiService, eventBus);
 
     Player player = new Player("junit");
-    player.getRanks().put("global", 10);
+    player.getRating().put("global", 10);
     when(playerService.getCurrentPlayer()).thenReturn(Optional.of(player));
 
     when(game.getMinRank()).thenReturn(0);

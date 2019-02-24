@@ -7,7 +7,7 @@
 <MenuButton xmlns:fx="http://javafx.com/fxml/1" fx:id="userButtonRoot" focusTraversable="false" graphicTextGap="10.0"
             mnemonicParsing="false" styleClass="username-button" text="&lt;Username&gt;"
             xmlns="http://javafx.com/javafx/8.0.60"
-            fx:controller="client.main.UserButtonController">
+            fx:controller="com.faforever.client.main.UserButtonController">
     <graphic>
         <ImageView fx:id="userImageView" fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true"/>
     </graphic>

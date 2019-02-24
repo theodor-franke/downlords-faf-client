@@ -117,7 +117,7 @@ public class UserFilterController implements Controller<Node> {
     Player player = optionalPlayer.get();
 
     // TODO support multiple ranks?
-    Integer rank = player.getRanks().values().stream().findFirst().orElse(0);
+    Integer rank = player.getRating().values().stream().findFirst().orElse(0);
     int minRating;
     int maxRating;
 

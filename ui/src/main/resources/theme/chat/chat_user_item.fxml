@@ -9,7 +9,7 @@
 <?import javafx.scene.text.Text?>
 <GridPane xmlns:fx="http://javafx.com/fxml/1" fx:id="chatUserItemRoot" hgap="5.0"
           onContextMenuRequested="#onContextMenuRequested" onMouseClicked="#onItemClicked" styleClass="chat-user-item"
-          xmlns="http://javafx.com/javafx/8.0.111" fx:controller="client.chat.ChatUserItemController">
+          xmlns="http://javafx.com/javafx/8.0.111" fx:controller="com.faforever.client.chat.ChatUserItemController">
    <columnConstraints>
       <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
        <ColumnConstraints hgrow="SOMETIMES" minWidth="0.0"/>

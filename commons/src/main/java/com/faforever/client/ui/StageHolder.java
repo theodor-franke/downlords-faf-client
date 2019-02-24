@@ -10,7 +10,7 @@ public final class StageHolder {
   }
 
   public static Stage getStage() {
-    if (stage != null) {
+    if (stage == null) {
       throw new IllegalStateException("Stage has not yet been set");
     }
     return stage;

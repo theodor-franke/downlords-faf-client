@@ -86,7 +86,7 @@ public class ChatChannelUserContextMenuControllerTest extends AbstractPlainJavaF
     when(preferences.getChat()).thenReturn(chatPrefs);
     when(chatPrefs.getUserToColor()).thenReturn(mock(ObservableMap.class));
     when(chatPrefs.chatColorModeProperty()).thenReturn(chatColorModeObjectProperty);
-    when(avatarService.getAvailableAvatars(any())).thenReturn(CompletableFuture.completedFuture(Arrays.asList(
+    when(avatarService.getAvailableAvatars(anyInt())).thenReturn(CompletableFuture.completedFuture(Arrays.asList(
         new Avatar(1, new URL("http://www.example.com/avatar1.png"), "Avatar Number #1"),
         new Avatar(2, new URL("http://www.example.com/avatar2.png"), "Avatar Number #2"),
         new Avatar(3, new URL("http://www.example.com/avatar3.png"), "Avatar Number #3")

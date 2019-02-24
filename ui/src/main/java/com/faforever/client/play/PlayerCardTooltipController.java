@@ -7,6 +7,7 @@ import com.faforever.client.player.Player;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -27,7 +28,7 @@ public class PlayerCardTooltipController implements Controller<Node> {
     this.i18n = i18n;
   }
 
-  public void setPlayer(Player player, int rank) {
+  public void setPlayer(Player player, @Nullable Integer rank) {
     if (player == null) {
       return;
     }

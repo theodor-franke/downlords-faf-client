@@ -12,7 +12,7 @@
 <StackPane xmlns:fx="http://javafx.com/fxml/1" fx:id="transientNotificationRoot" alignment="TOP_CENTER"
            maxHeight="-Infinity" minHeight="0.0" onMouseClicked="#onClicked" opacity="0.9" prefHeight="104.0"
            xmlns="http://javafx.com/javafx/8.0.40"
-           fx:controller="client.notification.TransientNotificationController">
+           fx:controller="com.faforever.client.notification.TransientNotificationController">
   <children>
     <GridPane hgap="20.0" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="104.0" vgap="10.0">
       <columnConstraints>

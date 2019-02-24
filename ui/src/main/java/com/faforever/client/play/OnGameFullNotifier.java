@@ -14,9 +14,9 @@ import com.faforever.client.util.ProgrammingError;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
 import java.util.concurrent.Executor;
 
 import static com.github.nocatch.NoCatch.noCatch;
@@ -40,7 +40,7 @@ public class OnGameFullNotifier implements InitializingBean {
   private final String faWindowTitle;
 
 
-  public OnGameFullNotifier(PlatformService platformService, Executor executor, NotificationService notificationService,
+  public OnGameFullNotifier(PlatformService platformService, @Qualifier("taskExecutor") Executor executor, NotificationService notificationService,
                             I18n i18n, MapPreviewService mapPreviewService, EventBus eventBus, ClientProperties clientProperties,
                             GameService gameService) {
     this.platformService = platformService;

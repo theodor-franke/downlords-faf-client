@@ -4,7 +4,7 @@ import com.faforever.client.game.relay.GpgMessage;
 
 public class HostGameMessage extends GpgMessage {
 
-  protected HostGameMessage() {
+  public HostGameMessage() {
     super("HostGame", 1);
   }
 

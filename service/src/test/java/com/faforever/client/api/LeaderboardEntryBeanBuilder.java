@@ -15,7 +15,7 @@ public class LeaderboardEntryBeanBuilder {
   }
 
   LeaderboardEntryBeanBuilder username(String username) {
-    leaderboardEntry.setUsername(username);
+    leaderboardEntry.setPlayerName(username);
     return this;
   }
 

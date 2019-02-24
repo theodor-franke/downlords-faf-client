@@ -16,6 +16,7 @@ import com.faforever.client.vault.review.StarsController;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.image.Image;
+import org.apache.maven.artifact.versioning.ComparableVersion;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -93,6 +94,7 @@ public class ModDetailControllerTest extends AbstractPlainJavaFxTest {
   @Test
   public void testSetMod() {
     ModVersion modVersion = new ModVersion();
+    modVersion.setVersion(new ComparableVersion("1"));
     modVersion.setDisplayName("ModVersion name");
     modVersion.setUploader("ModVersion author");
     modVersion.setThumbnailUrl(getClass().getResource("/theme/images/close.png"));
@@ -111,6 +113,7 @@ public class ModDetailControllerTest extends AbstractPlainJavaFxTest {
   @Test
   public void testSetModNoThumbnailLoadsDefault() {
     ModVersion modVersion = new ModVersion();
+    modVersion.setVersion(new ComparableVersion("1"));
     Image image = mock(Image.class);
     when(modThumbnailService.loadThumbnail(modVersion)).thenReturn(image);
 
@@ -125,7 +128,9 @@ public class ModDetailControllerTest extends AbstractPlainJavaFxTest {
   public void testOnInstallButtonClicked() {
     when(modService.downloadAndInstallMod(any(ModVersion.class), any(), any())).thenReturn(CompletableFuture.completedFuture(null));
 
-    instance.setModVersion(new ModVersion());
+    ModVersion modVersion = new ModVersion();
+    modVersion.setVersion(new ComparableVersion("1"));
+    instance.setModVersion(modVersion);
     instance.onInstallButtonClicked();
 
     verify(modService).downloadAndInstallMod(any(ModVersion.class), any(), any());
@@ -137,7 +142,9 @@ public class ModDetailControllerTest extends AbstractPlainJavaFxTest {
     future.completeExceptionally(new Exception("test exception"));
     when(modService.downloadAndInstallMod(any(ModVersion.class), any(), any())).thenReturn(future);
 
-    instance.setModVersion(new ModVersion());
+    ModVersion modVersion = new ModVersion();
+    modVersion.setVersion(new ComparableVersion("1"));
+    instance.setModVersion(modVersion);
 
     instance.onInstallButtonClicked();
 
@@ -148,6 +155,7 @@ public class ModDetailControllerTest extends AbstractPlainJavaFxTest {
   @Test
   public void testOnUninstallButtonClicked() {
     ModVersion modVersion = new ModVersion();
+    modVersion.setVersion(new ComparableVersion("1"));
     instance.setModVersion(modVersion);
     when(modService.uninstallMod(modVersion)).thenReturn(CompletableFuture.completedFuture(null));
 
@@ -159,6 +167,7 @@ public class ModDetailControllerTest extends AbstractPlainJavaFxTest {
   @Test
   public void testOnUninstallButtonClickedThrowsException() {
     ModVersion modVersion = new ModVersion();
+    modVersion.setVersion(new ComparableVersion("1"));
     instance.setModVersion(modVersion);
 
     CompletableFuture<Void> future = new CompletableFuture<>();
@@ -196,6 +205,7 @@ public class ModDetailControllerTest extends AbstractPlainJavaFxTest {
     when(modService.isModInstalled(uuid)).thenReturn(true);
 
     ModVersion modVersion = new ModVersion();
+    modVersion.setVersion(new ComparableVersion("1"));
     modVersion.setUuid(uuid);
     instance.setModVersion(modVersion);
 
@@ -209,6 +219,7 @@ public class ModDetailControllerTest extends AbstractPlainJavaFxTest {
     when(modService.isModInstalled(uuid)).thenReturn(false);
 
     ModVersion modVersion = new ModVersion();
+    modVersion.setVersion(new ComparableVersion("1"));
     modVersion.setUuid(uuid);
     instance.setModVersion(modVersion);
 
@@ -222,6 +233,7 @@ public class ModDetailControllerTest extends AbstractPlainJavaFxTest {
     when(modService.isModInstalled(uuid)).thenReturn(true);
 
     ModVersion modVersion = new ModVersion();
+    modVersion.setVersion(new ComparableVersion("1"));
     modVersion.setUuid(uuid);
     instance.setModVersion(modVersion);
     installedModVersions.add(modVersion);
@@ -239,6 +251,7 @@ public class ModDetailControllerTest extends AbstractPlainJavaFxTest {
   public void testChangeInstalledStateWhenModIsInstalled() {
     UUID uuid = UUID.randomUUID();
     ModVersion modVersion = new ModVersion();
+    modVersion.setVersion(new ComparableVersion("1"));
     modVersion.setUuid(uuid);
 
     when(modService.isModInstalled(uuid)).thenReturn(false);

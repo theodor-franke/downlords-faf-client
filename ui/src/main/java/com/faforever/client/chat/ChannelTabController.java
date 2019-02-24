@@ -118,6 +118,9 @@ public class ChannelTabController extends AbstractChatTabController {
 
   /** The list of chat user (or category) items that backs the chat user list view. */
   private final ObservableList<CategoryOrChatUserListItem> chatUserListItems;
+
+  private final AutoCompletionHelper autoCompletionHelper;
+
   private final ObjectMapper objectMapper;
 
   public ToggleButton advancedUserFilter;
@@ -145,12 +148,12 @@ public class ChannelTabController extends AbstractChatTabController {
                               PlayerService playerService, AudioService audioService, TimeService timeService,
                               I18n i18n, ImageUploadService imageUploadService,
                               NotificationService notificationService, ReportingService reportingService,
-                              UiService uiService, AutoCompletionHelper autoCompletionHelper, EventBus eventBus,
+                              UiService uiService, EventBus eventBus,
                               WebViewConfigurer webViewConfigurer,
                               CountryFlagService countryFlagService, ObjectMapper objectMapper) {
 
     super(webViewConfigurer, userService, chatService, preferencesService, playerService, audioService,
-      timeService, i18n, imageUploadService, notificationService, reportingService, uiService, autoCompletionHelper,
+      timeService, i18n, imageUploadService, notificationService, reportingService, uiService,
       eventBus, countryFlagService);
     this.objectMapper = objectMapper;
 
@@ -162,6 +165,13 @@ public class ChannelTabController extends AbstractChatTabController {
     userNamesToListItems = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
     chatUserListItems = FXCollections.observableArrayList();
     filteredChatUserList = new FilteredList<>(chatUserListItems);
+
+    autoCompletionHelper = new AutoCompletionHelper(
+      currentWord -> userNamesToListItems.keySet().stream()
+        .filter(playerName -> playerName.toLowerCase(US).startsWith(currentWord.toLowerCase()))
+        .sorted()
+        .collect(Collectors.toList())
+    );
 
     chatColorModeChangeListener = (observable, oldValue, newValue) -> {
       if (newValue != DEFAULT) {
@@ -251,6 +261,8 @@ public class ChannelTabController extends AbstractChatTabController {
 
     chatUserListView.setItems(filteredChatUserList);
     chatUserListView.setCellFactory(param -> new ChatUserListCell(uiService));
+
+    autoCompletionHelper.bindTo(messageTextField());
   }
 
   @Override

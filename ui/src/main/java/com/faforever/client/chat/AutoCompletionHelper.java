@@ -1,26 +1,18 @@
 package com.faforever.client.chat;
 
-import com.faforever.client.player.PlayerService;
 import com.faforever.client.util.Assert;
 import javafx.event.EventHandler;
 import javafx.scene.control.TextInputControl;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-import org.springframework.beans.factory.config.ConfigurableBeanFactory;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.function.Function;
 
-import static java.util.Locale.US;
-
-@Component
-@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class AutoCompletionHelper {
-
-  private final PlayerService playerService;
 
   private List<String> possibleAutoCompletions;
   private int nextAutoCompleteIndex;
@@ -28,10 +20,11 @@ public class AutoCompletionHelper {
 
   private TextInputControl boundTextField;
   private EventHandler<KeyEvent> keyEventHandler;
+  private Function<String, Collection<String>> completionProposalGenerator;
 
 
-  public AutoCompletionHelper(PlayerService playerService) {
-    this.playerService = playerService;
+  public AutoCompletionHelper(Function<String, Collection<String>> completionProposalGenerator) {
+    this.completionProposalGenerator = completionProposalGenerator;
 
     keyEventHandler = keyEvent -> {
       if (!keyEvent.isControlDown() && keyEvent.getCode() == KeyCode.TAB) {
@@ -89,21 +82,14 @@ public class AutoCompletionHelper {
   }
 
   private void initializeAutoCompletion() {
-    possibleAutoCompletions = new ArrayList<>();
-
     autoCompletePartialName = getWordBeforeCaret(boundTextField);
     if (autoCompletePartialName.isEmpty()) {
+      possibleAutoCompletions = Collections.emptyList();
       return;
     }
 
+    possibleAutoCompletions = new ArrayList<>(completionProposalGenerator.apply(autoCompletePartialName));
     nextAutoCompleteIndex = 0;
-
-    possibleAutoCompletions.addAll(
-        playerService.getPlayerNames().stream()
-            .filter(playerName -> playerName.toLowerCase(US).startsWith(autoCompletePartialName.toLowerCase()))
-            .sorted()
-            .collect(Collectors.toList())
-    );
   }
 
   public void bindTo(TextInputControl messageTextField) {

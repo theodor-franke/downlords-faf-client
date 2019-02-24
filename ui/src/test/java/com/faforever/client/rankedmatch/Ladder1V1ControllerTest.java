@@ -1,6 +1,5 @@
 package com.faforever.client.rankedmatch;
 
-import com.faforever.client.config.ClientProperties;
 import com.faforever.client.game.Faction;
 import com.faforever.client.game.GameService;
 import com.faforever.client.game.KnownFeaturedMod;
@@ -73,25 +72,24 @@ public class Ladder1V1ControllerTest extends AbstractPlainJavaFxTest {
 
   @Before
   public void setUp() throws Exception {
-    instance = new Ladder1v1Controller(gameService, preferencesService, playerService, leaderboardService, i18n,
-        new ClientProperties(), eventBus);
+    instance = new Ladder1v1Controller(gameService, preferencesService, playerService, leaderboardService, i18n, eventBus);
 
     Player player = new Player(USERNAME);
     player.setId(PLAYER_ID);
     currentPlayerProperty = new SimpleObjectProperty<>(player);
     factionList = FXCollections.observableArrayList();
     LeaderboardEntry leaderboardEntry = new LeaderboardEntry();
-    leaderboardEntry.setRank(500);
-    leaderboardEntry.setWinLossRatio(12.23f);
+    leaderboardEntry.setRating(500);
+    leaderboardEntry.setWonGames((int) (12.23f * 412));
     leaderboardEntry.setPosition(100);
-    leaderboardEntry.setGamesPlayed(412);
-    leaderboardEntry.setUsername(USERNAME);
+    leaderboardEntry.setTotalGames(412);
+    leaderboardEntry.setPlayerName(USERNAME);
 
     when(leaderboardService.getLeaderboardStats("global")).thenReturn(CompletableFuture.completedFuture(new ArrayList<>()));
     when(leaderboardService.getEntryForPlayer(PLAYER_ID, KnownFeaturedMod.LADDER_1V1.getTechnicalName())).thenReturn(CompletableFuture.completedFuture(leaderboardEntry));
     when(gameService.searching1v1Property()).thenReturn(searching1v1Property);
     when(preferencesService.getPreferences()).thenReturn(preferences);
-    when(preferences.getLadder1v1Prefs()).thenReturn(ladder1V1Prefs);
+    when(preferences.getLadder1v1()).thenReturn(ladder1V1Prefs);
     when(ladder1V1Prefs.getFactions()).thenReturn(factionList);
     when(preferences.getForgedAlliance()).thenReturn(forgedAlliancePrefs);
     when(playerService.getCurrentPlayer()).thenReturn(Optional.ofNullable(currentPlayerProperty.get()));

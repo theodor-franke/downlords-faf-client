@@ -30,6 +30,8 @@ import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
@@ -179,6 +181,9 @@ public class ReplayServiceTest {
     LocalReplayInfo localReplayInfo = new LocalReplayInfo();
     localReplayInfo.setId(123);
     localReplayInfo.setTitle("title");
+    localReplayInfo.setFeaturedMod(new FeaturedMod(KnownFeaturedMod.DEFAULT.getTechnicalName(), 1));
+    localReplayInfo.setStartTime(Instant.now());
+    localReplayInfo.setDuration(Duration.ofMinutes(20));
 
     when(replayFileReader.parseMetaData(file1)).thenReturn(localReplayInfo);
     when(modService.getFeaturedMod(any())).thenReturn(CompletableFuture.completedFuture(null));
@@ -201,7 +206,7 @@ public class ReplayServiceTest {
     LocalReplayInfo replayInfo = new LocalReplayInfo();
     replayInfo.setId(123);
     replayInfo.setSimMods(Collections.emptyMap());
-    replayInfo.setFeaturedMod(new FeaturedMod("sh", 1));
+    replayInfo.setFeaturedMod(new FeaturedMod(KnownFeaturedMod.DEFAULT.getTechnicalName(), 1));
     replayInfo.setMap(TEST_MAP_NAME);
 
     when(replayFileReader.parseMetaData(replayFile)).thenReturn(replayInfo);
@@ -209,7 +214,7 @@ public class ReplayServiceTest {
 
     instance.runReplay(replay);
 
-    verify(gameService).runWithReplay(any(), eq(123), eq("faf"), eq(3599), eq(emptySet()), eq(TEST_MAP_NAME));
+    verify(gameService).runWithReplay(any(), eq(123), eq(KnownFeaturedMod.DEFAULT.getTechnicalName()), eq(3599), eq(emptySet()), eq(TEST_MAP_NAME));
     verifyZeroInteractions(notificationService);
   }
 
@@ -278,7 +283,7 @@ public class ReplayServiceTest {
     instance.runReplay(replay);
 
     verify(taskService).submitTask(replayDownloadTask);
-    verify(gameService).runWithReplay(any(), eq(123), eq("faf"), eq(3599), eq(emptySet()), eq(TEST_MAP_NAME));
+    verify(gameService).runWithReplay(any(), eq(123), eq("sh"), eq(3599), eq(emptySet()), eq(TEST_MAP_NAME));
     verifyZeroInteractions(notificationService);
   }
 

@@ -1,38 +1,45 @@
 package com.faforever.client.leaderboard;
 
-import javafx.beans.property.FloatProperty;
 import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleFloatProperty;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import org.supcomhub.api.dto.Leaderboard;
 
 public class LeaderboardEntry {
 
-  private StringProperty username;
+  private StringProperty playerName;
+  private IntegerProperty rating;
+  private IntegerProperty totalGames;
+  private IntegerProperty wonGames;
+  private ObjectProperty<Leaderboard> leaderboard;
   private IntegerProperty position;
-  private IntegerProperty rank;
-  private IntegerProperty gamesPlayed;
-  private FloatProperty winLossRatio;
 
   public LeaderboardEntry() {
-    username = new SimpleStringProperty();
+    playerName = new SimpleStringProperty();
+    rating = new SimpleIntegerProperty();
+    totalGames = new SimpleIntegerProperty();
+    wonGames = new SimpleIntegerProperty();
+    leaderboard = new SimpleObjectProperty<>();
     position = new SimpleIntegerProperty();
-    rank = new SimpleIntegerProperty();
-    gamesPlayed = new SimpleIntegerProperty();
-    winLossRatio = new SimpleFloatProperty();
   }
 
-  public String getUsername() {
-    return username.get();
+  public float getWinLossRatio() {
+    return (float) getWonGames() / (float) getTotalGames();
   }
 
-  public void setUsername(String username) {
-    this.username.set(username);
+  public String getPlayerName() {
+    return playerName.get();
   }
 
-  public StringProperty usernameProperty() {
-    return username;
+  public void setPlayerName(String playerName) {
+    this.playerName.set(playerName);
+  }
+
+  public StringProperty playerNameProperty() {
+    return playerName;
   }
 
   public int getPosition() {
@@ -47,45 +54,45 @@ public class LeaderboardEntry {
     return position;
   }
 
-  public int getRank() {
-    return rank.get();
+  public int getRating() {
+    return rating.get();
   }
 
-  public void setRank(int rank) {
-    this.rank.set(rank);
+  public void setRating(int rating) {
+    this.rating.set(rating);
   }
 
-  public IntegerProperty rankProperty() {
-    return rank;
+  public IntegerProperty ratingProperty() {
+    return rating;
   }
 
-  public int getGamesPlayed() {
-    return gamesPlayed.get();
+  public int getTotalGames() {
+    return totalGames.get();
   }
 
-  public void setGamesPlayed(int gamesPlayed) {
-    this.gamesPlayed.set(gamesPlayed);
+  public void setTotalGames(int totalGames) {
+    this.totalGames.set(totalGames);
   }
 
-  public IntegerProperty gamesPlayedProperty() {
-    return gamesPlayed;
+  public IntegerProperty totalGamesProperty() {
+    return totalGames;
   }
 
-  public float getWinLossRatio() {
-    return winLossRatio.get();
+  public int getWonGames() {
+    return wonGames.get();
   }
 
-  public void setWinLossRatio(float winLossRatio) {
-    this.winLossRatio.set(winLossRatio);
+  public void setWonGames(int wonGames) {
+    this.wonGames.set(wonGames);
   }
 
-  public FloatProperty winLossRatioProperty() {
-    return winLossRatio;
+  public IntegerProperty wonGamesProperty() {
+    return wonGames;
   }
 
   @Override
   public int hashCode() {
-    return username.get() != null ? username.get().hashCode() : 0;
+    return playerName.get() != null ? playerName.get().hashCode() : 0;
   }
 
   @Override
@@ -99,14 +106,14 @@ public class LeaderboardEntry {
 
     LeaderboardEntry that = (LeaderboardEntry) o;
 
-    return !(username.get() != null ? !username.get().equalsIgnoreCase(that.username.get()) : that.username.get() != null);
+    return !(playerName.get() != null ? !playerName.get().equalsIgnoreCase(that.playerName.get()) : that.playerName.get() != null);
 
   }
 
   @Override
   public String toString() {
     return "Ranked1v1EntryBean{" +
-        "displayName=" + username.get() +
+      "displayName=" + playerName.get() +
         '}';
   }
 }

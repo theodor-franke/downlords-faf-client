@@ -6,7 +6,7 @@
 <?import javafx.scene.Group?>
 <?import javafx.scene.layout.VBox?>
 <VBox xmlns:fx="http://javafx.com/fxml/1" fx:id="playRoot" maxHeight="1.7976931348623157E308"
-      xmlns="http://javafx.com/javafx/8.0.60" fx:controller="client.play.PlayController">
+      xmlns="http://javafx.com/javafx/8.0.60" fx:controller="com.faforever.client.play.PlayController">
     <children>
         <TabPane fx:id="playRootTabPane" rotateGraphic="true" side="LEFT" tabClosingPolicy="UNAVAILABLE"
                  tabMaxHeight="200.0"

@@ -2,7 +2,6 @@ package com.faforever.client.api;
 
 import com.faforever.client.config.ClientProperties;
 import com.faforever.client.game.KnownFeaturedMod;
-import com.faforever.client.leaderboard.LeaderboardEntry;
 import com.google.common.eventbus.EventBus;
 import org.junit.Before;
 import org.junit.Rule;
@@ -17,11 +16,13 @@ import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.oauth2.client.OAuth2RestTemplate;
+import org.supcomhub.api.dto.Account;
 import org.supcomhub.api.dto.Achievement;
 import org.supcomhub.api.dto.Event;
 import org.supcomhub.api.dto.Game;
 import org.supcomhub.api.dto.GameParticipant;
 import org.supcomhub.api.dto.GameReview;
+import org.supcomhub.api.dto.LeaderboardEntry;
 import org.supcomhub.api.dto.MapVersion;
 import org.supcomhub.api.dto.MapVersionReview;
 import org.supcomhub.api.dto.ModVersion;
@@ -38,7 +39,6 @@ import java.util.Map;
 import java.util.function.Supplier;
 
 import static java.util.Collections.emptyList;
-import static java.util.Collections.emptyMap;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
@@ -171,28 +171,29 @@ public class FafApiAccessorImplTest {
   @SuppressWarnings("unchecked")
   public void testGetLeaderboard() {
     List<LeaderboardEntry> result = Arrays.asList(
-      LeaderboardEntryBeanBuilder.create().defaultValues().username("user1").get(),
-      LeaderboardEntryBeanBuilder.create().defaultValues().username("user2").get()
+      new LeaderboardEntry().setAccount(new Account().setDisplayName("user1")),
+      new LeaderboardEntry().setAccount(new Account().setDisplayName("user2"))
     );
 
-    ArgumentCaptor<Map<String, ?>> captor = ArgumentCaptor.forClass(Map.class);
-    when(restOperations.getForObject(any(), eq(List.class)))
+    when(restOperations.getForObject(
+      "/data/leaderboardEntry?filter=leaderboard.technicalName==\"ladder1v1\"&include=account.id,account.displayName&sort=-rank&page[size]=10000&page[number]=1",
+      List.class
+    ))
       .thenReturn(result)
       .thenReturn(emptyList());
 
     assertThat(instance.getLeaderboard("ladder1v1"), equalTo(result));
-
-    Map<String, ?> params = captor.getValue();
-    assertThat(params.get("sort"), is("-rating"));
-    assertThat(params.get("include"), is("account"));
   }
 
   @Test
   public void testGetLadder1v1EntryForPlayer() {
     LeaderboardEntry entry = new LeaderboardEntry();
-    when(restOperations.getForObject("/data/leaderboardEntry?filter=account.id==123", LeaderboardEntry.class, emptyMap())).thenReturn(entry);
+    when(restOperations.getForObject(
+      "/data/leaderboardEntry?filter=leaderboard.technicalName==\"ladder1v1\";account.id==\"123\"&include=account.id,account.displayName&page[size]=10000&page[number]=1",
+      List.class
+    )).thenReturn(Collections.singletonList(entry));
 
-    assertThat(instance.getLeaderboardEntry(123, "ladder1v1"), equalTo(entry));
+    assertThat(instance.getLeaderboardEntry(123, "ladder1v1").get(), equalTo(entry));
   }
 
   @Test

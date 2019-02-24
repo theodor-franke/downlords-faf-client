@@ -1,5 +1,6 @@
 package com.faforever.client.config;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
@@ -7,6 +8,7 @@ import java.time.Duration;
 
 @Data
 @ConfigurationProperties(prefix = "faf-client", ignoreUnknownFields = false)
+@JsonIgnoreProperties("trueSkill")
 public class ClientProperties {
 
   private String mainWindowTitle = "Downlord's FAF Client";
@@ -17,7 +19,6 @@ public class ClientProperties {
   private Vault vault = new Vault();
   private Replay replay = new Replay();
   private Imgur imgur = new Imgur();
-  private TrueSkill trueSkill = new TrueSkill();
   private Api api = new Api();
   private UnitDatabase unitDatabase = new UnitDatabase();
   private Website website = new Website();
@@ -96,19 +97,6 @@ public class ClientProperties {
       private String clientId;
       private int maxSize = 2097152;
     }
-  }
-
-  /**
-   * @deprecated load from server
-   */
-  @Data
-  @Deprecated
-  public static class TrueSkill {
-    private int initialStandardDeviation;
-    private int initialMean;
-    private int beta;
-    private float dynamicFactor;
-    private float drawProbability;
   }
 
   @Data

@@ -6,8 +6,11 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
 import java.time.OffsetDateTime;
 
@@ -24,6 +27,7 @@ public class Tournament {
   private final StringProperty liveImageUrl;
   private final StringProperty signUpUrl;
   private final BooleanProperty openForSignup;
+  private final ObjectProperty<Status> status;
 
   public Tournament() {
     id = new SimpleStringProperty();
@@ -38,6 +42,18 @@ public class Tournament {
     liveImageUrl = new SimpleStringProperty();
     signUpUrl = new SimpleStringProperty();
     openForSignup = new SimpleBooleanProperty();
+    status = new SimpleObjectProperty<>();
+    status.bind(Bindings.createObjectBinding(() -> {
+      if (getCompletedAt() != null) {
+        return Status.FINISHED;
+      } else if (getStartingAt() != null && getStartingAt().isBefore(OffsetDateTime.now())) {
+        return Status.RUNNING;
+      } else if (isOpenForSignup()) {
+        return Status.OPEN_FOR_REGISTRATION;
+      } else {
+        return Status.CLOSED_FOR_REGISTRATION;
+      }
+    }, startingAt, completedAt, openForSignup));
   }
 
   public static Tournament fromTournamentDto(org.supcomhub.api.dto.challonge.Tournament tournament) {
@@ -201,5 +217,25 @@ public class Tournament {
 
   public BooleanProperty openForSignupProperty() {
     return openForSignup;
+  }
+
+  public Status getStatus() {
+    return status.get();
+  }
+
+  public ObjectProperty<Status> statusProperty() {
+    return status;
+  }
+
+  @AllArgsConstructor
+  @Getter
+  public enum Status {
+    FINISHED("tournament.status.finished", 1),
+    RUNNING("tournament.status.running", 2),
+    OPEN_FOR_REGISTRATION("tournament.status.openForRegistration", 4),
+    CLOSED_FOR_REGISTRATION("tournament.status.closedForRegistration", 3);
+
+    private final String messageKey;
+    private final int sortOrderPriority;
   }
 }

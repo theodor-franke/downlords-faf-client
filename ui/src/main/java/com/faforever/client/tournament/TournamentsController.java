@@ -93,7 +93,11 @@ public class TournamentsController extends AbstractViewController<Node> {
 
     tournamentService.getAllTournaments()
         .thenAccept(tournaments -> Platform.runLater(() -> {
-          tournaments.sort(Comparator.comparing(Tournament::getCreatedAt));
+          tournaments.sort(
+            Comparator.<Tournament, Integer>comparing(o -> o.getStatus().getSortOrderPriority())
+              .thenComparing(Tournament::getCreatedAt)
+              .reversed()
+          );
           tournamentListView.getItems().setAll(tournaments);
           tournamentListView.getSelectionModel().selectFirst();
           onLoadingStop();

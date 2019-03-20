@@ -35,6 +35,8 @@ import javafx.stage.Stage;
 import lombok.SneakyThrows;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.DisposableBean;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.ApplicationContext;
@@ -44,8 +46,6 @@ import org.springframework.context.support.MessageSourceResourceBundle;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
@@ -72,8 +72,6 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.ThreadPoolExecutor;
 
-import static com.faforever.client.io.FileUtils.deleteRecursively;
-import static com.faforever.client.preferences.Preferences.DEFAULT_THEME_NAME;
 import static com.github.nocatch.NoCatch.noCatch;
 import static java.nio.file.StandardWatchEventKinds.ENTRY_CREATE;
 import static java.nio.file.StandardWatchEventKinds.ENTRY_DELETE;
@@ -82,7 +80,7 @@ import static java.nio.file.StandardWatchEventKinds.ENTRY_MODIFY;
 
 @Lazy
 @Service
-public class UiService {
+public class UiService implements InitializingBean, DisposableBean {
 
   public static final String UNKNOWN_MAP_IMAGE = "theme/images/unknown_map.png";
   //TODO: Create Images for News Categories
@@ -167,8 +165,8 @@ public class UiService {
     });
   }
 
-  @PostConstruct
-  void postConstruct() throws IOException {
+  @Override
+  public void afterPropertiesSet() throws IOException {
     resources = new MessageSourceResourceBundle(messageSource, i18n.getUserSpecificLocale());
     Path themesDirectory = preferencesService.getThemesDirectory();
     startWatchService(themesDirectory);
@@ -223,8 +221,8 @@ public class UiService {
     return Theme.fromProperties(properties);
   }
 
-  @PreDestroy
-  void preDestroy() throws IOException {
+  @Override
+  public void destroy() throws IOException {
     Closeables.close(watchService, true);
     deleteStylesheetsCacheDirectory();
   }

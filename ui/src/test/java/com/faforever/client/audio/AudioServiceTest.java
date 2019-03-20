@@ -12,10 +12,6 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 
 public class AudioServiceTest extends AbstractPlainJavaFxTest {
 
@@ -39,13 +35,13 @@ public class AudioServiceTest extends AbstractPlainJavaFxTest {
     Mockito.when(preferencesService.getPreferences()).thenReturn(preferences);
     Mockito.when(uiService.getThemeFileUrl(ArgumentMatchers.any())).thenReturn(getThemeFileUrl(UiService.MENTION_SOUND));
 
-    instance.postConstruct();
+    instance.afterPropertiesSet();
 
     super.start(stage);
   }
 
   @Test
-  public void testPlayChatMentionSound() throws Exception {
+  public void testPlayChatMentionSound() {
     notificationsPrefs.setSoundsEnabled(true);
     notificationsPrefs.setMentionSoundEnabled(true);
 
@@ -55,7 +51,7 @@ public class AudioServiceTest extends AbstractPlainJavaFxTest {
   }
 
   @Test
-  public void testPlayPrivateMessageSound() throws Exception {
+  public void testPlayPrivateMessageSound() {
     notificationsPrefs.setSoundsEnabled(true);
     notificationsPrefs.setPrivateMessageSoundEnabled(true);
 
@@ -65,7 +61,7 @@ public class AudioServiceTest extends AbstractPlainJavaFxTest {
   }
 
   @Test
-  public void testPlayInfoNotificationSound() throws Exception {
+  public void testPlayInfoNotificationSound() {
     notificationsPrefs.setSoundsEnabled(true);
     notificationsPrefs.setInfoSoundEnabled(true);
 
@@ -75,7 +71,7 @@ public class AudioServiceTest extends AbstractPlainJavaFxTest {
   }
 
   @Test
-  public void testPlayWarnNotificationSound() throws Exception {
+  public void testPlayWarnNotificationSound() {
     notificationsPrefs.setSoundsEnabled(true);
     notificationsPrefs.setWarnSoundEnabled(true);
 
@@ -85,7 +81,7 @@ public class AudioServiceTest extends AbstractPlainJavaFxTest {
   }
 
   @Test
-  public void testPlayErrorNotificationSound() throws Exception {
+  public void testPlayErrorNotificationSound() {
     notificationsPrefs.setSoundsEnabled(true);
     notificationsPrefs.setErrorSoundEnabled(true);
 

@@ -96,7 +96,7 @@ public class MapServiceTest extends AbstractPlainJavaFxTest {
       return task;
     }).when(taskService).submitTask(any());
 
-    instance.postConstruct();
+    instance.afterPropertiesSet();
   }
 
   @Test
@@ -109,7 +109,7 @@ public class MapServiceTest extends AbstractPlainJavaFxTest {
     Path scmp001 = Files.createDirectory(mapsDirectory.resolve("SCMP_001"));
     Files.copy(getClass().getResourceAsStream("/maps/SCMP_001/SCMP_001_scenario.lua"), scmp001.resolve("SCMP_001_scenario.lua"));
 
-    instance.postConstruct();
+    instance.afterPropertiesSet();
 
     ObservableList<FaMap> localFaMaps = instance.getInstalledMaps();
     assertThat(localFaMaps, hasSize(1));
@@ -157,7 +157,7 @@ public class MapServiceTest extends AbstractPlainJavaFxTest {
     Path scmp001 = Files.createDirectory(mapsDirectory.resolve("SCMP_001"));
     Files.copy(getClass().getResourceAsStream("/maps/SCMP_001/SCMP_001_scenario.lua"), scmp001.resolve("SCMP_001_scenario.lua"));
 
-    instance.postConstruct();
+    instance.afterPropertiesSet();
 
     assertTrue(instance.isInstalled("ScMp_001"));
   }

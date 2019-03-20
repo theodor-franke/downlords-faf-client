@@ -19,11 +19,11 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.MapChangeListener;
 import javafx.concurrent.Task;
 import javafx.scene.paint.Color;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -38,7 +38,7 @@ import java.util.function.Consumer;
 @Service
 @Profile(SpringProfiles.PROFILE_OFFLINE)
 // NOSONAR
-public class MockChatService implements ChatService {
+public class MockChatService implements ChatService, InitializingBean {
 
   private static final int CHAT_MESSAGE_INTERVAL = 5000;
   private static final long CONNECTION_DELAY = 1000;
@@ -67,8 +67,8 @@ public class MockChatService implements ChatService {
     this.eventBus = eventBus;
   }
 
-  @PostConstruct
-  void postConstruct() {
+  @Override
+  public void afterPropertiesSet() {
     eventBus.register(this);
   }
 
@@ -155,7 +155,7 @@ public class MockChatService implements ChatService {
   public void joinChannel(String channelName) {
     ConcurrentUtil.executeInBackground(new Task<Void>() {
       @Override
-      protected Void call() throws Exception {
+      protected Void call() {
         ChatChannelUser chatUser = new ChatChannelUser(userService.getDisplayName(), null, false);
         ChatChannelUser mockUser = new ChatChannelUser("MockUser", null, false);
         ChatChannelUser moderatorUser = new ChatChannelUser("MockModerator", null, true);

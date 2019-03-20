@@ -28,14 +28,14 @@ import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.DisposableBean;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.net.URL;
@@ -60,7 +60,7 @@ import static java.util.stream.Collectors.toCollection;
 
 @Lazy
 @Service
-public class MapService {
+public class MapService implements InitializingBean, DisposableBean {
 
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
@@ -116,8 +116,8 @@ public class MapService {
     return noCatch(() -> new URL(String.format(baseUrl, UrlEscapers.urlFragmentEscaper().escape(mapName).toLowerCase(Locale.US))));
   }
 
-  @PostConstruct
-  void postConstruct() {
+  @Override
+  public void afterPropertiesSet() {
     customMapsDirectory = preferencesService.getPreferences().getForgedAlliance().getCustomMapsDirectory();
     JavaFxUtil.addListener(preferencesService.getPreferences().getForgedAlliance().pathProperty(), observable -> tryLoadMaps());
     JavaFxUtil.addListener(preferencesService.getPreferences().getForgedAlliance().customMapsDirectoryProperty(), observable -> tryLoadMaps());
@@ -394,8 +394,8 @@ public class MapService {
     return fafService.unrankMapVersion(map);
   }
 
-  @PreDestroy
-  private void preDestroy() {
+  @Override
+  public void destroy() {
     Optional.ofNullable(directoryWatcherThread).ifPresent(Thread::interrupt);
   }
 

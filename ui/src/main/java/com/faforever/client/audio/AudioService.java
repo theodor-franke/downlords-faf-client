@@ -5,15 +5,15 @@ import com.faforever.client.preferences.NotificationsPrefs;
 import com.faforever.client.preferences.PreferencesService;
 import com.faforever.client.theme.UiService;
 import javafx.scene.media.AudioClip;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
 import java.io.IOException;
 
 @Lazy
 @Service
-public class AudioService {
+public class AudioService implements InitializingBean {
 
   private static final String ACHIEVEMENT_UNLOCKED_SOUND = "theme/sounds/achievement_unlocked.mp3";
   private static final String INFO_SOUND = "theme/sounds/info.mp3";
@@ -45,8 +45,8 @@ public class AudioService {
     this.uiService = uiService;
   }
 
-  @PostConstruct
-  void postConstruct() throws IOException {
+  @Override
+  public void afterPropertiesSet() throws IOException {
     notificationsPrefs = preferencesService.getPreferences().getNotification();
     JavaFxUtil.addListener(notificationsPrefs.soundsEnabledProperty(), (observable, oldValue, newValue) ->
         playSounds = newValue
@@ -70,7 +70,7 @@ public class AudioService {
 //    friendPlaysGameSound = loadSound(FRIEND_PLAYS_GAME_SOUND);
   }
 
-  private AudioClip loadSound(String sound) throws IOException {
+  private AudioClip loadSound(String sound) {
     return new AudioClip(uiService.getThemeFileUrl(sound).toString());
   }
 

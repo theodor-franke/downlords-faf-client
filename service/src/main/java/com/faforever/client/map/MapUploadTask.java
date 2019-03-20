@@ -11,11 +11,11 @@ import com.faforever.commons.io.Bytes;
 import com.faforever.commons.io.Zipper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
 import java.io.BufferedOutputStream;
 import java.lang.invoke.MethodHandles;
 import java.nio.file.Files;
@@ -28,7 +28,7 @@ import static java.nio.file.Files.newOutputStream;
 
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-public class MapUploadTask extends CompletableTask<Void> {
+public class MapUploadTask extends CompletableTask<Void> implements InitializingBean {
 
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
@@ -47,8 +47,8 @@ public class MapUploadTask extends CompletableTask<Void> {
     this.i18n = i18n;
   }
 
-  @PostConstruct
-  void postConstruct() {
+  @Override
+  public void afterPropertiesSet() {
     updateTitle(i18n.get("mapVault.upload.uploading"));
   }
 

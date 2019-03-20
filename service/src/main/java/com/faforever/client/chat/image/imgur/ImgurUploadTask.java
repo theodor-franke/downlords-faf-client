@@ -10,11 +10,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.io.BaseEncoding;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.Image;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
@@ -32,7 +32,7 @@ import static com.faforever.commons.io.Bytes.formatSize;
 
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-public class ImgurUploadTask extends CompletableTask<String> {
+public class ImgurUploadTask extends CompletableTask<String> implements InitializingBean {
 
   private final I18n i18n;
   private final ClientProperties clientProperties;
@@ -51,8 +51,8 @@ public class ImgurUploadTask extends CompletableTask<String> {
     this.objectMapper = objectMapper;
   }
 
-  @PostConstruct
-  void postConstruct() {
+  @Override
+  public void afterPropertiesSet() {
     updateTitle(i18n.get("chat.imageUploadTask.title"));
     Upload uploadProperties = clientProperties.getImgur().getUpload();
     maxUploadSize = uploadProperties.getMaxSize();
@@ -72,7 +72,7 @@ public class ImgurUploadTask extends CompletableTask<String> {
     }
 
     String dataImage = BaseEncoding.base64().encode(byteArrayOutputStream.toByteArray());
-    String data = URLEncoder.encode("image", "UTF-8") + "=" + URLEncoder.encode(dataImage, "UTF-8");
+    String data = URLEncoder.encode("image", StandardCharsets.UTF_8) + "=" + URLEncoder.encode(dataImage, StandardCharsets.UTF_8);
 
     URL url = new URL(baseUrl);
     HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();

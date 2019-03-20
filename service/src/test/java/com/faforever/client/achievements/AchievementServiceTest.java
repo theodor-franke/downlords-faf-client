@@ -51,11 +51,11 @@ public class AchievementServiceTest {
     player.setId(PLAYER_ID);
     Mockito.when(playerService.getCurrentPlayer()).thenReturn(Optional.of(player));
 
-    instance.postConstruct();
+    instance.afterPropertiesSet();
   }
 
   @Test
-  public void testGetPlayerAchievementsForCurrentUser() throws Exception {
+  public void testGetPlayerAchievementsForCurrentUser() {
     instance.playerAchievements.add(new PlayerAchievement());
     instance.getPlayerAchievements(PLAYER_ID);
     Mockito.verify(fafService).addOnMessageListener(ArgumentMatchers.any(), ArgumentMatchers.any());
@@ -75,7 +75,7 @@ public class AchievementServiceTest {
   }
 
   @Test
-  public void testGetAchievements() throws Exception {
+  public void testGetAchievements() {
     instance.getAchievements();
     Mockito.verify(fafService).getAchievements();
   }

@@ -55,7 +55,7 @@ public class FriendJoinedGameNotifierTest {
     when(preferencesService.getPreferences()).thenReturn(preferences);
     when(preferences.getNotification()).thenReturn(notification);
 
-    instance.postConstruct();
+    instance.afterPropertiesSet();
     verify(eventBus).register(instance);
   }
 
@@ -66,7 +66,7 @@ public class FriendJoinedGameNotifierTest {
   }
 
   @Test
-  public void onFriendJoinedGame() throws Exception {
+  public void onFriendJoinedGame() {
     Game game = new Game().setTitle("My Game");
     Player player = new Player("junit");
     player.setGame(game);
@@ -88,7 +88,7 @@ public class FriendJoinedGameNotifierTest {
   }
 
   @Test
-  public void testNoNotificationIfDisabledInPreferences() throws Exception {
+  public void testNoNotificationIfDisabledInPreferences() {
     when(notification.isFriendJoinsGameToastEnabled()).thenReturn(false);
 
     instance.onFriendJoinedGame(new FriendJoinedGameEvent(new Player("junit"), new Game()));

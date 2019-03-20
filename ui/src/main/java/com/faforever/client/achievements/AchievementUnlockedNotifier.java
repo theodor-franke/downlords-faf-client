@@ -9,15 +9,15 @@ import com.faforever.client.remote.UpdatedAchievement;
 import com.faforever.client.remote.UpdatedAchievementsServerMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
 import java.lang.invoke.MethodHandles;
 
 @Lazy
 @Component
-public class AchievementUnlockedNotifier {
+public class AchievementUnlockedNotifier implements InitializingBean {
 
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
@@ -40,8 +40,8 @@ public class AchievementUnlockedNotifier {
     this.audioService = audioService;
   }
 
-  @PostConstruct
-  void postConstruct() {
+  @Override
+  public void afterPropertiesSet() {
     fafService.addOnMessageListener(UpdatedAchievementsServerMessage.class, this::onUpdatedAchievementsMessage);
   }
 

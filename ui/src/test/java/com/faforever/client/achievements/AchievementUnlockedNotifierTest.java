@@ -49,13 +49,13 @@ public class AchievementUnlockedNotifierTest {
     MockitoAnnotations.initMocks(this);
 
     instance = new AchievementUnlockedNotifier(notificationService, i18n, achievementService, achievementImageService, fafService, audioService);
-    instance.postConstruct();
+    instance.afterPropertiesSet();
 
     Mockito.verify(fafService).addOnMessageListener(ArgumentMatchers.eq(UpdatedAchievementsServerMessage.class), listenerCaptor.capture());
   }
 
   @Test
-  public void newlyUnlocked() throws Exception {
+  public void newlyUnlocked() {
     Achievement achievement = new Achievement();
     achievement.setType(AchievementType.STANDARD);
     achievement.setName("Test Achievement");

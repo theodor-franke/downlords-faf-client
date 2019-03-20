@@ -7,15 +7,15 @@ import com.faforever.client.notification.TransientNotification;
 import com.faforever.client.util.IdenticonUtil;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
 
 /**
  * Displays a notification whenever a friend goes offline (if enabled in settings).
  */
 @Component
-public class FriendOfflineNotifier {
+public class FriendOfflineNotifier implements InitializingBean {
 
   private final NotificationService notificationService;
   private final I18n i18n;
@@ -33,8 +33,8 @@ public class FriendOfflineNotifier {
     this.playerService = playerService;
   }
 
-  @PostConstruct
-  void postConstruct() {
+  @Override
+  public void afterPropertiesSet() {
     eventBus.register(this);
   }
 

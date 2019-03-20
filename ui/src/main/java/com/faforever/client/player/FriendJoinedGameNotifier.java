@@ -10,15 +10,15 @@ import com.faforever.client.preferences.PreferencesService;
 import com.faforever.client.util.IdenticonUtil;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
 
 /**
  * Displays a notification whenever a friend joins a preferences (if enabled in settings).
  */
 @Component
-public class FriendJoinedGameNotifier {
+public class FriendJoinedGameNotifier implements InitializingBean {
 
   private final NotificationService notificationService;
   private final I18n i18n;
@@ -39,8 +39,8 @@ public class FriendJoinedGameNotifier {
     this.audioService = audioService;
   }
 
-  @PostConstruct
-  void postConstruct() {
+  @Override
+  public void afterPropertiesSet() {
     eventBus.register(this);
   }
 

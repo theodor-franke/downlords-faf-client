@@ -6,10 +6,10 @@ import com.faforever.client.remote.UpdatedAchievementsServerMessage;
 import com.google.common.annotations.VisibleForTesting;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
@@ -17,7 +17,7 @@ import java.util.concurrent.CompletableFuture;
 
 @Lazy
 @Service
-public class AchievementService {
+public class AchievementService implements InitializingBean {
 
   @VisibleForTesting
   final ObservableList<PlayerAchievement> playerAchievements;
@@ -67,8 +67,8 @@ public class AchievementService {
     return achievementsLoadedFuture;
   }
 
-  @PostConstruct
-  void postConstruct() {
+  @Override
+  public void afterPropertiesSet() {
     fafService.addOnMessageListener(UpdatedAchievementsServerMessage.class, updatedAchievementsMessage -> reloadAchievements());
   }
 }

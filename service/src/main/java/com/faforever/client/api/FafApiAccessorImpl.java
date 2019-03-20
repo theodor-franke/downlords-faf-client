@@ -20,6 +20,7 @@ import com.google.common.eventbus.Subscribe;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.Profile;
@@ -62,7 +63,6 @@ import org.supcomhub.api.dto.PlayerAchievement;
 import org.supcomhub.api.dto.PlayerEvent;
 import org.supcomhub.api.dto.challonge.Tournament;
 
-import javax.annotation.PostConstruct;
 import java.io.Serializable;
 import java.nio.file.Path;
 import java.util.Arrays;
@@ -79,7 +79,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @Component
 @Profile("!" + SpringProfiles.PROFILE_OFFLINE)
-public class FafApiAccessorImpl implements FafApiAccessor {
+public class FafApiAccessorImpl implements FafApiAccessor, InitializingBean {
 
   private static final String MAP_ENDPOINT = "/data/map";
   private static final String TOURNAMENT_LIST_ENDPOINT = "/challonge/v1/tournaments.json";
@@ -120,8 +120,8 @@ public class FafApiAccessorImpl implements FafApiAccessor {
     return new QBuilder<>();
   }
 
-  @PostConstruct
-  void postConstruct() {
+  @Override
+  public void afterPropertiesSet() {
     eventBus.register(this);
   }
 

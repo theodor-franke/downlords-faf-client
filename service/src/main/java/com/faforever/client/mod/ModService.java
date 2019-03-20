@@ -29,6 +29,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.DisposableBean;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Lazy;
@@ -36,8 +38,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.invoke.MethodHandles;
@@ -71,7 +71,7 @@ import static java.util.concurrent.CompletableFuture.completedFuture;
 
 @Lazy
 @Service
-public class ModService {
+public class ModService implements InitializingBean, DisposableBean {
 
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
@@ -116,8 +116,8 @@ public class ModService {
     this.platformService = platformService;
   }
 
-  @PostConstruct
-  void postConstruct() {
+  @Override
+  public void afterPropertiesSet() {
     modsDirectory = preferencesService.getPreferences().getForgedAlliance().getModsDirectory();
     JavaFxUtil.addListener(preferencesService.getPreferences().getForgedAlliance().modsDirectoryProperty(), (observable, oldValue, newValue) -> {
       if (newValue != null) {
@@ -448,8 +448,8 @@ public class ModService {
     }
   }
 
-  @PreDestroy
-  private void preDestroy() {
+  @Override
+  public void destroy() {
     Optional.ofNullable(directoryWatcherThread).ifPresent(Thread::interrupt);
   }
 }

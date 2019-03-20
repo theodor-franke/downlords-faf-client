@@ -12,17 +12,17 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
 import java.lang.invoke.MethodHandles;
 import java.util.concurrent.CompletableFuture;
 
 @Lazy
 @Service
-public class UserService {
+public class UserService implements InitializingBean {
 
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
   private final StringProperty displayName;
@@ -128,8 +128,8 @@ public class UserService {
     return taskService.submitTask(changePasswordTask);
   }
 
-  @PostConstruct
-  void postConstruct() {
+  @Override
+  public void afterPropertiesSet() {
     fafService.addOnMessageListener(AccountDetailsServerMessage.class, loginInfo -> userId = loginInfo.getId());
     fafService.addOnMessageListener(ErrorServerMessage.class, this::onLoginError);
     eventBus.register(this);

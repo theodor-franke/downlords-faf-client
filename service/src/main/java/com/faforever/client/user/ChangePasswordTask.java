@@ -5,17 +5,16 @@ import com.faforever.client.i18n.I18n;
 import com.faforever.client.task.CompletableTask;
 import com.faforever.client.util.Validator;
 import com.google.common.hash.Hashing;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-
-import javax.annotation.PostConstruct;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-public class ChangePasswordTask extends CompletableTask<Void> {
+public class ChangePasswordTask extends CompletableTask<Void> implements InitializingBean {
 
   private final FafApiAccessor fafApiAccessor;
   private final I18n i18n;
@@ -31,8 +30,8 @@ public class ChangePasswordTask extends CompletableTask<Void> {
     this.i18n = i18n;
   }
 
-  @PostConstruct
-  void postConstruct() {
+  @Override
+  public void afterPropertiesSet() {
     updateTitle(i18n.get("settings.account.changePassword.changing"));
   }
 

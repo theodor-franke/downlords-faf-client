@@ -80,7 +80,7 @@ public class FafApiAccessorImplTest {
     when(restTemplateBuilder.configure(any(OAuth2RestTemplate.class))).thenReturn(restOperations);
 
     instance = new FafApiAccessorImpl(eventBus, restTemplateBuilder, new ClientProperties(), jsonApiMessageConverter, jsonApiErrorHandler);
-    instance.postConstruct();
+    instance.afterPropertiesSet();
     instance.authorize(123, "junit", "42");
   }
 

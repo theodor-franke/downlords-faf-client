@@ -59,6 +59,7 @@ public class SpecificationController implements Controller<Node> {
 
   private static final Map<ComparisonOperator, String> operatorToI18nKey = ImmutableMap.<ComparisonOperator, String>builder()
       .put(ComparisonOperator.RE, "query.contains")
+      .put(ComparisonOperator.EX, "query.notContains")
       .put(ComparisonOperator.EQ, "query.equals")
       .put(ComparisonOperator.NE, "query.notEquals")
       .put(ComparisonOperator.GT, "query.greaterThan")
@@ -73,7 +74,7 @@ public class SpecificationController implements Controller<Node> {
       ImmutableMap.<Class<?>, Collection<ComparisonOperator>>builder()
           .put(Number.class, Arrays.asList(ComparisonOperator.EQ, ComparisonOperator.NE, ComparisonOperator.GT, ComparisonOperator.GTE, ComparisonOperator.LT, ComparisonOperator.LTE, ComparisonOperator.IN, ComparisonOperator.NIN))
           .put(Temporal.class, Arrays.asList(ComparisonOperator.EQ, ComparisonOperator.NE, ComparisonOperator.GT, ComparisonOperator.GTE, ComparisonOperator.LT, ComparisonOperator.LTE))
-          .put(String.class, Arrays.asList(ComparisonOperator.EQ, ComparisonOperator.NE, ComparisonOperator.IN, ComparisonOperator.NIN, ComparisonOperator.RE))
+          .put(String.class, Arrays.asList(ComparisonOperator.EQ, ComparisonOperator.NE, ComparisonOperator.IN, ComparisonOperator.NIN, ComparisonOperator.RE, ComparisonOperator.EX))
           .put(Boolean.class, Arrays.asList(ComparisonOperator.EQ, ComparisonOperator.NE))
           .put(Enum.class, Arrays.asList(ComparisonOperator.EQ, ComparisonOperator.NE, ComparisonOperator.IN, ComparisonOperator.NIN))
           .put(ComparableVersion.class, Arrays.asList(ComparisonOperator.EQ, ComparisonOperator.NE, ComparisonOperator.GT, ComparisonOperator.GTE, ComparisonOperator.LT, ComparisonOperator.LTE, ComparisonOperator.IN, ComparisonOperator.NIN))
@@ -329,6 +330,9 @@ public class SpecificationController implements Controller<Node> {
     }
     if (comparisonOperator == ComparisonOperator.RE) {
       return prop.eq("*" + value + "*");
+    }
+    if (comparisonOperator == ComparisonOperator.EX) {
+      return prop.ne("*" + value + "*");
     }
     throw new ProgrammingError("Operator '" + comparisonOperator + "' should not have been allowed for type: " + propertyClass);
   }

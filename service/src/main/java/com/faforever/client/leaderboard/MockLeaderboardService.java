@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 
@@ -33,8 +34,10 @@ public class MockLeaderboardService implements LeaderboardService {
   }
 
   @Override
-  public CompletableFuture<LeaderboardEntry> getEntryForPlayer(int playerId, String leaderboardName) {
-    return CompletableFuture.completedFuture(createLeaderboardEntry("Player #" + playerId, 111, 222, 333, 192));
+  public CompletableFuture<Optional<LeaderboardEntry>> getEntryForPlayer(int playerId, String leaderboardName) {
+    return CompletableFuture.completedFuture(
+      Optional.of(createLeaderboardEntry("Player #" + playerId, 111, 222, 333, 192))
+    );
   }
 
   @Override

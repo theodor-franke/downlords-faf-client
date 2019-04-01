@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -47,7 +48,7 @@ public class LeaderboardServiceImpl implements LeaderboardService {
   }
 
   @Override
-  public CompletableFuture<LeaderboardEntry> getEntryForPlayer(int playerId, String leaderboardName) {
+  public CompletableFuture<Optional<LeaderboardEntry>> getEntryForPlayer(int playerId, String leaderboardName) {
     return fafService.getLeaderboardEntryForPlayer(playerId, leaderboardName);
   }
 

@@ -12,6 +12,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -114,10 +115,13 @@ public class LeaderboardServiceImplTest {
   @Test
   public void testGetEntryForPlayer() throws Exception {
     LeaderboardEntry entry = new LeaderboardEntry();
-    when(fafService.getLeaderboardEntryForPlayer(PLAYER_ID, LEADERBOARD_NAME)).thenReturn(CompletableFuture.completedFuture(entry));
+    when(fafService.getLeaderboardEntryForPlayer(PLAYER_ID, LEADERBOARD_NAME))
+      .thenReturn(CompletableFuture.completedFuture(Optional.of(entry)));
 
-    LeaderboardEntry result = instance.getEntryForPlayer(PLAYER_ID, LEADERBOARD_NAME).toCompletableFuture().get(2, TimeUnit.SECONDS);
+    Optional<LeaderboardEntry> result = instance.getEntryForPlayer(PLAYER_ID, LEADERBOARD_NAME).toCompletableFuture().get(2, TimeUnit.SECONDS);
     verify(fafService).getLeaderboardEntryForPlayer(PLAYER_ID, LEADERBOARD_NAME);
-    assertThat(result, is(entry));
+
+    //noinspection OptionalGetWithoutIsPresent
+    assertThat(result.get(), is(entry));
   }
 }

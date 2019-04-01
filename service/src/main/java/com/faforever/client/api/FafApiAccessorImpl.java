@@ -185,7 +185,7 @@ public class FafApiAccessorImpl implements FafApiAccessor, InitializingBean {
       "filter", rsql(qBuilder()
         .string("leaderboard.technicalName").eq(leaderboardName)
       ),
-      "sort", "-rank",
+      "sort", "-rating",
       "include", "account.id,account.displayName"
     ));
   }

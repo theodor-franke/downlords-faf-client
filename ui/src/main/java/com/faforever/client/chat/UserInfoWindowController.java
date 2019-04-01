@@ -13,6 +13,7 @@ import com.faforever.client.fx.Controller;
 import com.faforever.client.fx.OffsetDateTimeCell;
 import com.faforever.client.game.KnownFeaturedMod;
 import com.faforever.client.i18n.I18n;
+import com.faforever.client.leaderboard.LeaderboardEntry;
 import com.faforever.client.leaderboard.LeaderboardService;
 import com.faforever.client.notification.NotificationService;
 import com.faforever.client.player.NameRecord;
@@ -328,14 +329,18 @@ public class UserInfoWindowController implements Controller<Node> {
 
   private void plotGamesPlayedChart() {
     // FIXME plot leaderboard dynamically
-    leaderboardService.getEntryForPlayer(player.getId(), "ladder1v1").thenAccept(leaderboardEntryBean -> Platform.runLater(() -> {
-      int ladderGamesCount = leaderboardEntryBean.getTotalGames();
-      int custonGamesCount = player.getNumberOfGames();
+    leaderboardService.getEntryForPlayer(player.getId(), "ladder1v1").thenAccept(entry -> {
+      LeaderboardEntry leaderboardEntry = entry.orElseGet(() -> {
+        LeaderboardEntry fallback = new LeaderboardEntry();
+        fallback.setPlayerName(player.getDisplayName());
+        return fallback;
+      });
+
       Platform.runLater(() -> gamesPlayedChart.setData(FXCollections.observableArrayList(
-        new PieChart.Data(i18n.get("stats.custom"), custonGamesCount),
-        new PieChart.Data(i18n.get("stats.ranked1v1"), ladderGamesCount)
+        new PieChart.Data(i18n.get("stats.custom"), player.getNumberOfGames()),
+        new PieChart.Data(i18n.get("stats.ranked1v1"), leaderboardEntry.getTotalGames())
       )));
-    })).exceptionally(throwable -> {
+    }).exceptionally(throwable -> {
       log.warn("Leaderboard entry could not be read for player: {}", player.getDisplayName(), throwable);
       return null;
     });

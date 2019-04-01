@@ -58,7 +58,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -145,10 +144,9 @@ public class FafService {
   }
 
   @Async
-  public CompletableFuture<LeaderboardEntry> getLeaderboardEntryForPlayer(int playerId, String leaderboardName) {
+  public CompletableFuture<Optional<LeaderboardEntry>> getLeaderboardEntryForPlayer(int playerId, String leaderboardName) {
     return CompletableFuture.completedFuture(fafApiAccessor.getLeaderboardEntry(playerId, leaderboardName)
       .map(apiDtoMapper::map)
-      .orElse(null)
     );
   }
 

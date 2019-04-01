@@ -88,7 +88,8 @@ public class Ladder1V1ControllerTest extends AbstractPlainJavaFxTest {
     leaderboardEntry.setPlayerName(USERNAME);
 
     when(leaderboardService.getLeaderboardStats(KnownFeaturedMod.LADDER_1V1.getTechnicalName())).thenReturn(CompletableFuture.completedFuture(new ArrayList<>()));
-    when(leaderboardService.getEntryForPlayer(PLAYER_ID, KnownFeaturedMod.LADDER_1V1.getTechnicalName())).thenReturn(CompletableFuture.completedFuture(leaderboardEntry));
+    when(leaderboardService.getEntryForPlayer(PLAYER_ID, KnownFeaturedMod.LADDER_1V1.getTechnicalName()))
+      .thenReturn(CompletableFuture.completedFuture(Optional.of(leaderboardEntry)));
     when(gameService.searching1v1Property()).thenReturn(searching1v1Property);
     when(preferencesService.getPreferences()).thenReturn(preferences);
     when(preferences.getLadder1v1()).thenReturn(ladder1V1Prefs);

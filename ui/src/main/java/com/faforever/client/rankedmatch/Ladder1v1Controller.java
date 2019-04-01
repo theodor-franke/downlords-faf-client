@@ -6,6 +6,7 @@ import com.faforever.client.game.Faction;
 import com.faforever.client.game.GameService;
 import com.faforever.client.game.KnownFeaturedMod;
 import com.faforever.client.i18n.I18n;
+import com.faforever.client.leaderboard.LeaderboardEntry;
 import com.faforever.client.leaderboard.LeaderboardService;
 import com.faforever.client.leaderboard.RatingStat;
 import com.faforever.client.map.ShowLadderMapsEvent;
@@ -46,6 +47,7 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Random;
 import java.util.stream.Collectors;
 
@@ -243,11 +245,18 @@ public class Ladder1v1Controller extends AbstractViewController<Node> {
   }
 
   private void updateOtherValues(Player currentPlayer) {
-    leaderboardService.getEntryForPlayer(currentPlayer.getId(), KnownFeaturedMod.LADDER_1V1.getTechnicalName()).thenAccept(leaderboardEntryBean -> Platform.runLater(() -> {
-      rankingLabel.setText(i18n.get("ranked1v1.rankingFormat", leaderboardEntryBean.getPosition()));
-      gamesPlayedLabel.setText(String.format("%d", leaderboardEntryBean.getTotalGames()));
-      winLossRationLabel.setText(i18n.get("percentage", leaderboardEntryBean.getWinLossRatio() * 100));
-    })).exceptionally(throwable -> {
+    leaderboardService.getEntryForPlayer(currentPlayer.getId(), KnownFeaturedMod.LADDER_1V1.getTechnicalName()).thenAccept(entry -> {
+      LeaderboardEntry leaderboardEntry = entry.orElseGet(() -> {
+        LeaderboardEntry fallback = new LeaderboardEntry();
+        fallback.setPlayerName(currentPlayer.getDisplayName());
+        return fallback;
+      });
+      Platform.runLater(() -> {
+        rankingLabel.setText(i18n.get("ranked1v1.rankingFormat", leaderboardEntry.getPosition()));
+        gamesPlayedLabel.setText(String.format("%d", leaderboardEntry.getTotalGames()));
+        winLossRationLabel.setText(i18n.get("percentage", leaderboardEntry.getWinLossRatio() * 100));
+      });
+    }).exceptionally(throwable -> {
       // Debug instead of warn, since it's fairly common that players don't have a leaderboard entry which causes a 404
       logger.debug("Leaderboard entry could not be read for current player: " + currentPlayer.getDisplayName(), throwable);
       return null;
@@ -272,7 +281,8 @@ public class Ladder1v1Controller extends AbstractViewController<Node> {
   private void plotRatingDistributions(List<RatingStat> ratingStats, Player player) {
     XYChart.Series<String, Integer> series = new XYChart.Series<>();
     series.setName(i18n.get("ranked1v1.players", LeaderboardService.MINIMUM_GAMES_PLAYED_TO_BE_SHOWN));
-    int currentPlayerRank = player.getRating().get(KnownFeaturedMod.LADDER_1V1.getTechnicalName());
+    int currentPlayerRank = Optional.ofNullable(player.getRating().get(KnownFeaturedMod.LADDER_1V1.getTechnicalName()))
+      .orElse(0);
 
     series.getData().addAll(ratingStats.stream()
       .sorted(Comparator.comparingInt(RatingStat::getRating))

@@ -19,6 +19,10 @@ public class Ladder1v1Prefs {
     return factions.get();
   }
 
+  public void setFactions(ObservableList<Faction> factions) {
+    this.factions.set(factions);
+  }
+
   public ListProperty<Faction> factionsProperty() {
     return factions;
   }

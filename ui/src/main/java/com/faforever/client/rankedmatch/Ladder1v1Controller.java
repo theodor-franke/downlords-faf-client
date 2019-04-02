@@ -161,7 +161,6 @@ public class Ladder1v1Controller extends AbstractViewController<Node> {
 
   public void onCancelButtonClicked() {
     gameService.stopSearchLadder1v1();
-    setSearching(false);
   }
 
   @Override

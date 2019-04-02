@@ -3,19 +3,19 @@ sh-client:
     web-socket-url: wss://server.supcomhub.org/ws
 
   irc:
-    host: irc.faforever.com
+    host: irc.supcomhub.org
 
   vault:
-    base-url: http://content.faforever.com
+    base-url: http://content.supcomhub.org
 
   news:
     feed-url: http://direct.faforever.com/news/feed
 
   replay:
-    remote-host: lobby.faforever.com
+    remote-host: lobby.supcomhub.org
 
   website:
-    base-url: https://www.faforever.com
+    base-url: https://www.supcomhub.org
 
   api:
     base-url: https://api.supcomhub.org
@@ -23,6 +23,6 @@ sh-client:
     client-secret: 2ef8d9c2-6b74-4195-95f8-09dba7640716
 
   forged-alliance:
-    exe-url: http://content.faforever.com/faf/updaterNew/updates_faf_files/ForgedAlliance.exe
+    exe-url: http://content.supcomhub.org/faf/updaterNew/updates_faf_files/ForgedAlliance.exe
 
   use-remote-preferences: true

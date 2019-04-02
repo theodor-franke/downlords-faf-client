@@ -34,9 +34,14 @@ import org.springframework.integration.websocket.ClientWebSocketContainer;
 import org.springframework.integration.websocket.inbound.WebSocketInboundChannelAdapter;
 import org.springframework.integration.websocket.outbound.WebSocketOutboundMessageHandler;
 import org.springframework.integration.websocket.support.PassThruSubProtocolHandler;
+import org.springframework.integration.websocket.support.SubProtocolHandlerRegistry;
+import org.springframework.messaging.MessageChannel;
 import org.springframework.stereotype.Component;
+import org.springframework.web.socket.CloseStatus;
+import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -75,7 +80,7 @@ public class V2ServerAccessor implements FafServerAccessor {
     this.integrationFlowContext = integrationFlowContext;
     this.v2ServerMessageTransformer = v2ServerMessageTransformer;
 
-    connectionState = new SimpleObjectProperty<>();
+    connectionState = new SimpleObjectProperty<>(ConnectionState.DISCONNECTED);
     messageListeners = new HashMap<>();
     loginFuture = Optional.empty();
 
@@ -130,6 +135,7 @@ public class V2ServerAccessor implements FafServerAccessor {
   @Override
   public CompletableFuture<AccountDetailsServerMessage> connectAndLogIn(String username, String password) {
     disconnect();
+    connectionState.setValue(ConnectionState.CONNECTING);
 
     String webSocketUrl = properties.getServer().getWebSocketUrl();
     webSocketClient = new StandardWebSocketClient();
@@ -139,11 +145,15 @@ public class V2ServerAccessor implements FafServerAccessor {
     webSocketContainer = new ClientWebSocketContainer(webSocketClient, webSocketUrl);
     webSocketContainer.addSupportedProtocols(Protocol.V2_JSON_UTF_8.name());
 
-    WebSocketInboundChannelAdapter webSocketInboundChannelAdapter = new WebSocketInboundChannelAdapter(webSocketContainer);
+    SubProtocolHandlerRegistry protocolRegistry = new SubProtocolHandlerRegistry(Arrays.asList(
+      new ShSubProtocolHandler()
+    ));
+    WebSocketInboundChannelAdapter webSocketInboundChannelAdapter = new WebSocketInboundChannelAdapter(
+      webSocketContainer, protocolRegistry
+    );
     inboundFlowId = integrationFlowContext.registration(createInboundFlow(webSocketInboundChannelAdapter, v2ServerMessageTransformer))
       .register()
       .getId();
-
 
     WebSocketOutboundMessageHandler webSocketOutboundMessageHandler = new WebSocketOutboundMessageHandler(webSocketContainer);
     outboundFlowId = integrationFlowContext.registration(createOutboundFlow(webSocketOutboundMessageHandler, v2ServerMessageTransformer))
@@ -191,6 +201,7 @@ public class V2ServerAccessor implements FafServerAccessor {
   @Override
   public void reconnect() {
     // FIXME implement
+    throw new UnsupportedOperationException("Not yet implemented");
   }
 
   @Override
@@ -210,7 +221,7 @@ public class V2ServerAccessor implements FafServerAccessor {
 
   @Override
   public void stopSearchingRanked() {
-
+    throw new UnsupportedOperationException("Not yet implemented");
   }
 
   @Override
@@ -249,10 +260,21 @@ public class V2ServerAccessor implements FafServerAccessor {
   }
 
 
-  private static class ShSubProtocolHandler extends PassThruSubProtocolHandler {
+  private class ShSubProtocolHandler extends PassThruSubProtocolHandler {
     private ShSubProtocolHandler() {
       setSupportedProtocols(Protocol.V2_JSON_UTF_8.name());
     }
-  }
 
+    @Override
+    public void afterSessionStarted(WebSocketSession session, MessageChannel outputChannel) throws Exception {
+      super.afterSessionStarted(session, outputChannel);
+      connectionState.setValue(ConnectionState.CONNECTED);
+    }
+
+    @Override
+    public void afterSessionEnded(WebSocketSession session, CloseStatus closeStatus, MessageChannel outputChannel) throws Exception {
+      super.afterSessionEnded(session, closeStatus, outputChannel);
+      connectionState.setValue(ConnectionState.DISCONNECTED);
+    }
+  }
 }

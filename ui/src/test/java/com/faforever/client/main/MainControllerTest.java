@@ -185,7 +185,7 @@ public class MainControllerTest extends AbstractPlainJavaFxTest {
   }
 
   private void fakeLogin() throws InterruptedException {
-    instance.onLoginSuccessEvent(new LoginSuccessEvent("junit", "", 1));
+    instance.onLoginSuccessEvent(new LoginSuccessEvent("junit", "", "", 1));
     WaitForAsyncUtils.waitForFxEvents();
   }
 

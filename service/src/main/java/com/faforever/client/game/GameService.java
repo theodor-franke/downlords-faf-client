@@ -380,6 +380,7 @@ public class GameService implements InitializingBean {
       } else {
         logger.warn("Ranked1v1 could not be started", throwable);
       }
+      searching1v1.set(false);
       return null;
     };
 

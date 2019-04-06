@@ -14,6 +14,7 @@ import com.faforever.client.integration.ChannelNames;
 import com.faforever.client.integration.Protocol;
 import com.faforever.client.integration.ServerGateway;
 import com.faforever.client.integration.v2.server.V2ServerMessageTransformer;
+import com.faforever.client.matchmaking.CancelMatchSearchClientMessage;
 import com.faforever.client.matchmaking.SearchMatchClientMessage;
 import com.faforever.client.net.ConnectionState;
 import com.faforever.client.player.UpdateSocialRelationClientMessage;
@@ -68,6 +69,10 @@ public class V2ServerAccessor implements FafServerAccessor {
   private StandardWebSocketClient webSocketClient;
   private ClientWebSocketContainer webSocketContainer;
   private CompletableFuture<IceServerList> iceServersRequestFuture;
+  private String username;
+  // TODO remembering the password is insecure but right now it's the only way to allow reconnection. This will improve
+  //  once we use a token.
+  private String password;
 
   public V2ServerAccessor(
     ClientProperties properties,
@@ -134,6 +139,8 @@ public class V2ServerAccessor implements FafServerAccessor {
 
   @Override
   public CompletableFuture<AccountDetailsServerMessage> connectAndLogIn(String username, String password) {
+    this.username = username;
+    this.password = password;
     disconnect();
     connectionState.setValue(ConnectionState.CONNECTING);
 
@@ -200,8 +207,8 @@ public class V2ServerAccessor implements FafServerAccessor {
 
   @Override
   public void reconnect() {
-    // FIXME implement
-    throw new UnsupportedOperationException("Not yet implemented");
+    disconnect();
+    connectAndLogIn(username, password);
   }
 
   @Override
@@ -221,7 +228,7 @@ public class V2ServerAccessor implements FafServerAccessor {
 
   @Override
   public void stopSearchingRanked() {
-    throw new UnsupportedOperationException("Not yet implemented");
+    serverGateway.send(new CancelMatchSearchClientMessage("ladder1v1"));
   }
 
   @Override

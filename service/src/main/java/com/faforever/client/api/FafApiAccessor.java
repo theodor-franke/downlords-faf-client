@@ -26,6 +26,7 @@ import org.supcomhub.api.dto.ModReview;
 import org.supcomhub.api.dto.ModReviewSummary;
 import org.supcomhub.api.dto.ModVersion;
 import org.supcomhub.api.dto.ModVersionReview;
+import org.supcomhub.api.dto.NewsPost;
 import org.supcomhub.api.dto.PlayerAchievement;
 import org.supcomhub.api.dto.PlayerEvent;
 import org.supcomhub.api.dto.challonge.Tournament;
@@ -144,4 +145,6 @@ public interface FafApiAccessor {
   List<ModReview> findNonEmptyModReviews(String id, int count, int page);
 
   ModReviewSummary findModReviewSummary(String id);
+
+  Collection<NewsPost> getNews();
 }

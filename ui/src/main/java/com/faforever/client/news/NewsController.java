@@ -7,7 +7,6 @@ import com.faforever.client.i18n.I18n;
 import com.faforever.client.map.ShowLadderMapsEvent;
 import com.faforever.client.preferences.PreferencesService;
 import com.faforever.client.theme.UiService;
-import com.google.common.eventbus.EventBus;
 import com.google.common.io.CharStreams;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
@@ -19,6 +18,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.web.WebView;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Scope;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
@@ -35,8 +35,8 @@ public class NewsController extends AbstractViewController<Node> {
   private final I18n i18n;
   private final NewsService newsService;
   private final UiService uiService;
-  private final EventBus eventBus;
   private final WebViewConfigurer webViewConfigurer;
+  private final ApplicationEventPublisher eventPublisher;
   public Pane newsRoot;
   public WebView newsDetailWebView;
   public Button showLadderMapsButton;
@@ -44,13 +44,13 @@ public class NewsController extends AbstractViewController<Node> {
   public Control loadingIndicator;
   private ChangeListener<Boolean> loadingIndicatorListener;
 
-  public NewsController(PreferencesService preferencesService, I18n i18n, NewsService newsService, UiService uiService, EventBus eventBus, WebViewConfigurer webViewConfigurer) {
+  public NewsController(PreferencesService preferencesService, I18n i18n, NewsService newsService, UiService uiService, WebViewConfigurer webViewConfigurer, ApplicationEventPublisher eventPublisher) {
     this.preferencesService = preferencesService;
     this.i18n = i18n;
     this.newsService = newsService;
     this.uiService = uiService;
-    this.eventBus = eventBus;
     this.webViewConfigurer = webViewConfigurer;
+    this.eventPublisher = eventPublisher;
 
     loadingIndicatorListener = (observable, oldValue, newValue)
         -> loadingIndicator.getParent().getChildrenUnmodifiable().stream()
@@ -91,12 +91,12 @@ public class NewsController extends AbstractViewController<Node> {
     webViewConfigurer.configureWebView(newsDetailWebView);
 
     onLoadingStart();
-    newsService.fetchNews().thenAccept(newsItems -> {
+    newsService.getNews().thenAccept(newsItems -> {
       newsListView.getItems().setAll(newsItems);
       onLoadingStop();
       if (!newsItems.isEmpty()) {
         NewsItem mostRecentItem = newsItems.get(0);
-        preferencesService.getPreferences().getNews().setLastReadNewsUrl(mostRecentItem.getLink());
+        preferencesService.getPreferences().getNews().setLastReadNewsId(mostRecentItem.getId());
         preferencesService.storeInBackground();
       }
       newsListView.getSelectionModel().selectFirst();
@@ -105,8 +105,8 @@ public class NewsController extends AbstractViewController<Node> {
 
   @SneakyThrows
   private void displayNewsItem(NewsItem newsItem) {
-    showLadderMapsButton.setVisible(newsItem.getNewsCategory().equals(NewsCategory.LADDER));
-    eventBus.post(new UnreadNewsEvent(false));
+    showLadderMapsButton.setVisible(newsItem.getTags().contains(NewsTag.LADDER));
+    eventPublisher.publishEvent(new UnreadNewsEvent(false));
 
     try (Reader reader = new InputStreamReader(NEWS_DETAIL_HTML_RESOURCE.getInputStream())) {
       String html = CharStreams.toString(reader).replace("{title}", newsItem.getTitle())
@@ -122,6 +122,6 @@ public class NewsController extends AbstractViewController<Node> {
   }
 
   public void showLadderMaps() {
-    eventBus.post(new ShowLadderMapsEvent());
+    eventPublisher.publishEvent(new ShowLadderMapsEvent());
   }
 }

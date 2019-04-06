@@ -8,9 +8,6 @@ sh-client:
   vault:
     base-url: http://content.supcomhub.org
 
-  news:
-    feed-url: http://direct.faforever.com/news/feed
-
   replay:
     remote-host: lobby.supcomhub.org
 

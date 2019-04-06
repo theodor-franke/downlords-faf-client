@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-public enum NewsCategory {
+public enum NewsTag {
 
   SERVER_UPDATE("server update"),
   TOURNAMENT("tournament"),
@@ -20,28 +20,28 @@ public enum NewsCategory {
   UNCATEGORIZED("uncategorized"),
   LADDER("ladder");
 
-  private static final Map<String, NewsCategory> fromString;
+  private static final Map<String, NewsTag> fromString;
 
   static {
     fromString = new HashMap<>();
-    for (NewsCategory newsCategory : values()) {
-      fromString.put(newsCategory.name, newsCategory);
+    for (NewsTag newsTag : values()) {
+      fromString.put(newsTag.name, newsTag);
     }
   }
 
   private final String name;
 
-  NewsCategory(String name) {
+  NewsTag(String name) {
     this.name = name;
   }
 
-  public static NewsCategory fromString(String string) {
+  public static NewsTag fromString(String string) {
     if (string == null) {
       return null;
     }
     String toLower = string.toLowerCase(Locale.US);
     if (!fromString.containsKey(toLower)) {
-      return NewsCategory.UNCATEGORIZED;
+      return NewsTag.UNCATEGORIZED;
     }
     return fromString.get(toLower);
   }

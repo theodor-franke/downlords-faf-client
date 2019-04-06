@@ -8,8 +8,8 @@
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/downlords-faf-client.iml" filepath="$PROJECT_DIR$/.idea/modules/downlords-faf-client.iml" group="downlords-faf-client" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/downlords-faf-client_main.iml" filepath="$PROJECT_DIR$/.idea/modules/downlords-faf-client_main.iml" group="downlords-faf-client" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/downlords-faf-client_test.iml" filepath="$PROJECT_DIR$/.idea/modules/downlords-faf-client_test.iml" group="downlords-faf-client" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/service.iml" filepath="$PROJECT_DIR$/.idea/modules/service.iml" group="downlords-faf-client/service" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/service/service.iml" filepath="$PROJECT_DIR$/.idea/modules/service/service.iml" group="downlords-faf-client/service" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/service.iml" filepath="$PROJECT_DIR$/.idea/modules/service.iml" group="downlords-faf-client/service" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/service/service_main.iml" filepath="$PROJECT_DIR$/.idea/modules/service/service_main.iml" group="downlords-faf-client/service" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/service/service_test.iml" filepath="$PROJECT_DIR$/.idea/modules/service/service_test.iml" group="downlords-faf-client/service" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/test-commons/test-commons.iml" filepath="$PROJECT_DIR$/.idea/modules/test-commons/test-commons.iml" group="downlords-faf-client/test-commons" />

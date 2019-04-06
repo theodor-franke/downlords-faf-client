@@ -4,6 +4,8 @@ import com.faforever.client.api.ApiDtoMapper;
 import com.faforever.client.api.FafApiAccessor;
 import com.faforever.client.avatar.Avatar;
 import com.faforever.client.avatar.event.AvatarChangedEvent;
+import com.faforever.client.news.NewsItem;
+import com.faforever.client.news.NewsTag;
 import com.faforever.client.review.Review;
 import com.google.common.eventbus.EventBus;
 import org.junit.Before;
@@ -15,9 +17,15 @@ import org.supcomhub.api.dto.Account;
 import org.supcomhub.api.dto.GameReview;
 import org.supcomhub.api.dto.MapVersionReview;
 import org.supcomhub.api.dto.ModVersionReview;
+import org.supcomhub.api.dto.NewsPost;
 
 import java.net.URL;
+import java.time.OffsetDateTime;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
@@ -92,6 +100,22 @@ public class FafServiceTest {
 
     instance.saveModVersionReview(review, "5");
     verify(fafApiAccessor).createModVersionReview(any());
+  }
+
+  @Test
+  public void getNews() throws ExecutionException, InterruptedException {
+    NewsPost newsPost = new NewsPost();
+    when(fafApiAccessor.getNews()).thenReturn(Collections.singletonList(newsPost));
+
+    NewsItem newsItem = new NewsItem("", "", "", "", OffsetDateTime.now(), Collections.singletonList(NewsTag.UNCATEGORIZED));
+    when(apiDtoMapper.map(newsPost)).thenReturn(newsItem);
+
+    CompletableFuture<List<NewsItem>> news = instance.getNews();
+
+    verify(fafApiAccessor).getNews();
+    verify(apiDtoMapper).map(newsPost);
+
+    assertThat(news.get(), is(newsItem));
   }
 
   private Review createReview(String id, String text, int rating, Integer playerId) {

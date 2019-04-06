@@ -24,6 +24,7 @@ import com.faforever.client.mod.FeaturedMod;
 import com.faforever.client.mod.FeaturedModFile;
 import com.faforever.client.mod.ModVersion;
 import com.faforever.client.net.ConnectionState;
+import com.faforever.client.news.NewsItem;
 import com.faforever.client.player.Player;
 import com.faforever.client.rating.RatingHistoryDataPoint;
 import com.faforever.client.replay.Replay;
@@ -524,5 +525,12 @@ public class FafService {
   public CompletableFuture<Map<String, PlayerEvent>> getPlayerEvents(int playerId) {
     return CompletableFuture.completedFuture(fafApiAccessor.getPlayerEvents(playerId).stream()
       .collect(toMap(playerEvent -> playerEvent.getEvent().getId(), apiDtoMapper::map)));
+  }
+
+  @Async
+  public CompletableFuture<List<NewsItem>> getNews() {
+    return CompletableFuture.completedFuture(fafApiAccessor.getNews().stream()
+      .map(apiDtoMapper::map)
+      .collect(toList()));
   }
 }

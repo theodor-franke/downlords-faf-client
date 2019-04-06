@@ -31,6 +31,7 @@ import org.supcomhub.api.dto.ModReview;
 import org.supcomhub.api.dto.ModReviewSummary;
 import org.supcomhub.api.dto.ModVersion;
 import org.supcomhub.api.dto.ModVersionReview;
+import org.supcomhub.api.dto.NewsPost;
 import org.supcomhub.api.dto.PlayerAchievement;
 import org.supcomhub.api.dto.PlayerEvent;
 import org.supcomhub.api.dto.challonge.Tournament;
@@ -155,6 +156,11 @@ public class MockFafApiAccessor implements FafApiAccessor {
   @Override
   public ModReviewSummary findModReviewSummary(String id) {
     return null;
+  }
+
+  @Override
+  public Collection<NewsPost> getNews() {
+    return Collections.emptyList();
   }
 
   @Override

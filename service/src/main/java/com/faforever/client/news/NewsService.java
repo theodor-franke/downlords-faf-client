@@ -1,28 +1,19 @@
 package com.faforever.client.news;
 
-import com.faforever.client.config.ClientProperties;
 import com.faforever.client.preferences.PreferencesService;
-import com.github.nocatch.NoCatch;
-import com.google.common.eventbus.EventBus;
-import com.rometools.rome.feed.synd.SyndCategory;
-import com.rometools.rome.feed.synd.SyndEntry;
-import com.rometools.rome.io.SyndFeedInput;
-import com.rometools.rome.io.XmlReader;
+import com.faforever.client.remote.FafService;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.scheduling.TaskScheduler;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
-import java.net.URL;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
-import java.util.stream.Collectors;
 
 @Lazy
 @Service
@@ -31,60 +22,39 @@ public class NewsService implements InitializingBean {
   /** The delay (in seconds) between polling for new news. */
   private static final long POLL_DELAY = Duration.ofMinutes(10).toMillis();
 
-  private final String newsFeedUrl;
-
   private final PreferencesService preferencesService;
-  private final EventBus eventBus;
+  private final ApplicationEventPublisher eventPublisher;
   private final TaskScheduler taskScheduler;
+  private final FafService fafService;
 
-  public NewsService(ClientProperties clientProperties, PreferencesService preferencesService, EventBus eventBus,
-                     TaskScheduler taskScheduler) {
-    this.newsFeedUrl = clientProperties.getNews().getFeedUrl();
-
+  public NewsService(
+    PreferencesService preferencesService,
+    ApplicationEventPublisher eventPublisher,
+    TaskScheduler taskScheduler,
+    FafService fafService
+  ) {
     this.preferencesService = preferencesService;
-    this.eventBus = eventBus;
+    this.eventPublisher = eventPublisher;
     this.taskScheduler = taskScheduler;
+    this.fafService = fafService;
   }
 
   @Override
   public void afterPropertiesSet() {
-    eventBus.register(this);
     taskScheduler.scheduleWithFixedDelay(this::pollForNews, Date.from(Instant.now().plusSeconds(5)), POLL_DELAY);
   }
 
+  public CompletableFuture<List<NewsItem>> getNews() {
+    return fafService.getNews();
+  }
+
   private void pollForNews() {
-    fetchNews().thenAccept(newsItems -> newsItems.stream().findFirst()
-        .ifPresent(newsItem -> {
-          String lastReadNewsUrl = preferencesService.getPreferences().getNews().getLastReadNewsUrl();
-          if (!Objects.equals(newsItem.getLink(), lastReadNewsUrl)) {
-            eventBus.post(new UnreadNewsEvent(true));
-          }
-        }));
-  }
-
-  @Async
-  public CompletableFuture<List<NewsItem>> fetchNews() {
-    return CompletableFuture.completedFuture(
-        NoCatch.noCatch(() -> new SyndFeedInput().build(new XmlReader(new URL(newsFeedUrl)))).getEntries().stream()
-            .map(this::toNewsItem)
-            .sorted(Comparator.comparing(NewsItem::getDate).reversed())
-            .collect(Collectors.toList()));
-  }
-
-  private NewsItem toNewsItem(SyndEntry syndEntry) {
-    String author = syndEntry.getAuthor();
-    String link = syndEntry.getLink();
-    String title = syndEntry.getTitle();
-    String content = syndEntry.getContents().get(0).getValue();
-    Date publishedDate = syndEntry.getPublishedDate();
-
-    NewsCategory newsCategory = syndEntry.getCategories().stream()
-        .filter(Objects::nonNull)
-        .findFirst()
-        .map(SyndCategory::getName)
-        .map(NewsCategory::fromString)
-        .orElse(NewsCategory.UNCATEGORIZED);
-
-    return new NewsItem(author, link, title, content, publishedDate, newsCategory);
+    fafService.getNews().thenAccept(newsItems -> newsItems.stream().findFirst()
+      .ifPresent(newsItem -> {
+        String lastReadNewsId = preferencesService.getPreferences().getNews().getLastReadNewsId();
+        if (!Objects.equals(newsItem.getId(), lastReadNewsId)) {
+          eventPublisher.publishEvent(new UnreadNewsEvent(true));
+        }
+      }));
   }
 }

@@ -209,7 +209,7 @@ public class MainController implements Controller<Node> {
     runLater(this::enterLoggedOutState);
   }
 
-  @Subscribe
+  @EventListener
   public void onUnreadNews(UnreadNewsEvent event) {
     runLater(() -> newsButton.pseudoClassStateChanged(HIGHLIGHTED, event.hasUnreadNews()));
   }
@@ -401,11 +401,11 @@ public class MainController implements Controller<Node> {
       image = noCatch(() -> new Image(filepath.toUri().toURL().toExternalForm()));
     }
     mainRoot.setBackground(new Background(new BackgroundImage(
-        image,
-        BackgroundRepeat.NO_REPEAT,
-        BackgroundRepeat.NO_REPEAT,
-        BackgroundPosition.CENTER,
-        BackgroundSize.DEFAULT
+      image,
+      BackgroundRepeat.NO_REPEAT,
+      BackgroundRepeat.NO_REPEAT,
+      BackgroundPosition.CENTER,
+      BackgroundSize.DEFAULT
     )));
 
   }
@@ -473,6 +473,7 @@ public class MainController implements Controller<Node> {
   }
 
   @Subscribe
+  @EventListener
   public void onNavigateEvent(NavigateEvent navigateEvent) {
     NavigationItem item = navigateEvent.getItem();
 

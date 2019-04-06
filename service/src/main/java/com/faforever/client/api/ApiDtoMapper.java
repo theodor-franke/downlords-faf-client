@@ -14,6 +14,8 @@ import com.faforever.client.mod.FeaturedMod;
 import com.faforever.client.mod.FeaturedModFile;
 import com.faforever.client.mod.Mod;
 import com.faforever.client.mod.ModVersion;
+import com.faforever.client.news.NewsItem;
+import com.faforever.client.news.NewsTag;
 import com.faforever.client.player.NameRecord;
 import com.faforever.client.player.Player;
 import com.faforever.client.replay.Replay;
@@ -36,12 +38,14 @@ import org.supcomhub.api.dto.MapVersionReview;
 import org.supcomhub.api.dto.ModReview;
 import org.supcomhub.api.dto.ModReviewSummary;
 import org.supcomhub.api.dto.ModVersionReview;
+import org.supcomhub.api.dto.NewsPost;
 import org.supcomhub.api.dto.ReviewScoreCount;
 
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -174,6 +178,12 @@ public interface ApiDtoMapper {
 
   PlayerEvent map(org.supcomhub.api.dto.PlayerEvent playerEvent);
 
+  @Mapping(target = "title", source = "headline")
+  @Mapping(target = "content", source = "body")
+  @Mapping(target = "author", source = "author.displayName")
+  @Mapping(target = "date", source = "createTime")
+  NewsItem map(NewsPost newsPost);
+
   default ComparableVersion map(short version) {
     return new ComparableVersion(String.valueOf(version));
   }
@@ -197,5 +207,11 @@ public interface ApiDtoMapper {
 
   default String map(URL url) {
     return url.toExternalForm();
+  }
+
+  default List<NewsTag> mapNewsTags(String tags) {
+    return Arrays.stream(tags.split(","))
+      .map(NewsTag::fromString)
+      .collect(Collectors.toList());
   }
 }

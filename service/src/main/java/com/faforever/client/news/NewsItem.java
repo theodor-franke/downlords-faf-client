@@ -1,16 +1,21 @@
 package com.faforever.client.news;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import java.util.Date;
+import java.time.OffsetDateTime;
+import java.util.List;
 
 @Data
-class NewsItem {
+@AllArgsConstructor
+@NoArgsConstructor
+public class NewsItem {
 
-  private final String author;
-  private final String link;
-  private final String title;
-  private final String content;
-  private final Date date;
-  private final NewsCategory newsCategory;
+  private String id;
+  private String author;
+  private String title;
+  private String content;
+  private OffsetDateTime date;
+  private List<NewsTag> tags;
 }

@@ -8,9 +8,6 @@ sh-client:
   vault:
     base-url: http://content.test.faforever.com
 
-  news:
-    feed-url: http://direct.faforever.com/news/feed
-
   replay:
     remote-host: test.faforever.com
 

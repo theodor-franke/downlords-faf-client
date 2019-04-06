@@ -4,21 +4,21 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
 public class NewsPrefs {
-  private final StringProperty lastReadNewsUrl;
+  private final StringProperty lastReadNewsId;
 
   public NewsPrefs() {
-    lastReadNewsUrl = new SimpleStringProperty();
+    lastReadNewsId = new SimpleStringProperty();
   }
 
-  public String getLastReadNewsUrl() {
-    return lastReadNewsUrl.get();
+  public String getLastReadNewsId() {
+    return lastReadNewsId.get();
   }
 
-  public void setLastReadNewsUrl(String lastReadNewsUrl) {
-    this.lastReadNewsUrl.set(lastReadNewsUrl);
+  public void setLastReadNewsId(String lastReadNewsId) {
+    this.lastReadNewsId.set(lastReadNewsId);
   }
 
-  public StringProperty lastReadNewsUrlProperty() {
-    return lastReadNewsUrl;
+  public StringProperty lastReadNewsIdProperty() {
+    return lastReadNewsId;
   }
 }

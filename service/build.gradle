@@ -37,7 +37,6 @@ dependencies {
   // TODO externalize versions
   compile("net.sf.jtidy:jtidy:r938")
   compile("com.neovisionaries:nv-i18n:1.23")
-  compile("com.rometools:rome:1.11.1")
   compile("org.jsoup:jsoup:1.11.3")
   compile("org.luaj:luaj-jse:3.0.1")
   compile("com.github.micheljung:JJsonRpc:01a7fba5f4")

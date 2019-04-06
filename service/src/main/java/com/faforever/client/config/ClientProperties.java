@@ -12,7 +12,6 @@ import java.time.Duration;
 public class ClientProperties {
 
   private String mainWindowTitle = "Downlord's FAF Client";
-  private News news = new News();
   private ForgedAlliance forgedAlliance = new ForgedAlliance();
   private Irc irc = new Irc();
   private Server server = new Server();
@@ -26,14 +25,6 @@ public class ClientProperties {
   private String clientConfigUrl;
   private boolean useRemotePreferences;
   private Duration clientConfigConnectTimeout = Duration.ofSeconds(30);
-
-  @Data
-  public static class News {
-    /**
-     * URL to fetch the RSS news feed from.
-     */
-    private String feedUrl;
-  }
 
   @Data
   public static class ForgedAlliance {

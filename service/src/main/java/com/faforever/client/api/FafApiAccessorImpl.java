@@ -59,6 +59,7 @@ import org.supcomhub.api.dto.ModReview;
 import org.supcomhub.api.dto.ModReviewSummary;
 import org.supcomhub.api.dto.ModVersion;
 import org.supcomhub.api.dto.ModVersionReview;
+import org.supcomhub.api.dto.NewsPost;
 import org.supcomhub.api.dto.PlayerAchievement;
 import org.supcomhub.api.dto.PlayerEvent;
 import org.supcomhub.api.dto.challonge.Tournament;
@@ -464,6 +465,14 @@ public class FafApiAccessorImpl implements FafApiAccessor, InitializingBean {
   @Override
   public ModReviewSummary findModReviewSummary(String id) {
     return getOne("/data/" + ModReviewSummary.TYPE_NAME + "/" + id, ModReviewSummary.class);
+  }
+
+  @Override
+  public Collection<NewsPost> getNews() {
+    return getPage("/data/newsPost", 10, 1, ImmutableMap.of(
+      "include", "author",
+      "sort", "-createTime"
+    ));
   }
 
   @Override

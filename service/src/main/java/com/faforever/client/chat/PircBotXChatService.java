@@ -9,11 +9,9 @@ import com.faforever.client.net.ConnectionState;
 import com.faforever.client.player.Player;
 import com.faforever.client.player.PlayerOnlineEvent;
 import com.faforever.client.player.SocialStatus;
-import com.faforever.client.player.UserOfflineEvent;
 import com.faforever.client.preferences.ChatColorMode;
 import com.faforever.client.preferences.ChatPrefs;
 import com.faforever.client.preferences.PreferencesService;
-import com.faforever.client.remote.FafService;
 import com.faforever.client.task.CompletableTask;
 import com.faforever.client.task.CompletableTask.Priority;
 import com.faforever.client.task.TaskService;
@@ -65,6 +63,7 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Profile;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -109,14 +108,12 @@ public class PircBotXChatService implements ChatService, InitializingBean, Dispo
   private final PreferencesService preferencesService;
   private final UserService userService;
   private final TaskService taskService;
-  private final FafService fafService;
   private final I18n i18n;
   private final PircBotXFactory pircBotXFactory;
   private final ThreadPoolExecutor threadPoolExecutor;
   private final EventBus eventBus;
   private final String ircHost;
   private final int ircPort;
-  private final String defaultChannelName;
   private final int reconnectDelay;
 
   private Configuration configuration;
@@ -133,17 +130,17 @@ public class PircBotXChatService implements ChatService, InitializingBean, Dispo
    * channels after a reconnect that the user left before the reconnect.
    */
   private boolean autoChannelsJoined;
+  private String defaultChannelName;
 
 
   public PircBotXChatService(PreferencesService preferencesService, UserService userService, TaskService taskService,
-                             FafService fafService, I18n i18n, PircBotXFactory pircBotXFactory,
+                             I18n i18n, PircBotXFactory pircBotXFactory,
                              @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection") ThreadPoolExecutor threadPoolExecutor,
                              EventBus eventBus,
                              ClientProperties clientProperties) {
     this.preferencesService = preferencesService;
     this.userService = userService;
     this.taskService = taskService;
-    this.fafService = fafService;
     this.i18n = i18n;
     this.pircBotXFactory = pircBotXFactory;
     this.threadPoolExecutor = threadPoolExecutor;
@@ -152,7 +149,6 @@ public class PircBotXChatService implements ChatService, InitializingBean, Dispo
     Irc irc = clientProperties.getIrc();
     this.ircHost = irc.getHost();
     this.ircPort = irc.getPort();
-    this.defaultChannelName = irc.getDefaultChannel();
     this.reconnectDelay = irc.getReconnectDelay();
 
     connectionState = new SimpleObjectProperty<>(ConnectionState.DISCONNECTED);
@@ -166,7 +162,6 @@ public class PircBotXChatService implements ChatService, InitializingBean, Dispo
   @Override
   public void afterPropertiesSet() {
     eventBus.register(this);
-    fafService.addOnMessageListener(ChatChannelsServerMessage.class, this::onSocialMessage);
     connectionState.addListener((observable, oldValue, newValue) -> {
       switch (newValue) {
         case DISCONNECTED:
@@ -345,10 +340,6 @@ public class PircBotXChatService implements ChatService, InitializingBean, Dispo
     synchronized (chatChannelUsersByChannelAndName) {
       chatChannelUsersByChannelAndName.remove(mapKey(username, channelName));
     }
-    // The server doesn't yet tell us when a user goes offline, so we have to rely on the user leaving IRC.
-    if (defaultChannelName.equals(channelName)) {
-      eventBus.post(new UserOfflineEvent(username));
-    }
   }
 
   private void onChatUserQuit(String username) {
@@ -388,11 +379,10 @@ public class PircBotXChatService implements ChatService, InitializingBean, Dispo
     return Hashing.md5().hashString(Hashing.sha256().hashString(userService.getPassword(), UTF_8).toString(), UTF_8).toString();
   }
 
-  private void onSocialMessage(ChatChannelsServerMessage socialMessage) {
+  @EventListener
+  public void onSocialMessage(ChatChannelsServerMessage socialMessage) {
     if (!autoChannelsJoined && socialMessage.getChannels() != null) {
       this.autoChannels = new ArrayList<>(socialMessage.getChannels());
-      autoChannels.remove(defaultChannelName);
-      autoChannels.add(0, defaultChannelName);
       threadPoolExecutor.execute(this::joinAutoChannels);
     }
   }
@@ -588,9 +578,14 @@ public class PircBotXChatService implements ChatService, InitializingBean, Dispo
     });
   }
 
+  @EventListener
+  public void onJoinChatChannels(ChatChannelsServerMessage message) {
+    defaultChannelName = message.getChannels().iterator().next();
+  }
+
   @Override
   public boolean isDefaultChannel(String channelName) {
-    return defaultChannelName.equals(channelName);
+    return defaultChannelName.equalsIgnoreCase(channelName);
   }
 
   @Override
@@ -640,16 +635,11 @@ public class PircBotXChatService implements ChatService, InitializingBean, Dispo
         .orElseThrow(() -> new IllegalArgumentException("Chat user '" + username + "' is unknown for channel '" + channelName + "'"));
   }
 
-  @Override
-  public String getDefaultChannelName() {
-    return defaultChannelName;
-  }
-
   private String mapKey(String username, String channelName) {
     return username + channelName;
   }
 
-  @Subscribe
+  @EventListener
   public void onPlayerOnline(PlayerOnlineEvent event) {
     Player player = event.getPlayer();
 

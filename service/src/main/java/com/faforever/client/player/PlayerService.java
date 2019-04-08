@@ -17,7 +17,6 @@ import com.faforever.client.remote.FafService;
 import com.faforever.client.user.LoginSuccessEvent;
 import com.faforever.client.user.UserService;
 import com.faforever.client.util.Assert;
-import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
@@ -26,7 +25,6 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableMap;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
@@ -49,7 +47,7 @@ import static com.faforever.client.player.SocialStatus.OTHER;
 import static com.faforever.client.player.SocialStatus.SELF;
 
 @Service
-public class PlayerService implements InitializingBean {
+public class PlayerService {
 
   private final ObservableMap<String, Player> playersByName;
   private final ObservableMap<Integer, Player> playersById;
@@ -59,14 +57,11 @@ public class PlayerService implements InitializingBean {
 
   private final FafService fafService;
   private final UserService userService;
-  // TODO remove, replaced by eventPublisher
-  private final EventBus eventBus;
   private final ApplicationEventPublisher eventPublisher;
 
-  public PlayerService(FafService fafService, UserService userService, EventBus eventBus, ApplicationEventPublisher eventPublisher) {
+  public PlayerService(FafService fafService, UserService userService, ApplicationEventPublisher eventPublisher) {
     this.fafService = fafService;
     this.userService = userService;
-    this.eventBus = eventBus;
     this.eventPublisher = eventPublisher;
 
     playersByName = FXCollections.observableMap(new ConcurrentHashMap<>());
@@ -74,13 +69,6 @@ public class PlayerService implements InitializingBean {
     friendList = new ArrayList<>();
     foeList = new ArrayList<>();
     currentPlayer = new SimpleObjectProperty<>();
-  }
-
-  @Override
-  public void afterPropertiesSet() {
-    eventBus.register(this);
-    fafService.addOnMessageListener(PlayersServerMessage.class, this::onPlayersInfo);
-    fafService.addOnMessageListener(SocialRelationsServerMessage.class, this::onFoeList);
   }
 
   @EventListener
@@ -102,6 +90,11 @@ public class PlayerService implements InitializingBean {
     }
   }
 
+  @EventListener
+  public void onPlayerOfflineMessage(PlayerOfflineMessage message) {
+    playersById.remove(message.getPlayerId());
+  }
+
   private void updateGameForPlayersInGame(Game game) {
     ObservableMap<Integer, List<Player>> teams = game.getTeams();
     synchronized (teams) {
@@ -109,7 +102,7 @@ public class PlayerService implements InitializingBean {
     }
   }
 
-  @Subscribe
+  @EventListener
   public void onLoginSuccess(LoginSuccessEvent event) {
     Player player = createAndGetPlayerForUsername(event.getDisplayName());
     player.setId(event.getUserId());
@@ -131,7 +124,7 @@ public class PlayerService implements InitializingBean {
     }
   }
 
-  @Subscribe
+  @EventListener
   public void onChatMessage(ChatMessageEvent event) {
     getPlayerForUsername(event.getMessage().getUsername()).ifPresent(this::resetIdleTime);
   }
@@ -148,7 +141,7 @@ public class PlayerService implements InitializingBean {
       } else {
         player.setGame(game);
         if ((player.getGame() == null || !player.getGame().equals(game)) && player.getSocialStatus() == FRIEND && game.getState() == GameState.OPEN) {
-          eventBus.post(new FriendJoinedGameEvent(player, game));
+          eventPublisher.publishEvent(new FriendJoinedGameEvent(player, game));
         }
       }
     });
@@ -248,11 +241,13 @@ public class PlayerService implements InitializingBean {
       }));
   }
 
-  private void onPlayersInfo(PlayersServerMessage playersMessage) {
+  @EventListener
+  public void onPlayersInfo(PlayersServerMessage playersMessage) {
     playersMessage.getPlayers().forEach(this::onPlayerInfo);
   }
 
-  private void onFoeList(SocialRelationsServerMessage socialMessage) {
+  @EventListener
+  public void onFoeList(SocialRelationsServerMessage socialMessage) {
     List<Integer> friends = socialMessage.getSocialRelations().stream()
       .filter(socialRelation -> socialRelation.getType() == RelationType.FRIEND)
       .map(SocialRelation::getPlayerId)
@@ -308,7 +303,7 @@ public class PlayerService implements InitializingBean {
 
       updatePlayer(player, playerInfo);
 
-      eventBus.post(new PlayerOnlineEvent(player));
+      eventPublisher.publishEvent(new PlayerOnlineEvent(player));
     }
 
     eventPublisher.publishEvent(new PlayerUpdatedEvent(player));

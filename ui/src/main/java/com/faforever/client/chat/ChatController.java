@@ -238,9 +238,6 @@ public class ChatController extends AbstractViewController<Node> {
       if (isCurrentUser(chatUser)) {
         AbstractChatTabController tabController = getOrCreateChannelTab(channelName);
         onConnected();
-        if (channelName.equals(chatService.getDefaultChannelName())) {
-          tabPane.getSelectionModel().select(tabController.getRoot());
-        }
       }
     });
   }

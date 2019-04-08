@@ -6,8 +6,8 @@ import com.faforever.client.notification.NotificationService;
 import com.faforever.client.notification.TransientNotification;
 import com.faforever.client.util.IdenticonUtil;
 import com.google.common.eventbus.EventBus;
-import com.google.common.eventbus.Subscribe;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
 
@@ -38,10 +38,10 @@ public class FriendOfflineNotifier implements InitializingBean {
     eventBus.register(this);
   }
 
-  @Subscribe
-  public void onUserOnline(UserOfflineEvent event) {
-    String username = event.getUsername();
-    playerService.getPlayerForUsername(username).ifPresent(player -> {
+  @EventListener
+  public void onUserOffline(PlayerOfflineMessage event) {
+    int playerId = event.getPlayerId();
+    playerService.getPlayerById(playerId).ifPresent(player -> {
       if (player.getSocialStatus() != SocialStatus.FRIEND) {
         return;
       }
@@ -49,7 +49,7 @@ public class FriendOfflineNotifier implements InitializingBean {
       audioService.playFriendOfflineSound();
       notificationService.addNotification(
           new TransientNotification(
-              i18n.get("friend.nowOfflineNotification.title", username), "",
+              i18n.get("friend.nowOfflineNotification.title", player.getDisplayName()), "",
               IdenticonUtil.createIdenticon(player.getId())
           ));
     });

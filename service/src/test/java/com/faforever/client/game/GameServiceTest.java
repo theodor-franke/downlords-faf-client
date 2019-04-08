@@ -44,7 +44,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Consumer;
 
 import static com.natpryce.hamcrest.reflection.HasAnnotationMatcher.hasAnnotation;
 import static java.util.Arrays.asList;
@@ -110,12 +109,6 @@ public class GameServiceTest extends AbstractPlainJavaFxTest {
   @Mock
   private ApplicationEventPublisher eventPublisher;
   @Captor
-  private ArgumentCaptor<Consumer<GameInfoServerMessage>> gameInfoMessageListenerCaptor;
-  @Captor
-  private ArgumentCaptor<Consumer<GameInfosServerMessage>> gameInfosMessageListenerCaptor;
-  @Captor
-  private ArgumentCaptor<Consumer<StartGameProcessServerMessage>> startGameProcessMessageListenerCaptor;
-  @Captor
   private ArgumentCaptor<Set<UUID>> simModsCaptor;
 
   private Player junitPlayer;
@@ -128,7 +121,7 @@ public class GameServiceTest extends AbstractPlainJavaFxTest {
 
     instance = new GameService(clientProperties, fafService, forgedAllianceService, mapService,
       preferencesService, gameUpdater, notificationService, i18n, executor, playerService,
-      reportingService, eventBus, iceAdapter, modService, platformService, eventPublisher);
+      reportingService, iceAdapter, modService, platformService, eventPublisher);
     instance.replayService = replayService;
 
     Preferences preferences = new Preferences();
@@ -149,16 +142,6 @@ public class GameServiceTest extends AbstractPlainJavaFxTest {
     }).when(executor).execute(any());
 
     instance.afterPropertiesSet();
-
-    verify(fafService).addOnMessageListener(eq(GameInfoServerMessage.class), gameInfoMessageListenerCaptor.capture());
-    verify(fafService).addOnMessageListener(eq(GameInfosServerMessage.class), gameInfosMessageListenerCaptor.capture());
-    verify(fafService).addOnMessageListener(eq(StartGameProcessServerMessage.class), startGameProcessMessageListenerCaptor.capture());
-  }
-
-  @Test
-  @SuppressWarnings("unchecked")
-  public void postConstruct() {
-    verify(fafService).addOnMessageListener(eq(GameInfoServerMessage.class), any(Consumer.class));
   }
 
   @Test
@@ -289,7 +272,7 @@ public class GameServiceTest extends AbstractPlainJavaFxTest {
       GameInfoMessageBuilder.create(2).defaultValues().get()
     ));
 
-    gameInfosMessageListenerCaptor.getValue().accept(multiGameInfoMessage);
+    instance.onGameInfos(multiGameInfoMessage);
     WaitForAsyncUtils.waitForFxEvents();
 
     assertThat(instance.getGames(), hasSize(2));
@@ -300,10 +283,10 @@ public class GameServiceTest extends AbstractPlainJavaFxTest {
     assertThat(instance.getGames(), empty());
 
     GameInfoServerMessage gameInfoMessage1 = GameInfoMessageBuilder.create(1).defaultValues().title("Game 1").get();
-    gameInfoMessageListenerCaptor.getValue().accept(gameInfoMessage1);
+    instance.onGameInfo(gameInfoMessage1);
 
     GameInfoServerMessage gameInfoMessage2 = GameInfoMessageBuilder.create(2).defaultValues().title("Game 2").get();
-    gameInfoMessageListenerCaptor.getValue().accept(gameInfoMessage2);
+    instance.onGameInfo(gameInfoMessage2);
     WaitForAsyncUtils.waitForFxEvents();
 
     Game game1 = new Game();
@@ -326,7 +309,7 @@ public class GameServiceTest extends AbstractPlainJavaFxTest {
     GameInfoServerMessage gameInfoMessage = GameInfoMessageBuilder.create(1234).defaultValues()
       .state(GameState.PLAYING)
       .addTeamMember(1, 1, "PlayerName").get();
-    gameInfoMessageListenerCaptor.getValue().accept(gameInfoMessage);
+    instance.onGameInfo(gameInfoMessage);
 
     assertThat(instance.getCurrentGame(), nullValue());
   }
@@ -338,7 +321,7 @@ public class GameServiceTest extends AbstractPlainJavaFxTest {
     when(playerService.getCurrentPlayer()).thenReturn(Optional.ofNullable(PlayerBuilder.create("PlayerName").get()));
 
     GameInfoServerMessage gameInfoMessage = GameInfoMessageBuilder.create(1234).defaultValues().addTeamMember(1, 1, "Other").get();
-    gameInfoMessageListenerCaptor.getValue().accept(gameInfoMessage);
+    instance.onGameInfo(gameInfoMessage);
 
     assertThat(instance.getCurrentGame(), nullValue());
   }
@@ -348,7 +331,7 @@ public class GameServiceTest extends AbstractPlainJavaFxTest {
     assertThat(instance.getGames(), empty());
 
     GameInfoServerMessage gameInfoMessage = GameInfoMessageBuilder.create(1).defaultValues().title("Game 1").state(GameState.PLAYING).get();
-    gameInfoMessageListenerCaptor.getValue().accept(gameInfoMessage);
+    instance.onGameInfo(gameInfoMessage);
     WaitForAsyncUtils.waitForFxEvents();
 
     CountDownLatch changeLatch = new CountDownLatch(1);
@@ -358,7 +341,7 @@ public class GameServiceTest extends AbstractPlainJavaFxTest {
     });
 
     gameInfoMessage = GameInfoMessageBuilder.create(1).defaultValues().title("Game 1 modified").state(GameState.PLAYING).get();
-    gameInfoMessageListenerCaptor.getValue().accept(gameInfoMessage);
+    instance.onGameInfo(gameInfoMessage);
 
     changeLatch.await();
     assertEquals(gameInfoMessage.getTitle(), game.getTitle());
@@ -371,10 +354,10 @@ public class GameServiceTest extends AbstractPlainJavaFxTest {
     when(playerService.getCurrentPlayer()).thenReturn(Optional.ofNullable(PlayerBuilder.create("PlayerName").get()));
 
     GameInfoServerMessage gameInfoMessage = GameInfoMessageBuilder.create(1).defaultValues().title("Game 1").get();
-    gameInfoMessageListenerCaptor.getValue().accept(gameInfoMessage);
+    instance.onGameInfo(gameInfoMessage);
 
     gameInfoMessage = GameInfoMessageBuilder.create(1).title("Game 1").defaultValues().state(GameState.CLOSED).get();
-    gameInfoMessageListenerCaptor.getValue().accept(gameInfoMessage);
+    instance.onGameInfo(gameInfoMessage);
     WaitForAsyncUtils.waitForFxEvents();
 
     assertThat(instance.getGames(), empty());
@@ -534,10 +517,6 @@ public class GameServiceTest extends AbstractPlainJavaFxTest {
   }
 
   private void startGameProcess(StartGameProcessServerMessage startGameProcessMessage) {
-    @SuppressWarnings("unchecked")
-    ArgumentCaptor<Consumer<StartGameProcessServerMessage>> captor = ArgumentCaptor.forClass(Consumer.class);
-    verify(fafService).addOnMessageListener(eq(StartGameProcessServerMessage.class), captor.capture());
-    Consumer<StartGameProcessServerMessage> consumer = captor.getValue();
-    consumer.accept(startGameProcessMessage);
+    instance.onStartGameProcessMessage(startGameProcessMessage);
   }
 }

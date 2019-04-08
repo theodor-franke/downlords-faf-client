@@ -21,7 +21,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Strings;
 import com.google.common.eventbus.EventBus;
-import com.google.common.eventbus.Subscribe;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.WeakChangeListener;
@@ -51,6 +50,7 @@ import javafx.stage.PopupWindow;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
@@ -601,7 +601,7 @@ public class ChannelTabController extends AbstractChatTabController {
     filteredChatUserList.setPredicate(predicate);
   }
 
-  @Subscribe
+  @EventListener
   public void onPlayerOnline(PlayerOnlineEvent event) {
     // We could add a listener on chatChannelUser.playerProperty() but this would result in thousands of mostly idle
     // listeners which we're trying to avoid.

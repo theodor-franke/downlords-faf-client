@@ -21,7 +21,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.Consumer;
 
 import static com.natpryce.hamcrest.reflection.HasAnnotationMatcher.hasAnnotation;
 import static org.hamcrest.CoreMatchers.is;
@@ -34,8 +33,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -56,18 +53,9 @@ public class PlayerServiceTest {
   public void setUp() throws Exception {
     MockitoAnnotations.initMocks(this);
 
-    instance = new PlayerService(fafService, userService, eventBus, eventPublisher);
+    instance = new PlayerService(fafService, userService, eventPublisher);
 
     when(fafService.connectionStateProperty()).thenReturn(new SimpleObjectProperty<>());
-
-    instance.afterPropertiesSet();
-  }
-
-  @Test
-  @SuppressWarnings("unchecked")
-  public void testPostConstruct() {
-    verify(fafService).addOnMessageListener(eq(PlayersServerMessage.class), any(Consumer.class));
-    verify(fafService).addOnMessageListener(eq(SocialRelationsServerMessage.class), any(Consumer.class));
   }
 
   @Test

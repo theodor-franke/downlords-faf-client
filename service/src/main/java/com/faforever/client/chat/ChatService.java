@@ -58,5 +58,4 @@ public interface ChatService {
 
   ChatChannelUser getChatUser(String username, String channelName);
 
-  String getDefaultChannelName();
 }

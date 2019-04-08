@@ -43,13 +43,8 @@ import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
-import java.util.function.Consumer;
 
 @Component
 @Profile("!" + SpringProfiles.PROFILE_OFFLINE)
@@ -58,7 +53,6 @@ public class V2ServerAccessor implements FafServerAccessor {
 
   private final ClientProperties properties;
   private final ServerGateway serverGateway;
-  private final Map<Class<? extends ServerMessage>, Collection<Consumer<? extends ServerMessage>>> messageListeners;
   private final ObjectProperty<ConnectionState> connectionState;
   private final IntegrationFlowContext integrationFlowContext;
   private final V2ServerMessageTransformer v2ServerMessageTransformer;
@@ -86,28 +80,13 @@ public class V2ServerAccessor implements FafServerAccessor {
     this.v2ServerMessageTransformer = v2ServerMessageTransformer;
 
     connectionState = new SimpleObjectProperty<>(ConnectionState.DISCONNECTED);
-    messageListeners = new HashMap<>();
     loginFuture = Optional.empty();
-
-    this.addOnMessageListener(IceServerList.class, this::onIceServerList);
   }
 
-  private void onIceServerList(IceServerList iceServerList) {
+  @EventListener
+  public void onIceServerList(IceServerList iceServerList) {
     iceServersRequestFuture.complete(iceServerList);
     iceServersRequestFuture = null;
-  }
-
-  @Override
-  public <T extends ServerMessage> void addOnMessageListener(Class<T> type, Consumer<T> listener) {
-    if (!messageListeners.containsKey(type)) {
-      messageListeners.put(type, new LinkedList<>());
-    }
-    messageListeners.get(type).add(listener);
-  }
-
-  @Override
-  public <T extends ServerMessage> void removeOnMessageListener(Class<T> type, Consumer<T> listener) {
-    messageListeners.get(type).remove(listener);
   }
 
   @Override

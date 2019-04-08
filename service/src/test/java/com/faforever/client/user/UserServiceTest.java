@@ -11,6 +11,7 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationEventPublisher;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -38,6 +39,8 @@ public class UserServiceTest {
   private TaskService taskService;
   @Mock
   private ApplicationContext applicationContext;
+  @Mock
+  private ApplicationEventPublisher eventPublisher;
 
   private UserService instance;
 
@@ -45,7 +48,7 @@ public class UserServiceTest {
   public void setUp() throws Exception {
     MockitoAnnotations.initMocks(this);
 
-    instance = new UserService(fafService, preferencesService, eventBus, applicationContext, taskService);
+    instance = new UserService(fafService, preferencesService, eventBus, applicationContext, taskService, eventPublisher);
 
     when(preferencesService.getPreferences()).thenReturn(preferences);
     when(preferences.getLogin()).thenReturn(login);

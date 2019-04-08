@@ -12,9 +12,9 @@ import com.faforever.client.notification.NotificationService;
 import com.faforever.client.notification.TransientNotification;
 import com.faforever.client.util.ProgrammingError;
 import com.google.common.eventbus.EventBus;
-import com.google.common.eventbus.Subscribe;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
 import java.util.concurrent.Executor;
@@ -57,7 +57,7 @@ public class OnGameFullNotifier implements InitializingBean {
     eventBus.register(this);
   }
 
-  @Subscribe
+  @EventListener
   public void onGameFull(GameFullEvent event) {
     executor.execute(() -> {
       platformService.startFlashingWindow(faWindowTitle);

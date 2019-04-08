@@ -59,7 +59,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
@@ -80,15 +79,6 @@ public class FafService {
     this.fafApiAccessor = fafApiAccessor;
     this.eventBus = eventBus;
     this.apiDtoMapper = apiDtoMapper;
-  }
-
-  public <T extends ServerMessage> void addOnMessageListener(Class<T> type, Consumer<T> listener) {
-    fafServerAccessor.addOnMessageListener(type, listener);
-  }
-
-  @SuppressWarnings("unchecked")
-  public <T extends ServerMessage> void removeOnMessageListener(Class<T> type, Consumer<T> listener) {
-    fafServerAccessor.removeOnMessageListener(type, listener);
   }
 
   public void requestHostGame(HostGameRequest hostGameRequest) {

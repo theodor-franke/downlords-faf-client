@@ -7,14 +7,15 @@ import com.faforever.client.remote.FafService;
 import com.faforever.client.task.CompletableTask;
 import com.faforever.client.task.TaskService;
 import com.google.common.eventbus.EventBus;
-import com.google.common.eventbus.Subscribe;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
 import java.lang.invoke.MethodHandles;
@@ -32,19 +33,29 @@ public class UserService implements InitializingBean {
   private final EventBus eventBus;
   private final ApplicationContext applicationContext;
   private final TaskService taskService;
+  private final ApplicationEventPublisher eventPublisher;
 
   private String password;
   private Integer userId;
   private CompletableFuture<Void> loginFuture;
 
 
-  public UserService(FafService fafService, PreferencesService preferencesService, EventBus eventBus, ApplicationContext applicationContext, TaskService taskService) {
-    displayName = new SimpleStringProperty();
+  public UserService(
+    FafService fafService,
+    PreferencesService preferencesService,
+    EventBus eventBus,
+    ApplicationContext applicationContext,
+    TaskService taskService,
+    ApplicationEventPublisher eventPublisher
+  ) {
+    this.eventPublisher = eventPublisher;
     this.fafService = fafService;
     this.preferencesService = preferencesService;
     this.eventBus = eventBus;
     this.applicationContext = applicationContext;
     this.taskService = taskService;
+
+    displayName = new SimpleStringProperty();
   }
 
 
@@ -68,7 +79,9 @@ public class UserService implements InitializingBean {
           preferencesService.getPreferences().getLogin().setUsername(displayName);
           preferencesService.storeInBackground();
 
-          eventBus.post(new LoginSuccessEvent(username, displayName, password, userId));
+          LoginSuccessEvent event = new LoginSuccessEvent(username, displayName, password, userId);
+          eventBus.post(event);
+          eventPublisher.publishEvent(event);
         })
         .whenComplete((aVoid, throwable) -> {
           if (throwable != null) {
@@ -103,9 +116,10 @@ public class UserService implements InitializingBean {
     }
   }
 
-  private void onLoginError(ErrorServerMessage noticeMessage) {
+  @EventListener
+  public void onLoginError(ErrorServerMessage message) {
     if (loginFuture != null) {
-      loginFuture.toCompletableFuture().completeExceptionally(new LoginFailedException(noticeMessage.getText()));
+      loginFuture.toCompletableFuture().completeExceptionally(new LoginFailedException(message.getText()));
       loginFuture = null;
       fafService.disconnect();
     }
@@ -128,15 +142,18 @@ public class UserService implements InitializingBean {
     return taskService.submitTask(changePasswordTask);
   }
 
+  @EventListener
+  public void onAccountDetails(AccountDetailsServerMessage message) {
+    userId = message.getId();
+  }
+
   @Override
   public void afterPropertiesSet() {
-    fafService.addOnMessageListener(AccountDetailsServerMessage.class, loginInfo -> userId = loginInfo.getId());
-    fafService.addOnMessageListener(ErrorServerMessage.class, this::onLoginError);
     eventBus.register(this);
   }
 
-  @Subscribe
-  public void onLogoutRequestEvent(LogOutRequestEvent event) {
+  @EventListener(classes =  LogOutRequestEvent.class)
+  public void onLogoutRequestEvent() {
     logOut();
   }
 }

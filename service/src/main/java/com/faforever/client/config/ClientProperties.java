@@ -43,13 +43,6 @@ public class ClientProperties {
   public static class Irc {
     private String host;
     private int port = 8167;
-    /**
-     * Channel to join by default.
-     *
-     * @deprecated shouldn't be known by the client but sent from the server.
-     */
-    @Deprecated
-    private String defaultChannel = "#aeolus";
     private int reconnectDelay = (int) Duration.ofSeconds(5).toMillis();
   }
 

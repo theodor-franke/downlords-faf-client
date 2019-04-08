@@ -6,8 +6,8 @@ import com.faforever.client.remote.UpdatedAchievementsServerMessage;
 import com.google.common.annotations.VisibleForTesting;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,7 +17,7 @@ import java.util.concurrent.CompletableFuture;
 
 @Lazy
 @Service
-public class AchievementService implements InitializingBean {
+public class AchievementService {
 
   @VisibleForTesting
   final ObservableList<PlayerAchievement> playerAchievements;
@@ -57,7 +57,8 @@ public class AchievementService implements InitializingBean {
     return fafService.getAchievement(achievementId);
   }
 
-  private CompletableFuture<List<PlayerAchievement>> reloadAchievements() {
+  @EventListener(classes = UpdatedAchievementsServerMessage.class)
+  public CompletableFuture<List<PlayerAchievement>> reloadAchievements() {
     CompletableFuture<List<PlayerAchievement>> achievementsLoadedFuture = new CompletableFuture<>();
     int playerId = playerService.getCurrentPlayer().orElseThrow(() -> new IllegalStateException("Player has to be set")).getId();
     fafService.getPlayerAchievements(playerId).thenAccept(achievements -> {
@@ -65,10 +66,5 @@ public class AchievementService implements InitializingBean {
       achievementsLoadedFuture.complete(readOnlyPlayerAchievements);
     });
     return achievementsLoadedFuture;
-  }
-
-  @Override
-  public void afterPropertiesSet() {
-    fafService.addOnMessageListener(UpdatedAchievementsServerMessage.class, updatedAchievementsMessage -> reloadAchievements());
   }
 }

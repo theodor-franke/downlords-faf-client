@@ -30,6 +30,7 @@ import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
@@ -37,15 +38,11 @@ import org.springframework.stereotype.Component;
 import java.lang.invoke.MethodHandles;
 import java.time.Instant;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.CompletableFuture;
-import java.util.function.Consumer;
 
 import static com.faforever.client.task.CompletableTask.Priority.HIGH;
 import static java.util.Collections.emptyList;
@@ -60,7 +57,7 @@ public class MockFafServerAccessor implements FafServerAccessor {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
   private static final String USER_NAME = "MockUser";
   private final Timer timer;
-  private final HashMap<Class<? extends ServerMessage>, Collection<Consumer<ServerMessage>>> messageListeners;
+  private final ApplicationEventPublisher eventPublisher;
 
   private final TaskService taskService;
   private final NotificationService notificationService;
@@ -70,28 +67,14 @@ public class MockFafServerAccessor implements FafServerAccessor {
   private ObjectProperty<ConnectionState> connectionState;
 
 
-  public MockFafServerAccessor(TaskService taskService, NotificationService notificationService, I18n i18n, EventBus eventBus) {
+  public MockFafServerAccessor(ApplicationEventPublisher eventPublisher, TaskService taskService, NotificationService notificationService, I18n i18n, EventBus eventBus) {
+    this.eventPublisher = eventPublisher;
     timer = new Timer("LobbyServerAccessorTimer", true);
-    messageListeners = new HashMap<>();
     connectionState = new SimpleObjectProperty<>();
     this.taskService = taskService;
     this.notificationService = notificationService;
     this.i18n = i18n;
     this.eventBus = eventBus;
-  }
-
-  @Override
-  @SuppressWarnings("unchecked")
-  public <T extends ServerMessage> void addOnMessageListener(Class<T> type, Consumer<T> listener) {
-    if (!messageListeners.containsKey(type)) {
-      messageListeners.put(type, new LinkedList<>());
-    }
-    messageListeners.get(type).add((Consumer<ServerMessage>) listener);
-  }
-
-  @Override
-  public <T extends ServerMessage> void removeOnMessageListener(Class<T> type, Consumer<T> listener) {
-    messageListeners.get(type).remove(listener);
   }
 
   @Override
@@ -120,7 +103,7 @@ public class MockFafServerAccessor implements FafServerAccessor {
 
         eventBus.post(new LoginSuccessEvent(username, username, password, playerServerMessage.getId()));
 
-        messageListeners.getOrDefault(playersMessage.getClass(), Collections.emptyList()).forEach(consumer -> consumer.accept(playersMessage));
+        eventPublisher.publishEvent(playersMessage);
 
         timer.schedule(new TimerTask() {
           @Override
@@ -130,8 +113,7 @@ public class MockFafServerAccessor implements FafServerAccessor {
             updatedAchievement.setNewlyUnlocked(true);
 
             UpdatedAchievementsServerMessage updatedAchievementsServerMessage = new UpdatedAchievementsServerMessage(singletonList(updatedAchievement));
-
-            messageListeners.getOrDefault(updatedAchievementsServerMessage.getClass(), Collections.emptyList()).forEach(consumer -> consumer.accept(updatedAchievementsServerMessage));
+            eventPublisher.publishEvent(updatedAchievementsServerMessage);
           }
         }, 7000);
 
@@ -141,7 +123,7 @@ public class MockFafServerAccessor implements FafServerAccessor {
             MatchMakerInfoServerMessage matchmakerServerMessage = new MatchMakerInfoServerMessage(ImmutableMap.of(
               "ladder1v1", 5
             ));
-            messageListeners.getOrDefault(matchmakerServerMessage.getClass(), Collections.emptyList()).forEach(consumer -> consumer.accept(matchmakerServerMessage));
+            eventPublisher.publishEvent(matchmakerServerMessage);
           }
         }, 7000);
 
@@ -155,9 +137,7 @@ public class MockFafServerAccessor implements FafServerAccessor {
           createGameInfo(7, "Mock game 7", true, "faf", "scmp_016", 6, "Mock user")
         );
 
-        gameInfoMessages.forEach(gameInfoMessage ->
-          messageListeners.getOrDefault(gameInfoMessage.getClass(), Collections.emptyList())
-            .forEach(consumer -> consumer.accept(gameInfoMessage)));
+        gameInfoMessages.forEach(eventPublisher::publishEvent);
 
         notificationService.addNotification(
           new PersistentNotification(

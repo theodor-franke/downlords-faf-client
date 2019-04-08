@@ -10,7 +10,9 @@ import com.faforever.client.game.relay.GpgMessage;
 import com.faforever.client.game.relay.ice.IceServersServerMessage;
 import com.faforever.client.matchmaking.MatchMakerInfoServerMessage;
 import com.faforever.client.notification.InfoServerMessage;
+import com.faforever.client.player.PlayerOfflineMessage;
 import com.faforever.client.player.PlayerServerMessage;
+import com.faforever.client.player.PlayerService;
 import com.faforever.client.player.PlayersServerMessage;
 import com.faforever.client.player.SocialRelationsServerMessage;
 import com.faforever.client.remote.ErrorServerMessage;
@@ -23,7 +25,7 @@ import org.supcomhub.server.protocol.v2.dto.server.V2GpgServerMessage;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = PlayerService.class)
 public interface V2ServerMessageMapper {
 
   GpgMessage map(V2GpgServerMessage source);
@@ -59,6 +61,9 @@ public interface V2ServerMessageMapper {
   GameResultMessage map(org.supcomhub.server.protocol.v2.dto.server.GameResultMessage source);
 
   ErrorServerMessage map(org.supcomhub.server.protocol.v2.dto.server.ErrorServerMessage source);
+
+  // FIXME lookup player when mapping this
+  PlayerOfflineMessage map(org.supcomhub.server.protocol.v2.dto.server.PlayerOfflineServerMessage source);
 
   default URL map(String url) {
     try {

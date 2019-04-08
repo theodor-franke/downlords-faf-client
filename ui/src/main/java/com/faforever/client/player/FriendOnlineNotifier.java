@@ -11,8 +11,8 @@ import com.faforever.client.preferences.NotificationsPrefs;
 import com.faforever.client.preferences.PreferencesService;
 import com.faforever.client.util.IdenticonUtil;
 import com.google.common.eventbus.EventBus;
-import com.google.common.eventbus.Subscribe;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
 
@@ -45,7 +45,7 @@ public class FriendOnlineNotifier implements InitializingBean {
     eventBus.register(this);
   }
 
-  @Subscribe
+  @EventListener
   public void onUserOnline(PlayerOnlineEvent event) {
     NotificationsPrefs notification = preferencesService.getPreferences().getNotification();
     Player player = event.getPlayer();

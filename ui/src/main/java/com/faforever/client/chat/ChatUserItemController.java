@@ -385,10 +385,10 @@ public class ChatUserItemController implements Controller<Node> {
   }
 
   private void updateNameLabelText(Player player) {
-    userTooltip.setText(String.format("%s\n%s",
       // FIXME display images
-      i18n.get("userInfo.ratingFormat", player.getRating()),
-      i18n.get("userInfo.idleTimeFormat", timeService.timeAgo(player.getIdleSince()))));
+//    userTooltip.setText(String.format("%s\n%s",
+//      i18n.get("userInfo.ratingFormat", player.getRating()),
+//      i18n.get("userInfo.idleTimeFormat", timeService.timeAgo(player.getIdleSince()))));
   }
 
   private void addListeners(@NotNull ChatChannelUser chatUser) {

@@ -50,7 +50,7 @@ public class FriendJoinedGameNotifierTest {
   public void setUp() throws Exception {
     MockitoAnnotations.initMocks(this);
 
-    instance = new FriendJoinedGameNotifier(notificationService, i18n, eventBus, joinGameHelper, preferencesService, audioService);
+    instance = new FriendJoinedGameNotifier(notificationService, i18n, joinGameHelper, preferencesService, audioService);
 
     when(preferencesService.getPreferences()).thenReturn(preferences);
     when(preferences.getNotification()).thenReturn(notification);

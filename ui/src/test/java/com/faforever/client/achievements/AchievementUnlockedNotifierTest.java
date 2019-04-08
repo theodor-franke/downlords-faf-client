@@ -48,7 +48,7 @@ public class AchievementUnlockedNotifierTest {
   public void setUp() throws Exception {
     MockitoAnnotations.initMocks(this);
 
-    instance = new AchievementUnlockedNotifier(notificationService, i18n, achievementService, achievementImageService, fafService, audioService);
+    instance = new AchievementUnlockedNotifier(notificationService, i18n, achievementService, achievementImageService, audioService);
     instance.afterPropertiesSet();
 
     Mockito.verify(fafService).addOnMessageListener(ArgumentMatchers.eq(UpdatedAchievementsServerMessage.class), listenerCaptor.capture());

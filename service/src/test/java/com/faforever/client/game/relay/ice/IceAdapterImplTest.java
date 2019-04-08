@@ -2,14 +2,17 @@ package com.faforever.client.game.relay.ice;
 
 import com.faforever.client.player.PlayerService;
 import com.faforever.client.remote.FafService;
-import com.google.common.eventbus.EventBus;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationEventPublisher;
 
+// TODO implement tests
+@Ignore
 @RunWith(MockitoJUnitRunner.class)
 public class IceAdapterImplTest {
 
@@ -20,13 +23,13 @@ public class IceAdapterImplTest {
   @Mock
   private PlayerService playerService;
   @Mock
-  private EventBus eventBus;
+  private ApplicationEventPublisher eventPublisher;
   @Mock
   private FafService fafService;
 
   @Before
   public void setUp() throws Exception {
-    instance = new IceAdapterImpl(applicationContext, playerService, eventBus, fafService);
+    instance = new IceAdapterImpl(applicationContext, playerService, fafService, eventPublisher);
   }
 
   @Test

@@ -9,18 +9,11 @@ import com.faforever.client.user.AccountDetailsServerMessage;
 import javafx.beans.property.ReadOnlyObjectProperty;
 
 import java.util.concurrent.CompletableFuture;
-import java.util.function.Consumer;
 
 /**
  * Entry class for all communication with the FAF server.
  */
 public interface FafServerAccessor {
-
-  @SuppressWarnings("unchecked")
-  <T extends ServerMessage> void addOnMessageListener(Class<T> type, Consumer<T> listener);
-
-  @SuppressWarnings("unchecked")
-  <T extends ServerMessage> void removeOnMessageListener(Class<T> type, Consumer<T> listener);
 
   ReadOnlyObjectProperty<ConnectionState> connectionStateProperty();
 

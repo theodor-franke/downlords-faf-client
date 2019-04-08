@@ -16,8 +16,6 @@ import com.faforever.client.game.relay.ice.event.IceAdapterStateChanged;
 import com.faforever.client.player.Player;
 import com.faforever.client.player.PlayerService;
 import com.faforever.client.remote.FafService;
-import com.google.common.eventbus.EventBus;
-import com.google.common.eventbus.Subscribe;
 import com.nbarraille.jjsonrpc.JJsonPeer;
 import com.nbarraille.jjsonrpc.TcpClient;
 import lombok.SneakyThrows;
@@ -27,9 +25,10 @@ import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import org.springframework.util.SocketUtils;
 
@@ -52,47 +51,65 @@ import static java.util.Arrays.asList;
 @Component
 @Lazy
 @Slf4j
-public class IceAdapterImpl implements IceAdapter, InitializingBean, DisposableBean {
+public class IceAdapterImpl implements IceAdapter, DisposableBean {
 
   private static final int CONNECTION_ATTEMPTS = 5;
 
   private final ApplicationContext applicationContext;
   private final PlayerService playerService;
-  private final EventBus eventBus;
   private final FafService fafService;
   private final IceAdapterApi iceAdapterProxy;
+  private final ApplicationEventPublisher eventPublisher;
 
   private CompletableFuture<Integer> iceAdapterClientFuture;
   private Process process;
   private LobbyMode lobbyInitMode;
   private JJsonPeer peer;
 
-  public IceAdapterImpl(ApplicationContext applicationContext, PlayerService playerService,
-                        EventBus eventBus, FafService fafService) {
+  public IceAdapterImpl(
+    ApplicationContext applicationContext,
+    PlayerService playerService,
+    FafService fafService,
+    ApplicationEventPublisher eventPublisher
+  ) {
     this.applicationContext = applicationContext;
     this.playerService = playerService;
-    this.eventBus = eventBus;
     this.fafService = fafService;
+    this.eventPublisher = eventPublisher;
 
     iceAdapterProxy = newIceAdapterProxy();
   }
 
-  @Override
-  public void afterPropertiesSet() {
-    eventBus.register(this);
-    fafService.addOnMessageListener(JoinGameMessage.class, message -> iceAdapterProxy.joinGame(message.getUsername(), message.getPeerUid()));
-    fafService.addOnMessageListener(HostGameMessage.class, message -> iceAdapterProxy.hostGame(message.getMapName()));
-    fafService.addOnMessageListener(ConnectToPeerMessage.class, message -> iceAdapterProxy.connectToPeer(message.getUsername(), message.getPeerUid(), message.isOffer()));
-    fafService.addOnMessageListener(StartGameProcessServerMessage.class, this::updateLobbyModeFromGameInfo);
-    fafService.addOnMessageListener(DisconnectFromPeerMessage.class, message -> iceAdapterProxy.disconnectFromPeer(message.getUid()));
-    fafService.addOnMessageListener(IceServerMessage.class, message -> iceAdapterProxy.iceMsg(message.getSenderId(), message.getContent()));
+  @EventListener
+  public void onJoinGameMessage(JoinGameMessage message) {
+    iceAdapterProxy.joinGame(message.getUsername(), message.getPeerUid());
+  }
+
+  @EventListener
+  public void onHostGameMessage(HostGameMessage message) {
+    iceAdapterProxy.hostGame(message.getMapName());
+  }
+
+  @EventListener
+  public void onConnectToPeerMessage(ConnectToPeerMessage message) {
+    iceAdapterProxy.connectToPeer(message.getUsername(), message.getPeerUid(), message.isOffer());
+  }
+
+  @EventListener
+  public void onDisconnectFromPeerMessage(DisconnectFromPeerMessage message) {
+    iceAdapterProxy.disconnectFromPeer(message.getUid());
+  }
+
+  @EventListener
+  public void onIceServerMessage(IceServerMessage message) {
+    iceAdapterProxy.iceMsg(message.getSenderId(), message.getContent());
   }
 
   @SneakyThrows
   private List<Map<String, String>> toIceServers(List<IceServer> iceServers) {
     return iceServers.stream()
-        .map(this::toIceServer)
-        .collect(Collectors.toList());
+      .map(this::toIceServer)
+      .collect(Collectors.toList());
   }
 
   @NotNull
@@ -110,7 +127,7 @@ public class IceAdapterImpl implements IceAdapter, InitializingBean, DisposableB
     return map;
   }
 
-  @Subscribe
+  @EventListener
   public void onIceAdapterStateChanged(IceAdapterStateChanged event) {
     switch (event.getNewState()) {
       case "Disconnected":
@@ -119,17 +136,17 @@ public class IceAdapterImpl implements IceAdapter, InitializingBean, DisposableB
     }
   }
 
-  @Subscribe
+  @EventListener
   public void onGpgGameMessage(GpgGameMessageEvent event) {
     GpgGameMessage gpgGameMessage = event.getGpgGameMessage();
     GpgClientCommand command = gpgGameMessage.getCommand();
 
     if (command == GpgClientCommand.REHOST) {
-      eventBus.post(new RehostRequestEvent());
+      eventPublisher.publishEvent(new RehostRequestEvent());
       return;
     }
     if (command == GpgClientCommand.GAME_FULL) {
-      eventBus.post(new GameFullEvent());
+      eventPublisher.publishEvent(new GameFullEvent());
       return;
     }
 
@@ -146,16 +163,16 @@ public class IceAdapterImpl implements IceAdapter, InitializingBean, DisposableB
       int gpgPort = SocketUtils.findAvailableTcpPort();
 
       Player currentPlayer = playerService.getCurrentPlayer()
-          .orElseThrow(() -> new IllegalStateException("Player has not been set"));
+        .orElseThrow(() -> new IllegalStateException("Player has not been set"));
 
 
       Path workDirectory = Paths.get(nativeDir).toAbsolutePath();
       String[] cmd = new String[]{
-          getBinaryName(workDirectory),
-          "--id", String.valueOf(currentPlayer.getId()),
-          "--login", currentPlayer.getDisplayName(),
-          "--rpc-port", String.valueOf(adapterPort),
-          "--gpgnet-port", String.valueOf(gpgPort)
+        getBinaryName(workDirectory),
+        "--id", String.valueOf(currentPlayer.getId()),
+        "--login", currentPlayer.getDisplayName(),
+        "--rpc-port", String.valueOf(adapterPort),
+        "--gpgnet-port", String.valueOf(gpgPort)
       };
 
       try {
@@ -208,11 +225,11 @@ public class IceAdapterImpl implements IceAdapter, InitializingBean, DisposableB
 
   private void setIceServers() {
     fafService.getIceServers()
-        .thenAccept(iceServers -> iceAdapterProxy.setIceServers(toIceServers(iceServers.getServers())))
-        .exceptionally(throwable -> {
-          log.warn("Could not get ICE servers", throwable);
-          return null;
-        });
+      .thenAccept(iceServers -> iceAdapterProxy.setIceServers(toIceServers(iceServers.getServers())))
+      .exceptionally(throwable -> {
+        log.warn("Could not get ICE servers", throwable);
+        return null;
+      });
   }
 
   private void setLobbyInitMode() {
@@ -228,28 +245,29 @@ public class IceAdapterImpl implements IceAdapter, InitializingBean, DisposableB
 
   private IceAdapterApi newIceAdapterProxy() {
     return (IceAdapterApi) Proxy.newProxyInstance(getClass().getClassLoader(), new Class<?>[]{IceAdapterApi.class},
-        (Object proxy, Method method, Object[] args) -> {
-          if ("toString".equals(method.getName())) {
-            return "ICE adapter proxy";
-          }
-
-          List<Object> argList = args == null ? Collections.emptyList() : asList(args);
-          if (peer == null || !peer.isAlive() && !"quit".equals(method.getName())) {
-            log.warn("Ignoring call to ICE adapter as we are not connected: {}({})", method.getName(), argList);
-            return null;
-          }
-          log.debug("Calling {}({})", method.getName(), argList);
-          if (method.getReturnType() == void.class) {
-            peer.sendAsyncRequest(method.getName(), argList, null, true);
-            return null;
-          } else {
-            return peer.sendSyncRequest(method.getName(), argList, true);
-          }
+      (Object proxy, Method method, Object[] args) -> {
+        if ("toString".equals(method.getName())) {
+          return "ICE adapter proxy";
         }
+
+        List<Object> argList = args == null ? Collections.emptyList() : asList(args);
+        if (peer == null || !peer.isAlive() && !"quit".equals(method.getName())) {
+          log.warn("Ignoring call to ICE adapter as we are not connected: {}({})", method.getName(), argList);
+          return null;
+        }
+        log.debug("Calling {}({})", method.getName(), argList);
+        if (method.getReturnType() == void.class) {
+          peer.sendAsyncRequest(method.getName(), argList, null, true);
+          return null;
+        } else {
+          return peer.sendSyncRequest(method.getName(), argList, true);
+        }
+      }
     );
   }
 
-  private void updateLobbyModeFromGameInfo(StartGameProcessServerMessage gameLaunchMessage) {
+  @EventListener
+  public void onStartGameProcessMessage(StartGameProcessServerMessage gameLaunchMessage) {
     if (KnownFeaturedMod.LADDER_1V1.getTechnicalName().equals(gameLaunchMessage.getMod())) {
       lobbyInitMode = LobbyMode.DEFAULT_LOBBY;
     } else {

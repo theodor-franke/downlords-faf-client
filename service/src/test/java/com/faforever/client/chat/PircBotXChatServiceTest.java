@@ -10,7 +10,6 @@ import com.faforever.client.player.PlayerBuilder;
 import com.faforever.client.player.SocialStatus;
 import com.faforever.client.preferences.Preferences;
 import com.faforever.client.preferences.PreferencesService;
-import com.faforever.client.remote.FafService;
 import com.faforever.client.task.CompletableTask;
 import com.faforever.client.task.TaskService;
 import com.faforever.client.test.AbstractPlainJavaFxTest;
@@ -64,7 +63,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Consumer;
 
 import static com.faforever.client.preferences.ChatColorMode.CUSTOM;
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -80,7 +78,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -137,14 +134,10 @@ public class PircBotXChatServiceTest extends AbstractPlainJavaFxTest {
   @Mock
   private UserChannelDao<User, org.pircbotx.Channel> userChannelDao;
   @Mock
-  private FafService fafService;
-  @Mock
   private ThreadPoolExecutor threadPoolExecutor;
   @Mock
   private EventBus eventBus;
 
-  @Captor
-  private ArgumentCaptor<Consumer<ChatChannelsServerMessage>> socialMessageListenerCaptor;
   @Captor
   private ArgumentCaptor<Configuration> configurationCaptor;
 
@@ -161,7 +154,7 @@ public class PircBotXChatServiceTest extends AbstractPlainJavaFxTest {
       .setDefaultChannel(DEFAULT_CHANNEL_NAME)
       .setReconnectDelay(100);
 
-    instance = new PircBotXChatService(preferencesService, userService, taskService, fafService, i18n, pircBotXFactory,
+    instance = new PircBotXChatService(preferencesService, userService, taskService, i18n, pircBotXFactory,
       threadPoolExecutor, eventBus, clientProperties);
 
     botShutdownLatch = new CountDownLatch(1);
@@ -212,8 +205,6 @@ public class PircBotXChatServiceTest extends AbstractPlainJavaFxTest {
     chatUser2 = instance.getOrCreateChatUser(user2.getNick(), DEFAULT_CHANNEL_NAME, false);
 
     instance.afterPropertiesSet();
-
-    verify(fafService).addOnMessageListener(eq(ChatChannelsServerMessage.class), socialMessageListenerCaptor.capture());
   }
 
   @After
@@ -263,7 +254,7 @@ public class PircBotXChatServiceTest extends AbstractPlainJavaFxTest {
     ChatChannelsServerMessage chatChannelServerMessage = new ChatChannelsServerMessage();
     chatChannelServerMessage.setChannels(Collections.emptySet());
 
-    socialMessageListenerCaptor.getValue().accept(chatChannelServerMessage);
+    instance.onSocialMessage(chatChannelServerMessage);
     verify(outputIrc, timeout(TIMEOUT).atLeastOnce()).joinChannel(DEFAULT_CHANNEL_NAME);
   }
 

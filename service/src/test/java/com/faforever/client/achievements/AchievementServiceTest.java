@@ -12,7 +12,6 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -50,15 +49,13 @@ public class AchievementServiceTest {
     Player player = new Player("abc");
     player.setId(PLAYER_ID);
     Mockito.when(playerService.getCurrentPlayer()).thenReturn(Optional.of(player));
-
-    instance.afterPropertiesSet();
   }
 
   @Test
   public void testGetPlayerAchievementsForCurrentUser() {
     instance.playerAchievements.add(new PlayerAchievement());
     instance.getPlayerAchievements(PLAYER_ID);
-    Mockito.verify(fafService).addOnMessageListener(ArgumentMatchers.any(), ArgumentMatchers.any());
+    Mockito.verify(fafService).getPlayerAchievements(PLAYER_ID);
     verifyNoMoreInteractions(fafService);
   }
 

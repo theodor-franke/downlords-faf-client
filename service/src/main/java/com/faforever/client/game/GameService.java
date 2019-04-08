@@ -23,9 +23,6 @@ import com.faforever.client.remote.FafService;
 import com.faforever.client.replay.ReplayService;
 import com.faforever.client.reporting.ReportingService;
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.eventbus.EventBus;
-import com.google.common.eventbus.Subscribe;
-import javafx.application.Platform;
 import javafx.beans.Observable;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanProperty;
@@ -46,6 +43,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
@@ -65,7 +63,6 @@ import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executor;
-import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -107,7 +104,6 @@ public class GameService implements InitializingBean {
   private final Executor executor;
   private final PlayerService playerService;
   private final ReportingService reportingService;
-  private final EventBus eventBus;
   private final IceAdapter iceAdapter;
   private final ModService modService;
   private final PlatformService platformService;
@@ -136,7 +132,6 @@ public class GameService implements InitializingBean {
     @Qualifier("taskExecutor") Executor executor,
     PlayerService playerService,
     ReportingService reportingService,
-    EventBus eventBus,
     IceAdapter iceAdapter,
     ModService modService,
     PlatformService platformService,
@@ -152,7 +147,6 @@ public class GameService implements InitializingBean {
     this.executor = executor;
     this.playerService = playerService;
     this.reportingService = reportingService;
-    this.eventBus = eventBus;
     this.iceAdapter = iceAdapter;
     this.modService = modService;
     this.platformService = platformService;
@@ -200,11 +194,10 @@ public class GameService implements InitializingBean {
       }
     });
     JavaFxUtil.attachListToMap(games, uidToGameInfoBean);
-
-    fafService.addOnMessageListener(StartGameProcessServerMessage.class, this::onStartGameProcessMessage);
   }
 
-  private void onStartGameProcessMessage(StartGameProcessServerMessage message) {
+  @EventListener
+  public void onStartGameProcessMessage(StartGameProcessServerMessage message) {
     if (gameLaunchFuture != null) {
       gameLaunchFuture.complete(message);
       gameLaunchFuture = null;
@@ -315,7 +308,7 @@ public class GameService implements InitializingBean {
   }
 
   private void notifyCantPlayReplay(@Nullable Integer replayId, Throwable throwable) {
-    logger.error("Could not play replay '" + replayId + "'", throwable);
+    logger.error("Could not play replay '{}'", replayId, throwable);
     notificationService.addNotification(new ImmediateErrorNotification(
       i18n.get("errorTitle"),
       i18n.get("replayCouldNotBeStarted", replayId),
@@ -360,10 +353,6 @@ public class GameService implements InitializingBean {
       logger.warn("Can't find {} in gameInfoBean map", uid);
     }
     return game;
-  }
-
-  public void addOnRankedMatchNotificationListener(Consumer<MatchAvailableNotification> listener) {
-    fafService.addOnMessageListener(MatchAvailableNotification.class, listener);
   }
 
   public CompletableFuture<Void> startSearchLadder1v1(Faction faction) {
@@ -555,7 +544,7 @@ public class GameService implements InitializingBean {
     }
   }
 
-  @Subscribe
+  @EventListener
   public void onRehostRequest(RehostRequestEvent event) {
     this.rehostRequested = true;
     synchronized (gameRunning) {
@@ -568,10 +557,6 @@ public class GameService implements InitializingBean {
 
   @Override
   public void afterPropertiesSet() {
-    eventBus.register(this);
-    fafService.addOnMessageListener(GameInfoServerMessage.class, message -> Platform.runLater(() -> onGameInfo(message)));
-    fafService.addOnMessageListener(GameInfosServerMessage.class, message -> Platform.runLater(() -> onGameInfos(message)));
-    fafService.addOnMessageListener(PlayerServerMessage.class, message -> onLoggedIn());
     JavaFxUtil.addListener(fafService.connectionStateProperty(), (observable, oldValue, newValue) -> {
       if (newValue == ConnectionState.DISCONNECTED) {
         synchronized (uidToGameInfoBean) {
@@ -581,17 +566,20 @@ public class GameService implements InitializingBean {
     });
   }
 
-  private void onLoggedIn() {
+  @EventListener(classes = PlayerServerMessage.class)
+  public void onLoggedIn() {
     if (isGameRunning()) {
       fafService.restoreGameSession(currentGame.get().getId());
     }
   }
 
-  private void onGameInfos(GameInfosServerMessage message) {
+  @EventListener
+  public void onGameInfos(GameInfosServerMessage message) {
     message.getGames().forEach(this::onGameInfo);
   }
 
-  private void onGameInfo(GameInfoServerMessage gameInfoMessage) {
+  @EventListener
+  public void onGameInfo(GameInfoServerMessage gameInfoMessage) {
     // Since all game updates are usually reflected on the UI and to prevent deadlocks
     JavaFxUtil.assertApplicationThread();
 

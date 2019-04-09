@@ -6,7 +6,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.integration.channel.DirectChannel;
 import org.springframework.integration.dsl.MessageChannels;
 import org.springframework.messaging.MessageChannel;
-import org.springframework.messaging.SubscribableChannel;
 
 import java.util.concurrent.Executors;
 
@@ -49,10 +48,5 @@ public class ChannelConfiguration {
     return MessageChannels
       .executor(Executors.newSingleThreadExecutor(runnable -> new Thread(runnable, "server-outbound")))
       .get();
-  }
-
-  @Bean(name = ChannelNames.SERVER_DISCONNECTED_EVENT)
-  public SubscribableChannel serverDisconnectedEvent() {
-    return MessageChannels.publishSubscribe().get();
   }
 }

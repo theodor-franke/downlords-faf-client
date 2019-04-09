@@ -151,7 +151,6 @@ public class PircBotXChatServiceTest extends AbstractPlainJavaFxTest {
     clientProperties.getIrc()
       .setHost(LOOPBACK_ADDRESS.getHostAddress())
       .setPort(IRC_SERVER_PORT)
-      .setDefaultChannel(DEFAULT_CHANNEL_NAME)
       .setReconnectDelay(100);
 
     instance = new PircBotXChatService(preferencesService, userService, taskService, i18n, pircBotXFactory,
@@ -252,7 +251,7 @@ public class PircBotXChatServiceTest extends AbstractPlainJavaFxTest {
     firePircBotXEvent(new NoticeEvent(pircBotX, nickServHostMask, null, null, "", "you are now identified", ImmutableMap.of()));
 
     ChatChannelsServerMessage chatChannelServerMessage = new ChatChannelsServerMessage();
-    chatChannelServerMessage.setChannels(Collections.emptySet());
+    chatChannelServerMessage.setChannels(Collections.singletonList(DEFAULT_CHANNEL_NAME));
 
     instance.onSocialMessage(chatChannelServerMessage);
     verify(outputIrc, timeout(TIMEOUT).atLeastOnce()).joinChannel(DEFAULT_CHANNEL_NAME);

@@ -55,5 +55,5 @@ dependencies {
   // TODO this should be "implementation" but the search controller currently relies on DTOs
   //  we aim to not leak DTOs into the UI code
   compile 'org.supcomhub.api:sh-api-java-dto:2.2.8'
-  implementation "org.supcomhub.server:sh-server-v2p-java-dto:2.1.1"
+  implementation "org.supcomhub.server:sh-server-v2p-java-dto:2.2.3"
 }

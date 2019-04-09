@@ -5,13 +5,11 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.integration.IntegrationMessageHeaderAccessor;
-import org.springframework.integration.annotation.IntegrationComponentScan;
 import org.springframework.integration.dsl.IntegrationFlow;
 import org.springframework.integration.dsl.IntegrationFlows;
 import org.springframework.integration.event.outbound.ApplicationEventPublishingMessageHandler;
 
 @Configuration
-@IntegrationComponentScan("com.faforever.server.integration")
 public class IntegrationConfig {
 
   private final ApplicationEventPublisher applicationEventPublisher;
@@ -37,17 +35,6 @@ public class IntegrationConfig {
     return IntegrationFlows
       .from(ChannelNames.INBOUND_DISPATCH)
       .handle(applicationEventPublishingMessageHandler())
-      .get();
-  }
-
-  /**
-   * Reads messages from the server outbound channel and sends it to the target adapter's channel.
-   */
-  @Bean
-  public IntegrationFlow outboundFlow() {
-    return IntegrationFlows
-      .from(ChannelNames.SERVER_OUTBOUND)
-      .channel(ChannelNames.WEB_OUTBOUND)
       .get();
   }
 

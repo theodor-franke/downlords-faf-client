@@ -11,14 +11,11 @@ import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.control.MenuButton;
 import javafx.scene.image.ImageView;
-import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.context.annotation.Scope;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
 @Component
-@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class UserButtonController implements Controller<Node> {
 
   private final PlayerService playerService;

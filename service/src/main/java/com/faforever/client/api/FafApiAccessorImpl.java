@@ -406,7 +406,7 @@ public class FafApiAccessorImpl implements FafApiAccessor, InitializingBean {
 
   @Override
   public List<LadderMap> getLadder1v1Maps(int count, int page) {
-    return getPage("/data/ladder1v1Map", count, page, ImmutableMap.of(
+    return getPage("/data/matchmakerMap", count, page, ImmutableMap.of(
       "include", "mapVersion,mapVersion.map,mapVersion.map.latestVersion,mapVersion.map.latestVersion.reviews,mapVersion.map.author,mapVersion.map.statistics"));
   }
 

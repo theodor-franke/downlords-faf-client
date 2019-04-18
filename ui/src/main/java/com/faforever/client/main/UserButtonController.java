@@ -11,11 +11,13 @@ import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.control.MenuButton;
 import javafx.scene.image.ImageView;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
 @Component
+@Slf4j
 public class UserButtonController implements Controller<Node> {
 
   private final PlayerService playerService;
@@ -24,7 +26,8 @@ public class UserButtonController implements Controller<Node> {
 
   public MenuButton userButtonRoot;
   public ImageView userImageView;
-
+  /** To protect against application events when the FXML component has not yet been initialized. */
+  private boolean initialized;
 
   public UserButtonController(PlayerService playerService, UiService uiService, ApplicationEventPublisher eventPublisher) {
     this.playerService = playerService;
@@ -32,8 +35,18 @@ public class UserButtonController implements Controller<Node> {
     this.eventPublisher = eventPublisher;
   }
 
+  @Override
+  public void initialize() {
+    initialized = true;
+  }
+
   @EventListener
   public void onLoginSuccessEvent(LoginSuccessEvent event) {
+    if (!initialized) {
+      log.warn("Ignoring player online event as this component has not yet been initialized: {}", this);
+      return;
+    }
+
     Platform.runLater(() -> {
       userButtonRoot.setText(event.getDisplayName());
       userImageView.setImage(IdenticonUtil.createIdenticon(event.getUserId()));

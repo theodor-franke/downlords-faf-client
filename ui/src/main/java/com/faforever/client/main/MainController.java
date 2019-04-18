@@ -126,7 +126,8 @@ public class MainController implements Controller<Node> {
   Popup persistentNotificationsPopup;
   private NavigationItem currentItem;
   private BorderlessScene mainScene;
-
+  /** To protect against application events when the FXML component has not yet been initialized. */
+  private boolean initialized;
 
   public MainController(PreferencesService preferencesService, I18n i18n, NotificationService notificationService,
                         PlayerService playerService, GameService gameService, ClientUpdateService clientUpdateService,
@@ -196,6 +197,8 @@ public class MainController implements Controller<Node> {
     notificationService.addTransientNotificationListener(notification -> runLater(() -> transientNotificationsController.addNotification(notification)));
     // Always load chat immediately so messages or joined channels don't need to be cached until we display them.
     getView(NavigationItem.CHAT);
+
+    initialized = true;
   }
 
   @Subscribe
@@ -210,6 +213,10 @@ public class MainController implements Controller<Node> {
 
   @EventListener
   public void onUnreadNews(UnreadNewsEvent event) {
+    if (!initialized) {
+      log.warn("Ignoring unread news event as this component has not yet been initialized: {}", this);
+      return;
+    }
     runLater(() -> newsButton.pseudoClassStateChanged(HIGHLIGHTED, event.hasUnreadNews()));
   }
 
@@ -274,6 +281,11 @@ public class MainController implements Controller<Node> {
 
   @EventListener
   public void onMatchmakerMessage(MatchAvailableNotification message) {
+    if (!initialized) {
+      log.warn("Ignoring matchmaker notification as this component has not yet been initialized: {}", this);
+      return;
+    }
+
     if (message.getPoolNameToSearchers() == null
       || message.getPoolNameToSearchers().isEmpty()
       || gameService.gameRunningProperty().get()

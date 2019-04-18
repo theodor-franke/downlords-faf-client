@@ -34,6 +34,7 @@ import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.text.Text;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Lazy;
@@ -53,6 +54,7 @@ import java.util.stream.Collectors;
 
 @Component
 @Lazy
+@Slf4j
 // TODO clean up this class
 public class Ladder1v1Controller extends AbstractViewController<Node> {
 
@@ -90,6 +92,8 @@ public class Ladder1v1Controller extends AbstractViewController<Node> {
   private Text youLabel;
   // Kept as a field in order to prevent garbage collection
   private PreferenceUpdateListener preferenceUpdateListener;
+  /** To protect against application events when the FXML component has not yet been initialized. */
+  private boolean initialized;
 
 
   public Ladder1v1Controller(GameService gameService,
@@ -144,6 +148,8 @@ public class Ladder1v1Controller extends AbstractViewController<Node> {
 
     JavaFxUtil.addListener(playerService.currentPlayerProperty(), (observable, oldValue, newValue) -> Platform.runLater(() -> setCurrentPlayer(newValue)));
     playerService.getCurrentPlayer().ifPresent(this::setCurrentPlayer);
+
+    initialized = true;
   }
 
   @VisibleForTesting
@@ -196,6 +202,10 @@ public class Ladder1v1Controller extends AbstractViewController<Node> {
 
   @EventListener
   public void onPlayerUpdated(PlayerUpdatedEvent event) {
+    if (!initialized) {
+      log.warn("Ignoring player online event as this component has not yet been initialized: {}", this);
+      return;
+    }
     update(event.getPlayer());
   }
 

@@ -47,6 +47,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.web.WebView;
 import javafx.stage.Popup;
 import javafx.stage.PopupWindow;
+import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
@@ -73,6 +74,7 @@ import static java.util.Locale.US;
 
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
+@Slf4j
 public class ChannelTabController extends AbstractChatTabController {
 
   @VisibleForTesting
@@ -141,6 +143,8 @@ public class ChannelTabController extends AbstractChatTabController {
   /** For a set of usernames. */
   @SuppressWarnings("FieldCanBeLocal")
   private SetChangeListener<String> moderatorsChangedListener;
+  /** To protect against application events when the FXML component has not yet been initialized. */
+  private boolean initialized;
 
   // TODO cut dependencies
   public ChannelTabController(UserService userService, ChatService chatService,
@@ -263,6 +267,8 @@ public class ChannelTabController extends AbstractChatTabController {
     chatUserListView.setCellFactory(param -> new ChatUserListCell(uiService));
 
     autoCompletionHelper.bindTo(messageTextField());
+
+    initialized = true;
   }
 
   @Override
@@ -603,6 +609,10 @@ public class ChannelTabController extends AbstractChatTabController {
 
   @EventListener
   public void onPlayerOnline(PlayerOnlineEvent event) {
+    if (!initialized) {
+      log.warn("Ignoring player online event as this component has not yet been initialized: {}", this);
+      return;
+    }
     // We could add a listener on chatChannelUser.playerProperty() but this would result in thousands of mostly idle
     // listeners which we're trying to avoid.
     ChatChannelUser chatUser = chatService.getChatUser(event.getPlayer().getDisplayName(), channel.getName());

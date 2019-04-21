@@ -85,7 +85,6 @@ public class UserService implements InitializingBean {
         })
         .whenComplete((aVoid, throwable) -> {
           if (throwable != null) {
-            logger.warn("Error during login", throwable);
             fafService.disconnect();
           }
           loginFuture = null;

@@ -14,6 +14,7 @@ import com.faforever.client.integration.ChannelNames;
 import com.faforever.client.integration.Protocol;
 import com.faforever.client.integration.ServerGateway;
 import com.faforever.client.integration.v2.server.V2ServerMessageTransformer;
+import com.faforever.client.login.LoginFailedException;
 import com.faforever.client.matchmaking.CancelMatchSearchClientMessage;
 import com.faforever.client.matchmaking.SearchMatchClientMessage;
 import com.faforever.client.net.ConnectionState;
@@ -21,13 +22,16 @@ import com.faforever.client.player.UpdateSocialRelationClientMessage;
 import com.faforever.client.player.UpdateSocialRelationClientMessage.Operation;
 import com.faforever.client.player.UpdateSocialRelationClientMessage.RelationType;
 import com.faforever.client.user.AccountDetailsServerMessage;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.websocket.Constants;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.context.annotation.Profile;
 import org.springframework.context.event.EventListener;
+import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.integration.dsl.IntegrationFlows;
 import org.springframework.integration.dsl.StandardIntegrationFlow;
 import org.springframework.integration.dsl.context.IntegrationFlowContext;
@@ -42,6 +46,7 @@ import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 
+import javax.websocket.DeploymentException;
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -127,6 +132,7 @@ public class V2ServerAccessor implements FafServerAccessor {
     webSocketClient = new StandardWebSocketClient();
     webSocketClient.getUserProperties().put(Constants.WS_AUTHENTICATION_USER_NAME, username);
     webSocketClient.getUserProperties().put(Constants.WS_AUTHENTICATION_PASSWORD, password);
+    webSocketClient.setTaskExecutor(createOpenConnectionTaskExecutor());
 
     webSocketContainer = new ClientWebSocketContainer(webSocketClient, webSocketUrl);
     webSocketContainer.addSupportedProtocols(Protocol.V2_JSON_UTF_8.name());
@@ -147,7 +153,39 @@ public class V2ServerAccessor implements FafServerAccessor {
       .getId();
 
     loginFuture = Optional.of(new CompletableFuture<>());
-    return loginFuture.get();
+    return CompletableFuture.runAsync(() -> {
+      try {
+        // Test the connection, throws an exception if connection failed.
+        webSocketContainer.getSession(null);
+      } catch (Exception e) {
+        handleConnectException(e);
+      }
+    })
+      .thenCompose(aVoid -> loginFuture.orElseThrow(() -> new IllegalStateException("Login future not set")));
+  }
+
+  @NotNull
+  private SimpleAsyncTaskExecutor createOpenConnectionTaskExecutor() {
+    return new SimpleAsyncTaskExecutor(new ThreadFactoryBuilder()
+      .setUncaughtExceptionHandler((t, e) -> handleConnectException(e))
+      .build()
+    );
+  }
+
+  private void handleConnectException(Throwable throwable) {
+    disconnect();
+
+    LoginFailedException exception;
+    if (throwable instanceof IllegalStateException && throwable.getCause() instanceof DeploymentException) {
+      exception = new LoginFailedException(throwable.getCause().getLocalizedMessage(), throwable);
+    } else {
+      exception = new LoginFailedException(throwable);
+    }
+
+    loginFuture.ifPresentOrElse(
+      future -> future.completeExceptionally(exception),
+      () -> log.warn("Received account details but wasn't logging in")
+    );
   }
 
   @EventListener
@@ -156,6 +194,7 @@ public class V2ServerAccessor implements FafServerAccessor {
       future -> future.complete(accountDetailsServerMessage),
       () -> log.warn("Received account details but wasn't logging in")
     );
+    loginFuture = Optional.empty();
   }
 
   @Override

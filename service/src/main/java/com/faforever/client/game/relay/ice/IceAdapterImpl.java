@@ -269,7 +269,7 @@ public class IceAdapterImpl implements IceAdapter, DisposableBean {
   @EventListener
   public void onStartGameProcessMessage(StartGameProcessServerMessage gameLaunchMessage) {
     if (KnownFeaturedMod.LADDER_1V1.getTechnicalName().equals(gameLaunchMessage.getMod())) {
-      lobbyInitMode = LobbyMode.DEFAULT_LOBBY;
+      lobbyInitMode = LobbyMode.NO_LOBBY;
     } else {
       lobbyInitMode = LobbyMode.DEFAULT_LOBBY;
     }

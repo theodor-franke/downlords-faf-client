@@ -330,7 +330,8 @@ public class PreferencesService implements InitializingBean {
   }
 
   public boolean isGamePathValid() {
-    return isGamePathValid(preferences.getForgedAlliance().getPath().resolve("bin"));
+    return preferences.getForgedAlliance().getInstallationPath() != null
+      && isGamePathValid(preferences.getForgedAlliance().getInstallationPath().resolve("bin"));
   }
 
   public boolean isGamePathValid(Path binPath) {

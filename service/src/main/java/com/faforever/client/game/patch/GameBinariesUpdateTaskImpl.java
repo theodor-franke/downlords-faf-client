@@ -27,6 +27,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.stream.Stream;
 
 import static com.github.nocatch.NoCatch.noCatch;
 import static java.nio.file.Files.copy;
@@ -118,7 +119,8 @@ public class GameBinariesUpdateTaskImpl extends CompletableTask<Void> implements
 
     Path faBinPath = preferencesService.getPreferences().getForgedAlliance().getPath().resolve("bin");
 
-    Files.list(faBinPath)
+    try (Stream<Path> faBinPathStream = Files.list(faBinPath)) {
+      faBinPathStream
         .filter(path -> BINARIES_TO_COPY.contains(path.getFileName().toString()))
         .forEach(source -> {
           Path destination = fafBinDirectory.resolve(source.getFileName());
@@ -131,6 +133,7 @@ public class GameBinariesUpdateTaskImpl extends CompletableTask<Void> implements
             noCatch(() -> setAttribute(destination, "dos:readonly", false));
           }
         });
+    }
   }
 
   @Override

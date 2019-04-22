@@ -51,6 +51,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Stream;
 
 import static com.github.nocatch.NoCatch.noCatch;
 import static java.nio.file.Files.list;
@@ -167,9 +168,9 @@ public class MapService implements InitializingBean, DisposableBean {
         updateTitle(i18n.get("mapVault.loadingMaps"));
         Path officialMapsPath = preferencesService.getPreferences().getForgedAlliance().getPath().resolve("maps");
 
-        try {
+        try (Stream<Path> customMapsDirectoryStream = list(customMapsDirectory)) {
           List<Path> mapPaths = new ArrayList<>();
-          Files.list(customMapsDirectory).collect(toCollection(() -> mapPaths));
+          customMapsDirectoryStream.collect(toCollection(() -> mapPaths));
           Arrays.stream(OfficialMap.values())
             .map(map -> officialMapsPath.resolve(map.name()))
             .collect(toCollection(() -> mapPaths));
@@ -211,12 +212,12 @@ public class MapService implements InitializingBean, DisposableBean {
       throw new MapLoadException("Not a folder: " + mapFolder.toAbsolutePath());
     }
 
-    Path scenarioLuaPath = noCatch(() -> list(mapFolder))
-      .filter(file -> file.getFileName().toString().endsWith("_scenario.lua"))
-      .findFirst()
-      .orElseThrow(() -> new MapLoadException("Map folder does not contain a *_scenario.lua: " + mapFolder.toAbsolutePath()));
+    try (Stream<Path> mapFolderFilesStream = list(mapFolder)) {
+      Path scenarioLuaPath = mapFolderFilesStream
+        .filter(file -> file.getFileName().toString().endsWith("_scenario.lua"))
+        .findFirst()
+        .orElseThrow(() -> new MapLoadException("Map folder does not contain a *_scenario.lua: " + mapFolder.toAbsolutePath()));
 
-    try {
       LuaValue luaRoot = NoCatch.noCatch(() -> LuaUtil.loadFile(scenarioLuaPath), MapLoadException.class);
       LuaValue scenarioInfo = luaRoot.get("ScenarioInfo");
       LuaValue size = scenarioInfo.get("size");
@@ -235,7 +236,7 @@ public class MapService implements InitializingBean, DisposableBean {
       }
 
       return faMap;
-    } catch (LuaError e) {
+    } catch (IOException | LuaError e) {
       throw new MapLoadException(e);
     }
   }

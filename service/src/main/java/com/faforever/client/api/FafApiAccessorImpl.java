@@ -306,11 +306,14 @@ public class FafApiAccessorImpl implements FafApiAccessor, InitializingBean {
 
   @Override
   public List<Game> getHighestRatedReplays(int count, int page) {
-    return getPage("/data/game", count, page, ImmutableMap.of(
-      "sort", "-reviewsSummary.lowerBound",
-      "include", REPLAY_INCLUDES,
-      "filter", "endTime=isnull=false"
-    ));
+    return this.<GameReviewSummary>getPage("/data/gameReviewsSummary", count, page, ImmutableMap.of(
+      "sort", "-lowerBound",
+      // TODO this was done in a rush, check what is actually needed
+      "include", "game,game.featuredMod,game.playerStats,game.playerStats.player,game.reviews,game.reviews.player,game.mapVersion,game.mapVersion.map,game.mapVersion.reviews",
+      "filter", "game.endTime=isnull=false"
+    )).stream()
+      .map(GameReviewSummary::getGame)
+      .collect(Collectors.toList());
   }
 
   @Override

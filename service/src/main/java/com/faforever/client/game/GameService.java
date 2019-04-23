@@ -575,39 +575,40 @@ public class GameService implements InitializingBean {
 
   @EventListener
   public void onGameInfos(GameInfosServerMessage message) {
-    message.getGames().forEach(this::onGameInfo);
+    // Since all game updates are usually reflected on the UI and to prevent deadlocks
+    JavaFxUtil.runLater(() -> message.getGames().forEach(this::onGameInfo));
   }
 
   @EventListener
   public void onGameInfo(GameInfoServerMessage gameInfoMessage) {
     // Since all game updates are usually reflected on the UI and to prevent deadlocks
-    JavaFxUtil.assertApplicationThread();
+    JavaFxUtil.runLater(() -> {
+      // We may receive game info before we receive our player info
+      Optional<Player> currentPlayerOptional = playerService.getCurrentPlayer();
 
-    // We may receive game info before we receive our player info
-    Optional<Player> currentPlayerOptional = playerService.getCurrentPlayer();
+      Game game = createOrUpdateGame(gameInfoMessage);
+      if (GameState.CLOSED == game.getState()) {
+        if (!currentPlayerOptional.isPresent() || currentPlayerOptional.get().getGame() != game) {
+          removeGame(gameInfoMessage);
+          return;
+        }
 
-    Game game = createOrUpdateGame(gameInfoMessage);
-    if (GameState.CLOSED == game.getState()) {
-      if (!currentPlayerOptional.isPresent() || currentPlayerOptional.get().getGame() != game) {
-        removeGame(gameInfoMessage);
-        return;
+        // Don't remove the game until the current player closed it. TODO: Why?
+        JavaFxUtil.addListener(currentPlayerOptional.get().gameProperty(), (observable, oldValue, newValue) -> {
+          if (newValue == null && oldValue.getState() == GameState.CLOSED) {
+            removeGame(gameInfoMessage);
+          }
+        });
       }
 
-      // Don't remove the game until the current player closed it. TODO: Why?
-      JavaFxUtil.addListener(currentPlayerOptional.get().gameProperty(), (observable, oldValue, newValue) -> {
-        if (newValue == null && oldValue.getState() == GameState.CLOSED) {
-          removeGame(gameInfoMessage);
+      JavaFxUtil.addListener(game.stateProperty(), (observable, oldValue, newValue) -> {
+        if (oldValue == GameState.OPEN
+          && newValue == GameState.PLAYING
+          && game.getTeams().values().stream().anyMatch(team -> playerService.getCurrentPlayer().isPresent() && team.contains(playerService.getCurrentPlayer().get()))
+          && !platformService.isWindowFocused(faWindowTitle)) {
+          platformService.focusWindow(faWindowTitle);
         }
       });
-    }
-
-    JavaFxUtil.addListener(game.stateProperty(), (observable, oldValue, newValue) -> {
-      if (oldValue == GameState.OPEN
-        && newValue == GameState.PLAYING
-        && game.getTeams().values().stream().anyMatch(team -> playerService.getCurrentPlayer().isPresent() && team.contains(playerService.getCurrentPlayer().get()))
-        && !platformService.isWindowFocused(faWindowTitle)) {
-        platformService.focusWindow(faWindowTitle);
-      }
     });
   }
 

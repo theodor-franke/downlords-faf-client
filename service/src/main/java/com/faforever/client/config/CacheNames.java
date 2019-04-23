@@ -22,6 +22,7 @@ public final class CacheNames {
   public static final String FEATURED_MOD_FILES = "featuredModFiles";
   public static final String COOP_LEADERBOARD = "coopLeaderboard";
   public static final String CLAN = "clan";
+  public static final String PLAYER_ACHIEVEMENTS = "playerAchievements";
 
   private CacheNames() {
     throw new AssertionError("Not instantiatable");

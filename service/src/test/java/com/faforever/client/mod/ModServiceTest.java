@@ -1,5 +1,6 @@
 package com.faforever.client.mod;
 
+import com.faforever.client.api.FxMapper;
 import com.faforever.client.fx.PlatformService;
 import com.faforever.client.i18n.I18n;
 import com.faforever.client.mod.ModVersion.ModType;
@@ -9,6 +10,7 @@ import com.faforever.client.preferences.Preferences;
 import com.faforever.client.preferences.PreferencesService;
 import com.faforever.client.remote.FafService;
 import com.faforever.client.task.TaskService;
+import com.faforever.client.util.ReflectionUtil;
 import com.faforever.commons.io.ByteCopier;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
@@ -93,17 +95,18 @@ public class ModServiceTest {
   private I18n i18n;
   @Mock
   private PlatformService platformService;
-  @Mock
-  private ModInfoMapper modInfoMapper;
 
   private ModService instance;
   private Path gamePrefsPath;
-  private Path blackopsSupportPath;
 
   @Before
   public void setUp() throws Exception {
+    ModInfoMapper mapper = Mappers.getMapper(ModInfoMapper.class);
+    FxMapper fxMapper = Mappers.getMapper(FxMapper.class);
+    ReflectionUtil.setField(mapper, "fxMapper", fxMapper);
+
     instance = new ModService(taskService, fafService, preferencesService, applicationContext,
-      notificationService, i18n, platformService, Mappers.getMapper(ModInfoMapper.class));
+      notificationService, i18n, platformService, mapper);
 
     gamePrefsPath = faDataDirectory.getRoot().toPath().resolve("game.prefs");
 
@@ -115,12 +118,12 @@ public class ModServiceTest {
     // FIXME how did that happen... I see this line many times but it doesn't seem to do anything useful
     doAnswer(invocation -> invocation.getArgument(0)).when(taskService).submitTask(any());
 
-    blackopsSupportPath = copyMod(BLACK_OPS_UNLEASHED_DIRECTORY_NAME, BLACKOPS_UNLEASHED_MOD_INFO);
+    copyMod(BLACK_OPS_UNLEASHED_DIRECTORY_NAME, BLACKOPS_UNLEASHED_MOD_INFO);
 
     instance.afterPropertiesSet();
   }
 
-  private Path copyMod(String directoryName, ClassPathResource classPathResource) throws IOException {
+  private void copyMod(String directoryName, ClassPathResource classPathResource) throws IOException {
     Path targetDir = modsDirectory.getRoot().toPath().resolve(directoryName);
     Files.createDirectories(targetDir);
 
@@ -130,7 +133,6 @@ public class ModServiceTest {
         .to(outputStream)
         .copy();
     }
-    return targetDir;
   }
 
   @Test

@@ -9,13 +9,12 @@ import com.faforever.client.play.JoinGameHelper;
 import com.faforever.client.preferences.NotificationsPrefs;
 import com.faforever.client.preferences.Preferences;
 import com.faforever.client.preferences.PreferencesService;
-import com.google.common.eventbus.EventBus;
-import com.google.common.eventbus.Subscribe;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.context.event.EventListener;
 import org.springframework.util.ReflectionUtils;
 
 import static com.natpryce.hamcrest.reflection.HasAnnotationMatcher.hasAnnotation;
@@ -31,8 +30,6 @@ public class FriendJoinedGameNotifierTest {
   private FriendJoinedGameNotifier instance;
   @Mock
   private NotificationService notificationService;
-  @Mock
-  private EventBus eventBus;
   @Mock
   private I18n i18n;
   @Mock
@@ -54,15 +51,12 @@ public class FriendJoinedGameNotifierTest {
 
     when(preferencesService.getPreferences()).thenReturn(preferences);
     when(preferences.getNotification()).thenReturn(notification);
-
-    instance.afterPropertiesSet();
-    verify(eventBus).register(instance);
   }
 
   @Test
   public void testSubscribeAnnotations() {
     assertThat(ReflectionUtils.findMethod(instance.getClass(), "onFriendJoinedGame", FriendJoinedGameEvent.class),
-        hasAnnotation(Subscribe.class));
+        hasAnnotation(EventListener.class));
   }
 
   @Test

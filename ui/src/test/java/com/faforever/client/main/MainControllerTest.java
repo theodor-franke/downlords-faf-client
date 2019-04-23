@@ -242,12 +242,10 @@ public class MainControllerTest extends AbstractPlainJavaFxTest {
 
     when(playerService.getCurrentPlayer()).thenReturn(Optional.of(new Player("JUnit")));
 
-    verify(gameService).addOnRankedMatchNotificationListener(matchmakerMessageCaptor.capture());
-
     MatchAvailableNotification message = new MatchAvailableNotification(ImmutableMap.of(
       "ladder1v1", 1
     ));
-    matchmakerMessageCaptor.getValue().accept(message);
+    instance.onMatchmakerMessage(message);
   }
 
   @Test
@@ -265,29 +263,20 @@ public class MainControllerTest extends AbstractPlainJavaFxTest {
 
   @Test
   public void testOnMatchMakerMessageDisplaysNotificationNullQueues() {
-    @SuppressWarnings("unchecked")
-    ArgumentCaptor<Consumer<MatchAvailableNotification>> matchmakerMessageCaptor = ArgumentCaptor.forClass(Consumer.class);
-
-    verify(gameService).addOnRankedMatchNotificationListener(matchmakerMessageCaptor.capture());
-
     MatchAvailableNotification message = new MatchAvailableNotification(emptyMap());
-    matchmakerMessageCaptor.getValue().accept(message);
+    instance.onMatchmakerMessage(message);
 
     verify(notificationService, never()).addNotification(any(TransientNotification.class));
   }
 
   @Test
   public void testOnMatchMakerMessageDisplaysNotificationWithQueuesButDisabled() {
-    @SuppressWarnings("unchecked")
-    ArgumentCaptor<Consumer<MatchAvailableNotification>> messageCaptor = ArgumentCaptor.forClass(Consumer.class);
     when(notificationPrefs.getLadder1v1ToastEnabled()).thenReturn(false);
-
-    verify(gameService).addOnRankedMatchNotificationListener(messageCaptor.capture());
 
     MatchAvailableNotification message = new MatchAvailableNotification(ImmutableMap.of(
       "ladder1v1", 1
     ));
-    messageCaptor.getValue().accept(message);
+    instance.onMatchmakerMessage(message);
 
     verify(notificationService, never()).addNotification(any(TransientNotification.class));
   }

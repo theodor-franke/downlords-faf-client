@@ -20,8 +20,6 @@ import com.faforever.client.remote.FafService;
 import com.faforever.client.replay.ReplayService;
 import com.faforever.client.reporting.ReportingService;
 import com.faforever.client.test.AbstractPlainJavaFxTest;
-import com.google.common.eventbus.EventBus;
-import com.google.common.eventbus.Subscribe;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableMap;
@@ -33,6 +31,7 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.event.EventListener;
 import org.springframework.util.ReflectionUtils;
 import org.testfx.util.WaitForAsyncUtils;
 
@@ -92,8 +91,6 @@ public class GameServiceTest extends AbstractPlainJavaFxTest {
   private Executor executor;
   @Mock
   private ReplayService replayService;
-  @Mock
-  private EventBus eventBus;
   @Mock
   private IceAdapter iceAdapter;
   @Mock
@@ -443,12 +440,10 @@ public class GameServiceTest extends AbstractPlainJavaFxTest {
   }
 
   @Test
-  public void testSubscribeEventBus() {
-    verify(eventBus).register(instance);
-
+  public void testRehostRequestEventListener() {
     assertThat(ReflectionUtils.findMethod(
       instance.getClass(), "onRehostRequest", RehostRequestEvent.class),
-      hasAnnotation(Subscribe.class));
+      hasAnnotation(EventListener.class));
   }
 
   @Test

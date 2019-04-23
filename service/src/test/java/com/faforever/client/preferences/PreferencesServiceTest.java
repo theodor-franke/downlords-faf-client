@@ -1,7 +1,6 @@
 package com.faforever.client.preferences;
 
 import com.faforever.client.config.ClientProperties;
-import com.google.common.eventbus.EventBus;
 import com.sun.jna.platform.win32.Shell32Util;
 import com.sun.jna.platform.win32.ShlObj;
 import org.bridj.Platform;
@@ -21,12 +20,10 @@ import static org.junit.Assert.assertThat;
 public class PreferencesServiceTest {
 
   @Rule
-  private TemporaryFolder temporaryFolder = new TemporaryFolder();
+  public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
   @Mock
   private PreferencesService instance;
-  @Mock
-  private EventBus eventBus;
   @Mock
   private ClientProperties clientProperties;
 

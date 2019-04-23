@@ -115,7 +115,7 @@ public class FafServiceTest {
     verify(fafApiAccessor).getNews();
     verify(apiDtoMapper).map(newsPost);
 
-    assertThat(news.get(), is(newsItem));
+    assertThat(news.get().get(0), is(newsItem));
   }
 
   private Review createReview(String id, String text, int rating, Integer playerId) {

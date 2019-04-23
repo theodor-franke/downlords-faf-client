@@ -4,7 +4,6 @@ import com.faforever.client.audio.AudioService;
 import com.faforever.client.i18n.I18n;
 import com.faforever.client.notification.NotificationService;
 import com.faforever.client.notification.TransientNotification;
-import com.faforever.client.remote.FafService;
 import com.faforever.client.remote.UpdatedAchievement;
 import com.faforever.client.remote.UpdatedAchievementsServerMessage;
 import javafx.scene.image.Image;
@@ -13,15 +12,12 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
-import org.mockito.ArgumentMatchers;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import java.util.Collections;
 import java.util.concurrent.CompletableFuture;
-import java.util.function.Consumer;
 
 import static org.mockito.Mockito.verifyZeroInteractions;
 
@@ -37,21 +33,13 @@ public class AchievementUnlockedNotifierTest {
   @Mock
   private AchievementImageService achievementImageService;
   @Mock
-  private FafService fafService;
-  @Mock
   private AudioService audioService;
-
-  @Captor
-  private ArgumentCaptor<Consumer<UpdatedAchievementsServerMessage>> listenerCaptor;
 
   @Before
   public void setUp() throws Exception {
     MockitoAnnotations.initMocks(this);
 
     instance = new AchievementUnlockedNotifier(notificationService, i18n, achievementService, achievementImageService, audioService);
-    instance.afterPropertiesSet();
-
-    Mockito.verify(fafService).addOnMessageListener(ArgumentMatchers.eq(UpdatedAchievementsServerMessage.class), listenerCaptor.capture());
   }
 
   @Test
@@ -98,6 +86,6 @@ public class AchievementUnlockedNotifierTest {
     updatedAchievement.setAchievementId("1234");
     message.setUpdatedAchievements(Collections.singletonList(updatedAchievement));
 
-    listenerCaptor.getValue().accept(message);
+    instance.onUpdatedAchievementsMessage(message);
   }
 }

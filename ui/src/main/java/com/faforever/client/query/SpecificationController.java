@@ -46,16 +46,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static com.github.rutledgepaulv.qbuilders.operators.ComparisonOperator.EQ;
-import static com.github.rutledgepaulv.qbuilders.operators.ComparisonOperator.GT;
-import static com.github.rutledgepaulv.qbuilders.operators.ComparisonOperator.GTE;
-import static com.github.rutledgepaulv.qbuilders.operators.ComparisonOperator.IN;
-import static com.github.rutledgepaulv.qbuilders.operators.ComparisonOperator.LT;
-import static com.github.rutledgepaulv.qbuilders.operators.ComparisonOperator.LTE;
-import static com.github.rutledgepaulv.qbuilders.operators.ComparisonOperator.NE;
-import static com.github.rutledgepaulv.qbuilders.operators.ComparisonOperator.NIN;
-import static com.github.rutledgepaulv.qbuilders.operators.ComparisonOperator.RE;
-
 /**
  * Controller for building a specification in the sense of Domain Driven Design, e.g. {@code login == "Someone"} or
  * {@code rating > 500}. The specification can then be converted into a condition to be used in a {@link QBuilder}.
@@ -268,7 +258,7 @@ public class SpecificationController implements Controller<Node> {
     String fieldName;
     while (!path.isEmpty()) {
       fieldName = path.remove(0);
-      Class<?> clazz = ReflectionUtil.getDeclaredField(fieldName, targetClass);
+      Class<?> clazz = ReflectionUtil.getFieldType(fieldName, targetClass);
 
       if (Iterable.class.isAssignableFrom(clazz)) {
         ParameterizedType genericType = (ParameterizedType) targetClass.getDeclaredField(fieldName).getGenericType();

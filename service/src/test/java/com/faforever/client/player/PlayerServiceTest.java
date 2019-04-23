@@ -6,8 +6,6 @@ import com.faforever.client.game.GameRemovedEvent;
 import com.faforever.client.remote.FafService;
 import com.faforever.client.user.LoginSuccessEvent;
 import com.faforever.client.user.UserService;
-import com.google.common.eventbus.EventBus;
-import com.google.common.eventbus.Subscribe;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.ObservableMap;
 import org.junit.Before;
@@ -15,6 +13,7 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.event.EventListener;
 import org.springframework.util.ReflectionUtils;
 
 import java.util.Collections;
@@ -42,8 +41,6 @@ public class PlayerServiceTest {
   private FafService fafService;
   @Mock
   private UserService userService;
-  @Mock
-  private EventBus eventBus;
   @Mock
   private ApplicationEventPublisher eventPublisher;
 
@@ -188,19 +185,14 @@ public class PlayerServiceTest {
 
     Player currentPlayer = instance.getCurrentPlayer().orElseThrow(() -> new IllegalStateException("No player returned"));
 
-    assertThat(currentPlayer.getDisplayName(), is("junit"));
+    assertThat(currentPlayer.getDisplayName(), is("JUnit"));
     assertThat(currentPlayer.getId(), is(1));
   }
 
   @Test
   public void testSubscribeAnnotations() {
     assertThat(ReflectionUtils.findMethod(instance.getClass(), "onLoginSuccess", LoginSuccessEvent.class),
-      hasAnnotation(Subscribe.class));
-  }
-
-  @Test
-  public void testEventBusRegistered() {
-    verify(eventBus).register(instance);
+      hasAnnotation(EventListener.class));
   }
 
   @Test

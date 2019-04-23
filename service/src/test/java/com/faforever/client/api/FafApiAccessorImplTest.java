@@ -16,7 +16,6 @@ import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.oauth2.client.OAuth2RestTemplate;
-import org.supcomhub.api.dto.Account;
 import org.supcomhub.api.dto.Achievement;
 import org.supcomhub.api.dto.Event;
 import org.supcomhub.api.dto.Game;
@@ -176,7 +175,7 @@ public class FafApiAccessorImplTest {
     );
 
     when(restOperations.getForObject(
-      "/data/leaderboardEntry?filter=leaderboard.technicalName==\"ladder1v1\"&include=account.id,account.displayName&sort=-rank&page[size]=10000&page[number]=1",
+      "/data/leaderboardEntry?filter=leaderboard.technicalName==\"ladder1v1\"&include=account.id,account.displayName&sort=-rating&page[size]=10000&page[number]=1",
       List.class
     ))
       .thenReturn(result)
@@ -258,7 +257,7 @@ public class FafApiAccessorImplTest {
 
     instance.getCoopMissions();
 
-    verify(restOperations).getForObject(eq("/data/coopMission?page[size]=10000&page[number]=1"), eq(List.class));
+    verify(restOperations).getForObject(eq("/data/coopMission?include=map&page[size]=10000&page[number]=1"), eq(List.class));
   }
 
   @Test

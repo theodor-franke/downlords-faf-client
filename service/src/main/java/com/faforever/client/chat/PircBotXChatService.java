@@ -65,6 +65,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Profile;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
 
 import java.io.IOException;
 import java.time.Instant;
@@ -585,6 +586,7 @@ public class PircBotXChatService implements ChatService, InitializingBean, Dispo
 
   @Override
   public boolean isDefaultChannel(String channelName) {
+    Assert.notNull(defaultChannelName, "defaultChannelName has not been set");
     return defaultChannelName.equalsIgnoreCase(channelName);
   }
 

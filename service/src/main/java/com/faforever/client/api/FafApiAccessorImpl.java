@@ -139,6 +139,7 @@ public class FafApiAccessorImpl implements FafApiAccessor, InitializingBean {
   }
 
   @Override
+  @Cacheable(CacheNames.PLAYER_ACHIEVEMENTS)
   public List<PlayerAchievement> getPlayerAchievements(int playerId) {
     return getAll("/data/playerAchievement", ImmutableMap.of(
       "filter", rsql(qBuilder().intNum("player.id").eq(playerId))

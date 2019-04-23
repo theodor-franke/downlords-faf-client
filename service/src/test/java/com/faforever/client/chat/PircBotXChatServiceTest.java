@@ -704,6 +704,7 @@ public class PircBotXChatServiceTest extends AbstractPlainJavaFxTest {
 
   @Test
   public void testIsDefaultChannel() {
+    instance.onJoinChatChannels(new ChatChannelsServerMessage().setChannels(Collections.singletonList(DEFAULT_CHANNEL_NAME)));
     assertTrue(instance.isDefaultChannel(DEFAULT_CHANNEL_NAME));
   }
 

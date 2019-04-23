@@ -29,7 +29,8 @@ public class CacheConfig extends CachingConfigurerSupport {
     SimpleCacheManager simpleCacheManager = new SimpleCacheManager();
     simpleCacheManager.setCaches(Arrays.asList(
         new CaffeineCache(CacheNames.STATISTICS, Caffeine.newBuilder().maximumSize(10).expireAfterWrite(20, MINUTES).build()),
-        new CaffeineCache(CacheNames.ACHIEVEMENTS, Caffeine.newBuilder().expireAfterWrite(10, MINUTES).build()),
+        new CaffeineCache(CacheNames.ACHIEVEMENTS, Caffeine.newBuilder().expireAfterWrite(30, MINUTES).build()),
+        new CaffeineCache(CacheNames.PLAYER_ACHIEVEMENTS, Caffeine.newBuilder().expireAfterWrite(10, MINUTES).build()),
         new CaffeineCache(CacheNames.MODS, Caffeine.newBuilder().expireAfterWrite(10, MINUTES).build()),
         new CaffeineCache(CacheNames.MAPS, Caffeine.newBuilder().expireAfterWrite(10, MINUTES).build()),
         new CaffeineCache(CacheNames.LEADERBOARD, Caffeine.newBuilder().maximumSize(1).expireAfterAccess(5, MINUTES).build()),

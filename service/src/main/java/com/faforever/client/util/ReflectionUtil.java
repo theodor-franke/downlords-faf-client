@@ -1,5 +1,11 @@
 package com.faforever.client.util;
 
+import lombok.SneakyThrows;
+import lombok.experimental.UtilityClass;
+
+import java.lang.reflect.Field;
+
+@UtilityClass
 public class ReflectionUtil {
 
   /**
@@ -11,7 +17,7 @@ public class ReflectionUtil {
    * @return The class type of the field
    * @throws NoSuchFieldException When no field is found
    */
-  public static Class<?> getDeclaredField(String fieldName, Class<?> targetClass) throws NoSuchFieldException {
+  public Class<?> getFieldType(String fieldName, Class<?> targetClass) throws NoSuchFieldException {
     Class currentClass = targetClass;
     Class clazz = null;
     while (clazz == null) {
@@ -25,5 +31,12 @@ public class ReflectionUtil {
       }
     }
     return clazz;
+  }
+
+  @SneakyThrows
+  public void setField(Object target, String fieldName, Object value) {
+    Field declaredField = target.getClass().getDeclaredField(fieldName);
+    declaredField.setAccessible(true);
+    declaredField.set(target, value);
   }
 }

@@ -179,10 +179,14 @@ public class UiService implements InitializingBean, DisposableBean {
     loadWebViewsStyleSheet(getWebViewStyleSheet());
   }
 
-  private void deleteStylesheetsCacheDirectory() throws IOException {
+  private void deleteStylesheetsCacheDirectory() {
     Path cacheStylesheetsDirectory = preferencesService.getCacheStylesheetsDirectory();
     if (Files.exists(cacheStylesheetsDirectory)) {
-      FileUtils.deleteRecursively(cacheStylesheetsDirectory);
+      try {
+        FileUtils.deleteRecursively(cacheStylesheetsDirectory);
+      } catch (Exception e) {
+        logger.warn("Error during deletion of style cache directory", e);
+      }
     }
   }
 

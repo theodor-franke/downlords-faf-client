@@ -251,6 +251,11 @@ public class V2ServerAccessor implements FafServerAccessor {
 
   @Override
   public void sendGpgMessage(GpgGameMessage message) {
+    if (loginFuture.isPresent() && !loginFuture.get().isDone()) {
+      log.warn("Discarding GPG message since the player is not yet logged in: {}", message);
+      return;
+    }
+
     serverGateway.send(message);
   }
 

@@ -1,7 +1,5 @@
 package com.faforever.client.settings;
 
-import com.faforever.client.preferences.ChatColorMode;
-import com.faforever.client.preferences.ChatFormat;
 import com.faforever.client.config.ClientProperties;
 import com.faforever.client.fx.Controller;
 import com.faforever.client.fx.JavaFxUtil;
@@ -13,6 +11,8 @@ import com.faforever.client.notification.NotificationService;
 import com.faforever.client.notification.PersistentNotification;
 import com.faforever.client.notification.Severity;
 import com.faforever.client.notification.TransientNotification;
+import com.faforever.client.preferences.ChatColorMode;
+import com.faforever.client.preferences.ChatFormat;
 import com.faforever.client.preferences.LocalizationPrefs;
 import com.faforever.client.preferences.NotificationsPrefs;
 import com.faforever.client.preferences.Preferences;
@@ -34,6 +34,7 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.WeakChangeListener;
 import javafx.collections.FXCollections;
+import javafx.event.ActionEvent;
 import javafx.scene.Node;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
@@ -54,6 +55,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
+import java.nio.file.Paths;
 import java.text.NumberFormat;
 import java.util.Collections;
 import java.util.List;
@@ -460,5 +462,9 @@ public class SettingsController implements Controller<Node> {
     });
   }
 
+  public void onUseNoBackgroundImage(ActionEvent actionEvent) {
+    preferencesService.getPreferences().getMainWindow().setBackgroundImagePath(Paths.get("/useNoImage"));
+    preferencesService.storeInBackground();
+  }
 }
 

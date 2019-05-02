@@ -20,6 +20,7 @@ sh-client:
   translation-project-url: https://poeditor.com/join/project/2oWfdaZQZj
   client-config-url: https://gist.githubusercontent.com/micheljung/ac76eac2b9bb39d7718b26a749e698c1/raw
   client-config-connect-timeout: 10s
+  show-ice-adapter-debug-Window: ${SHOW_ICE_ADAPTER_DEBUG_WINDOW:false}
 
 spring:
   profiles:
@@ -40,7 +41,7 @@ logging:
     org.springframework.web.client: info
     org.springframework.security.oauth2: info
     org.springframework.security.oauth2.client.token.grant: off
-    faf-ice-adapter: off
+    faf-ice-adapter: debug
 
     org.ice4j.stack: warn
     com.nbarraille.jjsonrpc: warn

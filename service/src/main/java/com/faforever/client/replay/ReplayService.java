@@ -50,6 +50,7 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -66,6 +67,7 @@ import static java.net.URLDecoder.decode;
 import static java.nio.charset.StandardCharsets.US_ASCII;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.nio.file.Files.createDirectories;
+import static java.nio.file.Files.getLastModifiedTime;
 import static java.nio.file.Files.move;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptySet;
@@ -167,6 +169,7 @@ public class ReplayService {
 
     try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(replaysDirectory, replayFileGlob)) {
       StreamSupport.stream(directoryStream.spliterator(), false)
+        .sorted(Comparator.comparing(path -> noCatch(() -> getLastModifiedTime(path))))
         .limit(MAX_REPLAYS)
         .forEach(replayFile -> {
           try {

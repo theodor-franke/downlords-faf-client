@@ -17,6 +17,8 @@ import com.faforever.client.preferences.jackson.SetPropertyAdapter;
 import com.faforever.client.preferences.jackson.SetPropertyDeserializer;
 import com.faforever.client.preferences.jackson.StringPropertyAdapter;
 import com.faforever.client.update.ClientConfiguration;
+import com.github.nocatch.NoCatch;
+import com.github.nocatch.NoCatch.NoCatchRunnable;
 import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -24,6 +26,7 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.google.common.annotations.VisibleForTesting;
 import com.sun.jna.platform.win32.Shell32Util;
 import com.sun.jna.platform.win32.ShlObj;
+import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.FloatProperty;
@@ -36,6 +39,9 @@ import javafx.beans.property.StringProperty;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 import javafx.collections.ObservableSet;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.ButtonType;
 import javafx.scene.paint.Color;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.bridge.SLF4JBridgeHandler;
@@ -56,11 +62,19 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.MessageFormat;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CountDownLatch;
+
+import static com.github.nocatch.NoCatch.noCatch;
+import java.util.concurrent.CountDownLatch;
+
+import static com.github.nocatch.NoCatch.noCatch;
 
 @Lazy
 @Service
@@ -239,8 +253,28 @@ public class PreferencesService implements InitializingBean {
     try (Reader reader = Files.newBufferedReader(path, CHARSET)) {
       log.debug("Reading preferences file {}", preferencesFilePath.toAbsolutePath());
       preferences = objectMapper.readValue(reader, Preferences.class);
-    } catch (IOException e) {
+    } catch (Exception e) {
       log.warn("Preferences file {} could not be read", path.toAbsolutePath(), e);
+      CountDownLatch waitForUser = new CountDownLatch(1);
+      Platform.runLater(() -> {
+        Alert errorReading = new Alert(AlertType.ERROR, "Error reading setting. Reset settings? ", ButtonType.YES, ButtonType.CANCEL);
+        errorReading.showAndWait();
+
+        if (errorReading.getResult() == ButtonType.YES) {
+          try {
+            Files.delete(path);
+            preferences = new Preferences();
+            waitForUser.countDown();
+          } catch (Exception ex) {
+            log.error("Error deleting settings file", ex);
+            Alert errorDeleting = new Alert(AlertType.ERROR, MessageFormat.format("Error deleting setting. Please delete them yourself. You find them under {} .", preferencesFilePath.toAbsolutePath()), ButtonType.OK);
+            errorDeleting.showAndWait();
+            preferences = new Preferences();
+            waitForUser.countDown();
+          }
+        }
+      });
+      noCatch((NoCatchRunnable) waitForUser::await);
     }
 
     migratePreferences(preferences);

@@ -12,6 +12,7 @@ import com.faforever.client.map.MapService;
 import com.faforever.client.map.MapService.PreviewSize;
 import com.faforever.client.play.MapPreviewTableCell;
 import com.faforever.client.theme.UiService;
+import com.faforever.client.util.TimeService;
 import com.google.common.base.Joiner;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
@@ -32,6 +33,8 @@ import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import java.time.Instant;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.UUID;
@@ -46,27 +49,43 @@ public class LiveReplayController extends AbstractViewController<Node> {
   private final I18n i18n;
   private final MapService mapService;
   private final MapPreviewService mapPreviewService;
+  private final TimeService timeService;
 
   public TableView<Game> liveReplayControllerRoot;
   public TableColumn<Game, Image> mapPreviewColumn;
+  public TableColumn<Game, Instant> startTimeColumn;
   public TableColumn<Game, String> gameTitleColumn;
   public TableColumn<Game, Number> playersColumn;
   public TableColumn<Game, String> modsColumn;
   public TableColumn<Game, String> hostColumn;
   public TableColumn<Game, Game> watchColumn;
 
-  public LiveReplayController(GameService gameService, UiService uiService, I18n i18n, MapService mapService, MapPreviewService mapPreviewService) {
+  public LiveReplayController(
+    GameService gameService,
+    UiService uiService,
+    I18n i18n,
+    MapService mapService,
+    MapPreviewService mapPreviewService,
+    TimeService timeService
+  ) {
     this.gameService = gameService;
     this.uiService = uiService;
     this.i18n = i18n;
     this.mapService = mapService;
     this.mapPreviewService = mapPreviewService;
+    this.timeService = timeService;
 
     selectedGame = new SimpleObjectProperty<>();
   }
 
   public void initialize() {
-    initializeGameTable(gameService.getGames().filtered(game -> game.getState() == GameState.PLAYING));
+    Comparator gameSorter = Comparator.comparing(
+      Game::getStartTime,
+        Comparator.nullsFirst(Comparator.naturalOrder()))
+        .reversed();
+    initializeGameTable(gameService.getGames()
+                    .filtered(game -> game.getState() == GameState.PLAYING)
+                    .sorted(gameSorter));
   }
 
   private void initializeGameTable(ObservableList<Game> games) {
@@ -79,6 +98,8 @@ public class LiveReplayController extends AbstractViewController<Node> {
         param.getValue().mapNameProperty()
     ));
 
+    startTimeColumn.setCellValueFactory(param -> param.getValue().startTimeProperty());
+    startTimeColumn.setCellFactory(param -> new StringCell<>(this.timeService::asShortTime));
     gameTitleColumn.setCellValueFactory(param -> param.getValue().titleProperty());
     gameTitleColumn.setCellFactory(param -> new StringCell<>(title -> title));
     playersColumn.setCellValueFactory(param -> param.getValue().numPlayersProperty());
@@ -120,5 +141,4 @@ public class LiveReplayController extends AbstractViewController<Node> {
     }
     return new SimpleStringProperty(Joiner.on(i18n.get("textSeparator")).join(modNames));
   }
-
 }

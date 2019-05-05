@@ -78,9 +78,9 @@ public class SearchController implements Controller<Pane> {
     searchButton.disableProperty().bind(queryTextField.textProperty().isEmpty());
 
     initialLogicalNodeController.logicalOperatorField.managedProperty()
-        .bind(initialLogicalNodeController.logicalOperatorField.visibleProperty());
+      .bind(initialLogicalNodeController.logicalOperatorField.visibleProperty());
     initialLogicalNodeController.removeCriteriaButton.managedProperty()
-        .bind(initialLogicalNodeController.removeCriteriaButton.visibleProperty());
+      .bind(initialLogicalNodeController.removeCriteriaButton.visibleProperty());
 
     initialLogicalNodeController.logicalOperatorField.setValue(null);
     initialLogicalNodeController.logicalOperatorField.setDisable(true);
@@ -126,7 +126,12 @@ public class SearchController implements Controller<Pane> {
   public void setSortConfig(ObjectProperty<SortConfig> sortConfigObjectProperty) {
     sortPropertyComboBox.getItems().addAll(searchableProperties.values());
     sortOrderChoiceBox.getSelectionModel().select(sortConfigObjectProperty.get().getSortOrder());
-    sortPropertyComboBox.getSelectionModel().select(searchableProperties.get(sortConfigObjectProperty.get().getSortProperty()));
+
+    String savedSortProperty = searchableProperties.get(sortConfigObjectProperty.get().getSortProperty());
+    if (savedSortProperty != null) {
+      sortPropertyComboBox.getSelectionModel().select(savedSortProperty);
+    }
+
     sortPropertyComboBox.valueProperty().addListener((observable, oldValue, newValue) -> {
       sortConfigObjectProperty.set(new SortConfig(getCurrentEntityKey(), sortOrderChoiceBox.getValue()));
       preferencesService.storeInBackground();
@@ -160,10 +165,10 @@ public class SearchController implements Controller<Pane> {
 
   private String getCurrentEntityKey() {
     return searchableProperties.entrySet().stream()
-        .filter(stringStringEntry -> stringStringEntry.getValue().equals(sortPropertyComboBox.getValue()))
-        .findFirst()
-        .get()
-        .getKey();
+      .filter(stringStringEntry -> stringStringEntry.getValue().equals(sortPropertyComboBox.getValue()))
+      .findFirst()
+      .get()
+      .getKey();
   }
 
   public void onAddCriteriaButtonClicked() {

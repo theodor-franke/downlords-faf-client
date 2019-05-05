@@ -6,6 +6,7 @@ import com.faforever.client.game.patch.FeaturedModUpdater;
 import com.faforever.client.game.patch.GameUpdater;
 import com.faforever.client.game.patch.GameUpdaterImpl;
 import com.faforever.client.mod.ModService;
+import com.faforever.client.notification.NotificationService;
 import com.faforever.client.preferences.PreferencesService;
 import com.faforever.client.remote.FafService;
 import com.faforever.client.task.TaskService;
@@ -27,10 +28,11 @@ public class MockFeaturedModUpdaterConfig {
   private final FaInitGenerator faInitGenerator;
   private final FeaturedModUpdater featuredModUpdater;
   private final PreferencesService preferencesService;
+  private final NotificationService notificationService;
 
   @Bean
   GameUpdater gameUpdater() {
-    return new GameUpdaterImpl(modService, applicationContext, taskService, fafService, faInitGenerator, preferencesService)
+    return new GameUpdaterImpl(modService, applicationContext, taskService, fafService, faInitGenerator, preferencesService, notificationService)
         .addFeaturedModUpdater(featuredModUpdater);
   }
 }

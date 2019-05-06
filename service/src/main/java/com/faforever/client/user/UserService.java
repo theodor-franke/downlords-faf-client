@@ -64,7 +64,7 @@ public class UserService implements InitializingBean {
 
     preferencesService.getPreferences().getLogin()
         .setUsername(username)
-        .setPassword(password)
+        .setPassword(autoLogin ? password : null)
         .setAutoLogin(autoLogin);
     preferencesService.storeInBackground();
 

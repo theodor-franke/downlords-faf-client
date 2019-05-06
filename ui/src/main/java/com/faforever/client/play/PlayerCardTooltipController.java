@@ -4,10 +4,14 @@ import com.faforever.client.chat.CountryFlagService;
 import com.faforever.client.fx.Controller;
 import com.faforever.client.i18n.I18n;
 import com.faforever.client.player.Player;
+import com.faforever.client.player.SocialStatus;
+import javafx.beans.binding.Bindings;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
+import javafx.scene.control.Tooltip;
 import javafx.scene.image.ImageView;
 import org.jetbrains.annotations.Nullable;
+import javafx.scene.layout.HBox;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -22,6 +26,9 @@ public class PlayerCardTooltipController implements Controller<Node> {
 
   public Label playerInfo;
   public ImageView countryImageView;
+  public Label foeIconText;
+  public HBox root;
+  public Label friendIconText;
 
   public PlayerCardTooltipController(CountryFlagService countryFlagService, I18n i18n) {
     this.countryFlagService = countryFlagService;
@@ -37,9 +44,21 @@ public class PlayerCardTooltipController implements Controller<Node> {
     // TODO display image
     String playerInfoLocalized = i18n.get("userInfo.tooltipFormat", player.getDisplayName(), rank);
     playerInfo.setText(playerInfoLocalized);
+    foeIconText.visibleProperty().bind(Bindings.createBooleanBinding(() -> player.getSocialStatus() == SocialStatus.FOE, player.socialStatusProperty()));
+    friendIconText.visibleProperty().bind(Bindings.createBooleanBinding(() -> player.getSocialStatus() == SocialStatus.FRIEND, player.socialStatusProperty()));
   }
 
   public Node getRoot() {
-    return playerInfo;
+    return root;
+  }
+
+  @Override
+  public void initialize() {
+    foeIconText.managedProperty().bind(foeIconText.visibleProperty());
+    Tooltip foeTooltip = new Tooltip(i18n.get("userInfo.foe"));
+    Tooltip.install(foeIconText, foeTooltip);
+    friendIconText.managedProperty().bind(friendIconText.visibleProperty());
+    Tooltip friendTooltip = new Tooltip(i18n.get("userInfo.friend"));
+    Tooltip.install(friendIconText, friendTooltip);
   }
 }

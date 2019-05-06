@@ -92,7 +92,7 @@ public class DiscordRichPresenceService {
         joinSecret = objectMapper.writeValueAsString(new DiscordJoinSecret(game.getId()));
       }
 
-      if (game.getState() == GameState.PLAYING && game.getStartTime().isAfter(Instant.now().plus(5, ChronoUnit.MINUTES))) {
+      if (game.getState() == GameState.PLAYING && game.getStartTime() != null && game.getStartTime().isAfter(Instant.now().plus(5, ChronoUnit.MINUTES))) {
         spectateSecret = objectMapper.writeValueAsString(new DiscordSpectateSecret(game.getId(), currentPlayerId));
       }
 

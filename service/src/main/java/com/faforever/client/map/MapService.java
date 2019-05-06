@@ -7,6 +7,8 @@ import com.faforever.client.fx.JavaFxUtil;
 import com.faforever.client.game.FaStrings;
 import com.faforever.client.i18n.I18n;
 import com.faforever.client.map.FaMap.Type;
+import com.faforever.client.map.generator.MapGeneratedEvent;
+import com.faforever.client.map.generator.MapGeneratorService;
 import com.faforever.client.preferences.PreferencesService;
 import com.faforever.client.remote.FafService;
 import com.faforever.client.task.CompletableTask;
@@ -16,6 +18,8 @@ import com.faforever.client.util.LuaUtil;
 import com.faforever.client.vault.SearchConfig;
 import com.github.nocatch.NoCatch;
 import com.google.common.net.UrlEscapers;
+import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
@@ -70,6 +74,8 @@ public class MapService implements InitializingBean, DisposableBean {
   private final ApplicationContext applicationContext;
   private final FafService fafService;
   private final I18n i18n;
+  private final MapGeneratorService mapGeneratorService;
+  private final EventBus eventBus;
 
   private final String mapDownloadUrlFormat;
 
@@ -86,13 +92,17 @@ public class MapService implements InitializingBean, DisposableBean {
     ApplicationContext applicationContext,
     FafService fafService,
     I18n i18n,
-    ClientProperties clientProperties
+    ClientProperties clientProperties,
+    MapGeneratorService mapGeneratorService,
+    EventBus eventBus
   ) {
     this.preferencesService = preferencesService;
     this.taskService = taskService;
     this.applicationContext = applicationContext;
     this.fafService = fafService;
     this.i18n = i18n;
+    this.mapGeneratorService = mapGeneratorService;
+    this.eventBus = eventBus;
 
     Vault vault = clientProperties.getVault();
     this.mapDownloadUrlFormat = vault.getMapDownloadUrlFormat();
@@ -119,6 +129,7 @@ public class MapService implements InitializingBean, DisposableBean {
 
   @Override
   public void afterPropertiesSet() {
+    eventBus.register(this);
     customMapsDirectory = preferencesService.getPreferences().getForgedAlliance().getCustomMapsDirectory();
     JavaFxUtil.addListener(preferencesService.getPreferences().getForgedAlliance().pathProperty(), observable -> tryLoadMaps());
     JavaFxUtil.addListener(preferencesService.getPreferences().getForgedAlliance().customMapsDirectoryProperty(), observable -> tryLoadMaps());
@@ -205,6 +216,10 @@ public class MapService implements InitializingBean, DisposableBean {
     }
   }
 
+  @Subscribe
+  public void onMapGenerated(MapGeneratedEvent event) {
+    addSkirmishMap(getPathForMap(event.getMapName()));
+  }
 
   @NotNull
   public FaMap readMap(Path mapFolder) throws MapLoadException {
@@ -366,6 +381,11 @@ public class MapService implements InitializingBean, DisposableBean {
   }
 
   private CompletableFuture<Void> downloadAndInstallMap(String folderName, URL downloadUrl, @Nullable DoubleProperty progressProperty, @Nullable StringProperty titleProperty) {
+    if (mapGeneratorService.isGeneratedMap(folderName)) {
+      return mapGeneratorService.generateMap(folderName).thenRun(() -> {
+      });
+    }
+
     DownloadMapTask task = applicationContext.getBean(DownloadMapTask.class);
     task.setMapUrl(downloadUrl);
     task.setFolderName(folderName);

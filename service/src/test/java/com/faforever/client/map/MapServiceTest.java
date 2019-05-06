@@ -2,6 +2,7 @@ package com.faforever.client.map;
 
 import com.faforever.client.config.ClientProperties;
 import com.faforever.client.i18n.I18n;
+import com.faforever.client.map.generator.MapGeneratorService;
 import com.faforever.client.preferences.ForgedAlliancePrefs;
 import com.faforever.client.preferences.Preferences;
 import com.faforever.client.preferences.PreferencesService;
@@ -9,6 +10,7 @@ import com.faforever.client.remote.FafService;
 import com.faforever.client.task.CompletableTask;
 import com.faforever.client.task.TaskService;
 import com.faforever.client.test.AbstractPlainJavaFxTest;
+import com.google.common.eventbus.EventBus;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.ObservableList;
@@ -71,13 +73,26 @@ public class MapServiceTest extends AbstractPlainJavaFxTest {
   private ApplicationContext applicationContext;
   @Mock
   private FafService fafService;
+  @Mock
+  private MapGeneratorService mapGeneratorService;
+  @Mock
+  private EventBus eventBus;
 
   @Before
   public void setUp() throws Exception {
     ClientProperties clientProperties = new ClientProperties();
     clientProperties.getVault().setMapPreviewUrlFormat("http://127.0.0.1:65534/preview/%s/%s");
 
-    instance = new MapService(preferencesService, taskService, applicationContext, fafService, i18n, clientProperties);
+    instance = new MapService(
+      preferencesService,
+      taskService,
+      applicationContext,
+      fafService,
+      i18n,
+      clientProperties,
+      mapGeneratorService,
+      eventBus
+    );
 
     mapsDirectory = gameDirectory.newFolder("maps").toPath();
 

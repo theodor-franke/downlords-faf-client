@@ -14,6 +14,7 @@ import com.faforever.client.map.MapPreviewService;
 import com.faforever.client.map.MapService;
 import com.faforever.client.map.MapService.PreviewSize;
 import com.faforever.client.map.MapSize;
+import com.faforever.client.map.generator.MapGeneratorService;
 import com.faforever.client.mod.FeaturedMod;
 import com.faforever.client.mod.ModService;
 import com.faforever.client.mod.ModVersion;
@@ -82,6 +83,7 @@ public class CreateGameController implements Controller<Pane> {
   private final NotificationService notificationService;
   private final ReportingService reportingService;
   private final FafService fafService;
+  private final MapGeneratorService mapGeneratorService;
   public Label mapSizeLabel;
   public Label mapPlayersLabel;
   public Label mapDescriptionLabel;
@@ -118,7 +120,8 @@ public class CreateGameController implements Controller<Pane> {
     PreferencesService preferencesService,
     I18n i18n,
     NotificationService notificationService,
-    ReportingService reportingService
+    ReportingService reportingService,
+    MapGeneratorService mapGeneratorService
   ) {
     this.mapService = mapService;
     this.mapPreviewService = mapPreviewService;
@@ -129,6 +132,7 @@ public class CreateGameController implements Controller<Pane> {
     this.notificationService = notificationService;
     this.reportingService = reportingService;
     this.fafService = fafService;
+    this.mapGeneratorService = mapGeneratorService;
   }
 
   public void initialize() {
@@ -373,6 +377,21 @@ public class CreateGameController implements Controller<Pane> {
     int mapIndex = (int) (Math.random() * filteredFaMaps.size());
     mapListView.getSelectionModel().select(mapIndex);
     mapListView.scrollTo(mapIndex);
+  }
+
+  public void onGenerateMapButtonClicked() {
+    mapGeneratorService.generateMap().thenAccept(mapName -> {
+      Platform.runLater(() -> {
+        initMapSelection();
+        mapListView.getItems().stream()
+            .filter(mapBean -> mapBean.getFolderName().equalsIgnoreCase(mapName))
+            .findAny().ifPresent(mapBean -> {
+          mapListView.getSelectionModel().select(mapBean);
+          mapListView.scrollTo(mapBean);
+          setSelectedMap(mapBean);
+        });
+      });
+    });
   }
 
   public void onCreateButtonClicked() {

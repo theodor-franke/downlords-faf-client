@@ -1,6 +1,7 @@
 package com.faforever.client.game.patch;
 
 import com.faforever.client.config.ClientProperties;
+import com.faforever.client.fx.PlatformService;
 import com.faforever.client.i18n.I18n;
 import com.faforever.client.preferences.PreferencesService;
 import com.faforever.client.task.CompletableTask;
@@ -59,17 +60,19 @@ public class GameBinariesUpdateTaskImpl extends CompletableTask<Void> implements
 
   private final I18n i18n;
   private final PreferencesService preferencesService;
+  private final PlatformService platformService;
 
   private final String fafExeUrl;
 
   private Integer version;
 
 
-  public GameBinariesUpdateTaskImpl(I18n i18n, PreferencesService preferencesService, ClientProperties clientProperties) {
+  public GameBinariesUpdateTaskImpl(I18n i18n, PreferencesService preferencesService, PlatformService platformService, ClientProperties clientProperties) {
     super(Priority.HIGH);
 
     this.i18n = i18n;
     this.preferencesService = preferencesService;
+    this.platformService = platformService;
 
     this.fafExeUrl = clientProperties.getForgedAlliance().getExeUrl();
   }
@@ -89,8 +92,10 @@ public class GameBinariesUpdateTaskImpl extends CompletableTask<Void> implements
     return null;
   }
 
-  private void downloadFafExeIfNecessary(Path exePath) throws IOException {
+  @VisibleForTesting
+  void downloadFafExeIfNecessary(Path exePath) throws IOException {
     if (Files.exists(exePath)) {
+      platformService.setUnixExecutableAndWritableBits(exePath);
       return;
     }
     ResourceLocks.acquireDownloadLock();
@@ -105,6 +110,7 @@ public class GameBinariesUpdateTaskImpl extends CompletableTask<Void> implements
             .listener(this::updateProgress)
             .copy();
       }
+      platformService.setUnixExecutableAndWritableBits(exePath);
     } finally {
       ResourceLocks.freeDownloadLock();
     }

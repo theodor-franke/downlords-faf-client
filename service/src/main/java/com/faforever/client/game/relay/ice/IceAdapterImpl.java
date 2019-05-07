@@ -48,7 +48,6 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
-import static com.faforever.client.os.OsUtils.gobbleLines;
 import static java.util.Arrays.asList;
 
 @Component
@@ -209,8 +208,6 @@ public class IceAdapterImpl implements IceAdapter, DisposableBean {
         log.debug("Starting ICE adapter with command: {}", cmd);
         process = processBuilder.start();
         Logger logger = LoggerFactory.getLogger("faf-ice-adapter");
-        gobbleLines(process.getInputStream(), logger::debug);
-        gobbleLines(process.getErrorStream(), logger::error);
 
         IceAdapterCallbacks iceAdapterCallbacks = applicationContext.getBean(IceAdapterCallbacks.class);
 

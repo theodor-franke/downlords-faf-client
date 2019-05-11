@@ -3,7 +3,6 @@ package com.faforever.client.map;
 import com.faforever.client.asset.AssetService;
 import com.faforever.client.config.CacheNames;
 import com.faforever.client.config.ClientProperties;
-import com.faforever.client.config.ClientProperties.Vault;
 import com.faforever.client.map.MapService.PreviewSize;
 import com.faforever.client.theme.UiService;
 import com.faforever.client.util.ProgrammingError;
@@ -16,6 +15,7 @@ import org.springframework.stereotype.Service;
 import java.net.URL;
 import java.nio.file.Paths;
 import java.util.Locale;
+import com.faforever.client.map.generator.MapGeneratorService;
 
 import static com.github.nocatch.NoCatch.noCatch;
 
@@ -27,11 +27,13 @@ public class MapPreviewService {
   private final AssetService assetService;
   private final UiService uiService;
   private final ClientProperties clientProperties;
+  private final MapGeneratorService mapGeneratorService;
 
-  public MapPreviewService(AssetService assetService, UiService uiService, ClientProperties clientProperties) {
+  public MapPreviewService(AssetService assetService, UiService uiService, ClientProperties clientProperties, MapGeneratorService mapGeneratorService) {
     this.assetService = assetService;
     this.uiService = uiService;
     this.clientProperties = clientProperties;
+    this.mapGeneratorService = mapGeneratorService;
   }
 
   private static URL getPreviewUrl(String mapName, String baseUrl, PreviewSize previewSize) {
@@ -65,6 +67,10 @@ public class MapPreviewService {
 
   @Cacheable(value = CacheNames.MAP_PREVIEW, unless = "#result == null")
   public Image loadPreview(String mapName, PreviewSize previewSize) {
+    if (mapGeneratorService.isGeneratedMap(mapName)) {
+      return mapGeneratorService.getGeneratedMapPreviewImage();
+    }
+
     String mapPreviewUrlFormat = clientProperties.getVault().getMapPreviewUrlFormat();
     return loadPreview(getPreviewUrl(mapName, mapPreviewUrlFormat, previewSize), previewSize);
   }

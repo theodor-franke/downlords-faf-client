@@ -32,7 +32,7 @@ public class MapPreviewServiceTest {
   @Before
   public void setUp() throws Exception {
     clientProperties = new ClientProperties();
-    instance = new MapPreviewService(assetService, uiService, clientProperties);
+    instance = new MapPreviewService(assetService, uiService, clientProperties, mapGeneratorService);
   }
 
   @Test

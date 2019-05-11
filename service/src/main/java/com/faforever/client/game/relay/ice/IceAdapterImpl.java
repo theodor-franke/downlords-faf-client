@@ -14,6 +14,7 @@ import com.faforever.client.game.relay.event.GameFullEvent;
 import com.faforever.client.game.relay.event.RehostRequestEvent;
 import com.faforever.client.game.relay.ice.event.GpgGameMessageEvent;
 import com.faforever.client.game.relay.ice.event.IceAdapterStateChanged;
+import com.faforever.client.os.OsUtils;
 import com.faforever.client.player.Player;
 import com.faforever.client.player.PlayerService;
 import com.faforever.client.preferences.PreferencesService;
@@ -208,6 +209,10 @@ public class IceAdapterImpl implements IceAdapter, DisposableBean {
         log.debug("Starting ICE adapter with command: {}", cmd);
         process = processBuilder.start();
         Logger logger = LoggerFactory.getLogger("faf-ice-adapter");
+        OsUtils.gobbleLines(process.getInputStream(), s -> {
+        });
+        OsUtils.gobbleLines(process.getErrorStream(), s -> {
+        });
 
         IceAdapterCallbacks iceAdapterCallbacks = applicationContext.getBean(IceAdapterCallbacks.class);
 

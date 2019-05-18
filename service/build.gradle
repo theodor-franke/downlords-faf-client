@@ -29,6 +29,7 @@ dependencies {
   compile("com.github.rutledgepaulv:q-builders:${qBuildersVersion}")
   compileOnly("com.install4j:install4j-runtime:${install4jRuntimeVersion}")
   implementation("com.github.Vatuu:discord-rpc:${discordRpcVersion}")
+  compile ("com.github.axel1200:discord-rpc:${discordRpcVersion}")
 
   compile project(":commons")
   compile("org.mapstruct:mapstruct-jdk8:${mapstructVersion}")

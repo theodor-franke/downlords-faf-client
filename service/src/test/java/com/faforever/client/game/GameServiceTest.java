@@ -1,6 +1,7 @@
 package com.faforever.client.game;
 
 import com.faforever.client.config.ClientProperties;
+import com.faforever.client.discord.DiscordRichPresenceService;
 import com.faforever.client.fx.PlatformService;
 import com.faforever.client.game.patch.GameUpdater;
 import com.faforever.client.game.relay.event.RehostRequestEvent;
@@ -105,6 +106,9 @@ public class GameServiceTest extends AbstractPlainJavaFxTest {
   private PlatformService platformService;
   @Mock
   private ApplicationEventPublisher eventPublisher;
+  @Mock
+  private DiscordRichPresenceService discordRichPresenceService;
+
   @Captor
   private ArgumentCaptor<Set<UUID>> simModsCaptor;
 
@@ -116,9 +120,24 @@ public class GameServiceTest extends AbstractPlainJavaFxTest {
 
     ClientProperties clientProperties = new ClientProperties();
 
-    instance = new GameService(clientProperties, fafService, forgedAllianceService, mapService,
-      preferencesService, gameUpdater, notificationService, i18n, executor, playerService,
-      reportingService, iceAdapter, modService, platformService, eventPublisher);
+    instance = new GameService(
+      clientProperties,
+      fafService,
+      forgedAllianceService,
+      mapService,
+      preferencesService,
+      gameUpdater,
+      notificationService,
+      i18n,
+      executor,
+      playerService,
+      reportingService,
+      iceAdapter,
+      modService,
+      platformService,
+      eventPublisher,
+      discordRichPresenceService
+    );
     instance.replayService = replayService;
 
     Preferences preferences = new Preferences();
@@ -487,6 +506,7 @@ public class GameServiceTest extends AbstractPlainJavaFxTest {
 
     verify(eventPublisher, never()).publishEvent(any(CurrentGameEndedEvent.class));
 
+    game.setState(GameState.PLAYING);
     game.setState(GameState.CLOSED);
 
     WaitForAsyncUtils.waitForFxEvents();

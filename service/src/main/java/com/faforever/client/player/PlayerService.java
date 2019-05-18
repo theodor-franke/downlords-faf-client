@@ -28,10 +28,13 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
+import org.jetbrains.annotations.Nullable;
+import org.springframework.beans.factory.InitializingBean;
 
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
@@ -58,6 +61,7 @@ public class PlayerService {
   private final FafService fafService;
   private final UserService userService;
   private final ApplicationEventPublisher eventPublisher;
+  private final HashMap<Integer, List<Player>> playersByGame;
 
   public PlayerService(FafService fafService, UserService userService, ApplicationEventPublisher eventPublisher) {
     this.fafService = fafService;
@@ -69,6 +73,7 @@ public class PlayerService {
     friendList = new ArrayList<>();
     foeList = new ArrayList<>();
     currentPlayer = new SimpleObjectProperty<>();
+    playersByGame = new HashMap<>();
   }
 
   @EventListener
@@ -136,6 +141,7 @@ public class PlayerService {
   private void updateGamePlayers(List<Player> players, Game game) {
     players.forEach(player -> {
       resetIdleTime(player);
+      updateGameToPlayer(game, player);
       if (game == null || game.getState() == GameState.CLOSED) {
         player.setGame(null);
       } else {
@@ -145,6 +151,35 @@ public class PlayerService {
         }
       }
     });
+
+    if (game != null && game.getState() != GameState.CLOSED && playersByGame.get(game.getId()) != null) {
+      playersByGame.get(game.getId()).forEach(player -> {
+        boolean stillInGame = game.getTeams().entrySet().stream()
+          .anyMatch(entry -> entry.getValue().stream()
+            .map(Player::getId)
+            .anyMatch(id -> player.getId() == id));
+        if (!stillInGame) {
+          player.setGame(null);
+        }
+      });
+    }
+  }
+
+  private void updateGameToPlayer(Game game, Player player) {
+    if (game == null) {
+      return;
+    }
+
+    if (game.getState() == GameState.CLOSED) {
+      playersByGame.remove(game.getId());
+      return;
+    }
+
+    if (!playersByGame.containsKey(game.getId())) {
+      playersByGame.put(game.getId(), new ArrayList<>());
+    }
+
+    playersByGame.get(game.getId()).add(player);
   }
 
 

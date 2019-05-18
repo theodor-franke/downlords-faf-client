@@ -20,6 +20,8 @@ import javafx.scene.Node;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.FlowPane;
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -28,6 +30,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 
+@Slf4j
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 @Component
 public class GamesTilesContainerController implements Controller<Node> {
@@ -37,6 +40,7 @@ public class GamesTilesContainerController implements Controller<Node> {
   private final WeakListChangeListener<Game> weakGameListChangeListener;
   private final PreferencesService preferencesService;
   private final ChangeListener<? super TilesSortingOrder> sortingListener;
+  private final GameService gameService;
   public FlowPane tiledFlowPane;
   public ScrollPane tiledScrollPane;
   @VisibleForTesting
@@ -45,9 +49,10 @@ public class GamesTilesContainerController implements Controller<Node> {
   private Comparator<Node> appliedComparator;
 
 
-  public GamesTilesContainerController(UiService uiService, PreferencesService preferencesService) {
+  public GamesTilesContainerController(UiService uiService, PreferencesService preferencesService, GameService gameService) {
     this.uiService = uiService;
     this.preferencesService = preferencesService;
+    this.gameService = gameService;
     selectedGame = new SimpleObjectProperty<>();
 
     sortingListener = (observable, oldValue, newValue) -> {
@@ -60,15 +65,20 @@ public class GamesTilesContainerController implements Controller<Node> {
       sortNodes();
     };
 
-    gameListChangeListener = change -> Platform.runLater(() -> {
-      synchronized (change) {
+    gameListChangeListener = change -> {
+      Platform.runLater(() -> {
         while (change.next()) {
-          change.getRemoved().forEach(gameInfoBean -> tiledFlowPane.getChildren().remove(uidToGameCard.remove(gameInfoBean.getId())));
+          change.getRemoved().forEach(gameInfoBean -> {
+            boolean remove = tiledFlowPane.getChildren().remove(uidToGameCard.remove(gameInfoBean.getId()));
+            if (!remove) {
+              log.error("Tried to remove game tile that did not exist.");
+            }
+          });
           change.getAddedSubList().forEach(GamesTilesContainerController.this::addGameCard);
         }
         sortNodes();
       }
-    });
+    )};
     weakGameListChangeListener = new WeakListChangeListener<>(gameListChangeListener);
   }
 
@@ -89,6 +99,9 @@ public class GamesTilesContainerController implements Controller<Node> {
   void createTiledFlowPane(ObservableList<Game> games, ComboBox<TilesSortingOrder> choseSortingTypeChoiceBox) {
     initializeChoiceBox(choseSortingTypeChoiceBox);
     uidToGameCard = new HashMap<>();
+
+    JavaFxUtil.assertApplicationThread();
+    //No lock is needed here because game updates are always done on the Application thread
     games.forEach(this::addGameCard);
     games.removeListener(weakGameListChangeListener);
     JavaFxUtil.addListener(games, weakGameListChangeListener);

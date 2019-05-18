@@ -17,7 +17,9 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.beans.value.WeakChangeListener;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.SortedList;
 import javafx.geometry.Pos;
@@ -64,6 +66,8 @@ public class GamesTableController implements Controller<Node> {
   public TableColumn<Game, String> hostColumn;
   public TableColumn<Game, Boolean> passwordProtectionColumn;
   public TableColumn<Game, String> coopMissionName;
+  private final ChangeListener<Boolean> showModdedGamesChangedListener;
+  private final ChangeListener<Boolean> showPasswordProtectedGamesChangedListener;
 
 
   public GamesTableController(MapPreviewService mapPreviewService, JoinGameHelper joinGameHelper, I18n i18n, UiService uiService, PreferencesService preferencesService) {
@@ -74,6 +78,9 @@ public class GamesTableController implements Controller<Node> {
     this.preferencesService = preferencesService;
 
     this.selectedGame = new SimpleObjectProperty<>();
+
+    showModdedGamesChangedListener = (observable, oldValue, newValue) -> modsColumn.setVisible(newValue);
+    showPasswordProtectedGamesChangedListener = (observable, oldValue, newValue) -> passwordProtectionColumn.setVisible(newValue);
   }
 
   public ObjectProperty<Game> selectedGameProperty() {
@@ -134,6 +141,10 @@ public class GamesTableController implements Controller<Node> {
 
     gamesTable.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue)
       -> Platform.runLater(() -> selectedGame.set(newValue)));
+
+    //bindings do not work as that interferes with some bidirectional bindings in the TableView itself
+    JavaFxUtil.addListener(preferencesService.getPreferences().showModdedGamesProperty(), new WeakChangeListener<>(showModdedGamesChangedListener));
+    JavaFxUtil.addListener(preferencesService.getPreferences().showPasswordProtectedGamesProperty(), new WeakChangeListener<>(showPasswordProtectedGamesChangedListener));
   }
 
   private Integer countPlayers(Game game) {
@@ -167,9 +178,9 @@ public class GamesTableController implements Controller<Node> {
 
   private void onColumnSorted(@NotNull SortEvent<TableView<Game>> event) {
     List<Pair<String, SortType>> sorters = event.getSource().getSortOrder()
-        .stream()
-        .map(column -> new Pair<>(column.getId(), column.getSortType()))
-        .collect(Collectors.toList());
+      .stream()
+      .map(column -> new Pair<>(column.getId(), column.getSortType()))
+      .collect(Collectors.toList());
 
     preferencesService.getPreferences().getGameListSorting().setAll(sorters);
     preferencesService.storeInBackground();
@@ -179,9 +190,9 @@ public class GamesTableController implements Controller<Node> {
   private ObservableValue<String> modCell(CellDataFeatures<Game, String> param) {
     int simModCount = param.getValue().getSimMods().size();
     List<String> modNames = param.getValue().getSimMods().entrySet().stream()
-        .limit(2)
-        .map(Entry::getValue)
-        .collect(Collectors.toList());
+      .limit(2)
+      .map(Entry::getValue)
+      .collect(Collectors.toList());
     if (simModCount > 2) {
       return new SimpleStringProperty(i18n.get("game.mods.twoAndMore", modNames.get(0), modNames.size()));
     }
@@ -209,13 +220,13 @@ public class GamesTableController implements Controller<Node> {
 
   private TableCell<Game, Boolean> passwordIndicatorColumn() {
     return new StringCell<>(
-        isPasswordProtected -> isPasswordProtected ? "\uD83D\uDD12" : "",
-        Pos.CENTER, UiService.CSS_CLASS_ICON);
+      isPasswordProtected -> isPasswordProtected ? "\uD83D\uDD12" : "",
+      Pos.CENTER, UiService.CSS_CLASS_ICON);
   }
 
   private TableCell<Game, PlayerFill> playersCell() {
     return new StringCell<>(playerFill -> i18n.get("game.players.format",
-        playerFill.getPlayers(), playerFill.getMaxPlayers()), Pos.CENTER);
+      playerFill.getPlayers(), playerFill.getMaxPlayers()), Pos.CENTER);
   }
 
   private TableCell<Game, RankRange> rankTableCell() {

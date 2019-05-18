@@ -5,7 +5,24 @@
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/commons/commons.iml" filepath="$PROJECT_DIR$/.idea/modules/commons/commons.iml" group="downlords-faf-client/commons" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/commons/commons_main.iml" filepath="$PROJECT_DIR$/.idea/modules/commons/commons_main.iml" group="downlords-faf-client/commons" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/commons/commons_test.iml" filepath="$PROJECT_DIR$/.idea/modules/commons/commons_test.iml" group="downlords-faf-client/commons" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/downlords-faf-client.iml" filepath="$PROJECT_DIR$/.idea/modules/downlords-faf-client.iml" group="downlords-faf-client" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/downlords-faf-client.iml" filepath="$PROJECT_DIR$/.idea/modules/downlords-faf-client.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/commons/downlords-faf-client.commons.iml" filepath="$PROJECT_DIR$/.idea/modules/commons/downlords-faf-client.commons.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/commons/downlords-faf-client.commons.main.iml" filepath="$PROJECT_DIR$/.idea/modules/commons/downlords-faf-client.commons.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/commons/downlords-faf-client.commons.test.iml" filepath="$PROJECT_DIR$/.idea/modules/commons/downlords-faf-client.commons.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/downlords-faf-client.main.iml" filepath="$PROJECT_DIR$/.idea/modules/downlords-faf-client.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/service/downlords-faf-client.service.iml" filepath="$PROJECT_DIR$/.idea/modules/service/downlords-faf-client.service.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/service/downlords-faf-client.service.main.iml" filepath="$PROJECT_DIR$/.idea/modules/service/downlords-faf-client.service.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/service/downlords-faf-client.service.test.iml" filepath="$PROJECT_DIR$/.idea/modules/service/downlords-faf-client.service.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/downlords-faf-client.test.iml" filepath="$PROJECT_DIR$/.idea/modules/downlords-faf-client.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/test-commons/downlords-faf-client.test-commons.iml" filepath="$PROJECT_DIR$/.idea/modules/test-commons/downlords-faf-client.test-commons.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/test-commons/downlords-faf-client.test-commons.main.iml" filepath="$PROJECT_DIR$/.idea/modules/test-commons/downlords-faf-client.test-commons.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/test-commons/downlords-faf-client.test-commons.test.iml" filepath="$PROJECT_DIR$/.idea/modules/test-commons/downlords-faf-client.test-commons.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/ui/downlords-faf-client.ui.iml" filepath="$PROJECT_DIR$/.idea/modules/ui/downlords-faf-client.ui.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/ui/downlords-faf-client.ui.main.iml" filepath="$PROJECT_DIR$/.idea/modules/ui/downlords-faf-client.ui.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/ui/downlords-faf-client.ui.test.iml" filepath="$PROJECT_DIR$/.idea/modules/ui/downlords-faf-client.ui.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/webview-patch/downlords-faf-client.webview-patch.iml" filepath="$PROJECT_DIR$/.idea/modules/webview-patch/downlords-faf-client.webview-patch.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/webview-patch/downlords-faf-client.webview-patch.main.iml" filepath="$PROJECT_DIR$/.idea/modules/webview-patch/downlords-faf-client.webview-patch.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/webview-patch/downlords-faf-client.webview-patch.test.iml" filepath="$PROJECT_DIR$/.idea/modules/webview-patch/downlords-faf-client.webview-patch.test.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/downlords-faf-client_main.iml" filepath="$PROJECT_DIR$/.idea/modules/downlords-faf-client_main.iml" group="downlords-faf-client" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/downlords-faf-client_test.iml" filepath="$PROJECT_DIR$/.idea/modules/downlords-faf-client_test.iml" group="downlords-faf-client" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/service.iml" filepath="$PROJECT_DIR$/.idea/modules/service.iml" group="downlords-faf-client/service" />

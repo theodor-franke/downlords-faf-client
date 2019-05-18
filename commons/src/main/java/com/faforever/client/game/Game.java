@@ -20,6 +20,7 @@ import java.util.UUID;
 
 public class Game {
 
+  private final IntegerProperty hostId;
   private final StringProperty hostName;
   private final StringProperty title;
   private final StringProperty mapName;
@@ -48,6 +49,7 @@ public class Game {
 
   public Game() {
     id = new SimpleIntegerProperty();
+    hostId = new SimpleIntegerProperty();
     hostName = new SimpleStringProperty();
     title = new SimpleStringProperty();
     mapName = new SimpleStringProperty();
@@ -83,6 +85,18 @@ public class Game {
 
   public StringProperty hostNameProperty() {
     return hostName;
+  }
+
+  public int getHostId() {
+    return hostId.get();
+  }
+
+  public IntegerProperty hostIdProperty() {
+    return hostId;
+  }
+
+  public void setHostId(int hostId) {
+    this.hostId.set(hostId);
   }
 
   public String getTitle() {

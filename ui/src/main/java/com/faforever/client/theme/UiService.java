@@ -102,6 +102,7 @@ public class UiService implements InitializingBean, DisposableBean {
   public static final String MENTION_SOUND = "theme/sounds/mention.mp3";
   public static final String CSS_CLASS_ICON = "icon";
   public static final String LADDER_1V1_IMAGE = "theme/images/ranked1v1_notification.png";
+  public static final String GENERATED_MAP = "theme/images/generated-map.png";
   public static final String CHAT_CONTAINER = "theme/chat/chat_container.html";
   public static final String CHAT_SECTION_EXTENDED = "theme/chat/extended/chat_section.html";
   public static final String CHAT_SECTION_COMPACT = "theme/chat/compact/chat_section.html";

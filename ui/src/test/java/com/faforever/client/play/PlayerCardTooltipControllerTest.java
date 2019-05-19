@@ -1,4 +1,4 @@
-package com.faforever.client.game;
+package com.faforever.client.play;
 
 import com.faforever.client.chat.CountryFlagService;
 import com.faforever.client.i18n.I18n;

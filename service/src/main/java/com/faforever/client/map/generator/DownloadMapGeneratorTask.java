@@ -9,18 +9,14 @@ import com.faforever.commons.io.ByteCopier;
 import com.google.common.annotations.VisibleForTesting;
 import lombok.Getter;
 import lombok.Setter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import javax.inject.Inject;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.lang.invoke.MethodHandles;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.file.Files;
@@ -30,8 +26,8 @@ import java.util.Objects;
 
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
+@Slf4j
 public class DownloadMapGeneratorTask extends CompletableTask<Void> {
-  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   private final MapGeneratorService mapGeneratorService;
   private final ClientProperties clientProperties;
@@ -43,7 +39,6 @@ public class DownloadMapGeneratorTask extends CompletableTask<Void> {
   @VisibleForTesting
   private String version;
 
-  @Inject
   public DownloadMapGeneratorTask(MapGeneratorService mapGeneratorService, ClientProperties clientProperties, I18n i18n, PlatformService platformService) {
     super(Priority.HIGH);
 
@@ -63,8 +58,8 @@ public class DownloadMapGeneratorTask extends CompletableTask<Void> {
 
     URLConnection urlConnection = url.openConnection();
 
-    File targetFile = mapGeneratorService.getGeneratorExecutablePath().resolve(String.format(MapGeneratorService.getGENERATOR_EXECUTABLE_FILENAME(), version)).toFile();
-    Path tempFile = Files.createTempFile(targetFile.toPath().getParent(), "generator", null);
+    Path targetFile = mapGeneratorService.getGeneratorExecutableDir().resolve(String.format(MapGeneratorService.GENERATOR_EXECUTABLE_FILENAME, version));
+    Path tempFile = Files.createTempFile(targetFile.getParent(), "generator", null);
 
     ResourceLocks.acquireDownloadLock();
     try (InputStream inputStream = url.openStream(); OutputStream outputStream = Files.newOutputStream(tempFile)) {
@@ -74,17 +69,17 @@ public class DownloadMapGeneratorTask extends CompletableTask<Void> {
           .listener(this::updateProgress)
           .copy();
 
-      Files.move(tempFile, targetFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+      Files.move(tempFile, targetFile, StandardCopyOption.REPLACE_EXISTING);
     } finally {
       ResourceLocks.freeDownloadLock();
       try {
         Files.deleteIfExists(tempFile);
       } catch (IOException e) {
-        logger.warn("Could not delete temporary file: " + tempFile.toAbsolutePath(), e);
+        log.warn("Could not delete temporary file: {}", tempFile.toAbsolutePath(), e);
       }
     }
 
-    platformService.setUnixExecutableAndWritableBits(targetFile.toPath());
+    platformService.setUnixExecutableAndWritableBits(targetFile);
 
     return null;
   }

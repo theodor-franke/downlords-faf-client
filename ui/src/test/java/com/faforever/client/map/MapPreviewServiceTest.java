@@ -3,6 +3,7 @@ package com.faforever.client.map;
 import com.faforever.client.asset.AssetService;
 import com.faforever.client.config.ClientProperties;
 import com.faforever.client.map.MapService.PreviewSize;
+import com.faforever.client.map.generator.MapGeneratorService;
 import com.faforever.client.theme.UiService;
 import org.junit.Before;
 import org.junit.Test;
@@ -23,11 +24,14 @@ public class MapPreviewServiceTest {
 
   private MapPreviewService instance;
 
+  private ClientProperties clientProperties;
+
   @Mock
   private AssetService assetService;
   @Mock
   private UiService uiService;
-  private ClientProperties clientProperties;
+  @Mock
+  private MapGeneratorService mapGeneratorService;
 
   @Before
   public void setUp() throws Exception {
@@ -44,5 +48,4 @@ public class MapPreviewServiceTest {
       verify(assetService).loadAndCacheImage(any(URL.class), eq(cacheSubDir), any());
     }
   }
-
 }

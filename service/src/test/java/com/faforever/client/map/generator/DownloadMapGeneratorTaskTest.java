@@ -14,8 +14,10 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.io.File;
-import java.util.Arrays;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.startsWith;
@@ -62,12 +64,17 @@ public class DownloadMapGeneratorTaskTest extends AbstractPlainJavaFxTest {
 
   @Test
   public void testCall() throws Exception {
-    instance.setVersion("");//mock version to prevent a subdirectory with the name of the version
-    when(mapGeneratorService.getGeneratorExecutablePath()).thenReturn(downloadDirectory.getRoot().toPath());
+    // Prevent a subdirectory with the name of the version
+    instance.setVersion("");
+    Path executableDir = downloadDirectory.getRoot().toPath();
+    when(mapGeneratorService.getGeneratorExecutableDir()).thenReturn(executableDir);
 
     instance.call();
 
-    assertThat(Arrays.asList(Objects.requireNonNull(downloadDirectory.getRoot().listFiles())), contains(downloadDirectory.getRoot().toPath().resolve(String.format(MapGeneratorService.getGENERATOR_EXECUTABLE_FILENAME(), "")).toFile()));
+    assertThat(
+      Objects.requireNonNull(Files.list(executableDir).collect(Collectors.toList())),
+      contains(executableDir.resolve(String.format(MapGeneratorService.GENERATOR_EXECUTABLE_FILENAME, "")))
+    );
     verify(platformService).setUnixExecutableAndWritableBits(any());
   }
 }

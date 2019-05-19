@@ -14,7 +14,6 @@ import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
@@ -43,7 +42,6 @@ public class GenerateMapTask extends CompletableTask<Void> {
   @Setter
   private String mapFilename;
 
-  @Inject
   public GenerateMapTask(MapGeneratorService mapGeneratorService, ClientProperties clientProperties, NotificationService notificationService, I18n i18n, EventBus eventBus) {
     super(Priority.HIGH);
 
@@ -55,7 +53,7 @@ public class GenerateMapTask extends CompletableTask<Void> {
   }
 
   @Override
-  protected Void call() throws Exception {
+  protected Void call() {
     Objects.requireNonNull(version, "Version hasn't been set.");
 
     updateTitle(i18n.get("game.mapGeneration.generateMap.title", version, String.valueOf(seed)));
@@ -70,7 +68,7 @@ public class GenerateMapTask extends CompletableTask<Void> {
     logger.info("Starting map generator in directory: {} with command: {}", processBuilder.directory(), processBuilder.command().stream().reduce((l, r) -> l + " " + r).get());
     try {
       Process process = processBuilder.start();
-      process.waitFor(MapGeneratorService.getGENERATION_TIMEOUT_SECONDS(), TimeUnit.SECONDS);
+      process.waitFor(MapGeneratorService.GENERATION_TIMEOUT_SECONDS, TimeUnit.SECONDS);
       if (process.isAlive()) {
         logger.warn("Map generation timed out, killing process...");
         process.destroyForcibly();

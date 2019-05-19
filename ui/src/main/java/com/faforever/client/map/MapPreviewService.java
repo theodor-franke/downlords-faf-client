@@ -4,10 +4,12 @@ import com.faforever.client.asset.AssetService;
 import com.faforever.client.config.CacheNames;
 import com.faforever.client.config.ClientProperties;
 import com.faforever.client.map.MapService.PreviewSize;
+import com.faforever.client.map.generator.MapGeneratorService;
 import com.faforever.client.theme.UiService;
 import com.faforever.client.util.ProgrammingError;
 import com.google.common.net.UrlEscapers;
 import javafx.scene.image.Image;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -15,25 +17,28 @@ import org.springframework.stereotype.Service;
 import java.net.URL;
 import java.nio.file.Paths;
 import java.util.Locale;
-import com.faforever.client.map.generator.MapGeneratorService;
 
 import static com.github.nocatch.NoCatch.noCatch;
 
 @Lazy
 @Service
 // TODO unit test
+@Slf4j
 public class MapPreviewService {
 
   private final AssetService assetService;
   private final UiService uiService;
   private final ClientProperties clientProperties;
   private final MapGeneratorService mapGeneratorService;
+  private final Image generatedMapPreviewImage;
 
   public MapPreviewService(AssetService assetService, UiService uiService, ClientProperties clientProperties, MapGeneratorService mapGeneratorService) {
     this.assetService = assetService;
     this.uiService = uiService;
     this.clientProperties = clientProperties;
     this.mapGeneratorService = mapGeneratorService;
+
+    generatedMapPreviewImage = uiService.getThemeImage(UiService.GENERATED_MAP);
   }
 
   private static URL getPreviewUrl(String mapName, String baseUrl, PreviewSize previewSize) {
@@ -68,7 +73,7 @@ public class MapPreviewService {
   @Cacheable(value = CacheNames.MAP_PREVIEW, unless = "#result == null")
   public Image loadPreview(String mapName, PreviewSize previewSize) {
     if (mapGeneratorService.isGeneratedMap(mapName)) {
-      return mapGeneratorService.getGeneratedMapPreviewImage();
+      return generatedMapPreviewImage;
     }
 
     String mapPreviewUrlFormat = clientProperties.getVault().getMapPreviewUrlFormat();

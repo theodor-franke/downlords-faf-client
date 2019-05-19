@@ -128,7 +128,7 @@ public class GamesTilesContainerControllerTest extends AbstractPlainJavaFxTest {
   }
 
   @Test
-  public void testSorting() {
+  public void testSorting() throws Exception {
     ObservableList<Game> observableList = FXCollections.observableArrayList();
     Game game1 = new Game();
     game1.setTitle("abc");

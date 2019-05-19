@@ -320,8 +320,6 @@ public class GameServiceTest extends AbstractPlainJavaFxTest {
   public void testOnGameInfoMessageDoesntSetCurrentGameIfUserIsInAndStatusNotOpen() {
     assertThat(instance.getCurrentGame(), nullValue());
 
-    when(playerService.getCurrentPlayer()).thenReturn(Optional.ofNullable(PlayerBuilder.create("PlayerName").get()));
-
     GameInfoServerMessage gameInfoMessage = GameInfoMessageBuilder.create(1234).defaultValues()
       .state(GameState.PLAYING)
       .addTeamMember(1, 1, "PlayerName").get();
@@ -333,8 +331,6 @@ public class GameServiceTest extends AbstractPlainJavaFxTest {
   @Test
   public void testOnGameInfoMessageDoesntSetCurrentGameIfUserDoesntMatch() {
     assertThat(instance.getCurrentGame(), nullValue());
-
-    when(playerService.getCurrentPlayer()).thenReturn(Optional.ofNullable(PlayerBuilder.create("PlayerName").get()));
 
     GameInfoServerMessage gameInfoMessage = GameInfoMessageBuilder.create(1234).defaultValues().addTeamMember(1, 1, "Other").get();
     instance.onGameInfo(gameInfoMessage);
@@ -366,8 +362,6 @@ public class GameServiceTest extends AbstractPlainJavaFxTest {
   @Test
   public void testOnGameInfoRemove() {
     assertThat(instance.getGames(), empty());
-
-    when(playerService.getCurrentPlayer()).thenReturn(Optional.ofNullable(PlayerBuilder.create("PlayerName").get()));
 
     GameInfoServerMessage gameInfoMessage = GameInfoMessageBuilder.create(1).defaultValues().title("Game 1").get();
     instance.onGameInfo(gameInfoMessage);

@@ -5,6 +5,9 @@ plugins {
 apply plugin: 'io.spring.dependency-management'
 apply plugin: 'org.springframework.boot'
 
+bootJar.enabled = false
+jar.enabled = true
+
 dependencies {
   compile project(":commons")
   compile("org.springframework.boot:spring-boot-starter-test")

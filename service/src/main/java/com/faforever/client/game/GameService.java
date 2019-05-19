@@ -39,7 +39,6 @@ import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringEscapeUtils;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,12 +56,9 @@ import java.net.URI;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CancellationException;
@@ -100,6 +96,7 @@ public class GameService implements InitializingBean {
    */
   private final ObservableList<Game> games;
   private final ObservableMap<Integer, Game> uidToGameInfoBean;
+  private final Map<GameState, Consumer<Game>> gameStateChangeListeners;
 
   private final FafService fafService;
   private final ForgedAllianceService forgedAllianceService;
@@ -116,7 +113,6 @@ public class GameService implements InitializingBean {
   private final PlatformService platformService;
   private final String faWindowTitle;
   private final ApplicationEventPublisher eventPublisher;
-  private final DiscordRichPresenceService discordRichPresenceService;
 
   //TODO: circular reference
   ReplayService replayService;
@@ -159,10 +155,9 @@ public class GameService implements InitializingBean {
     this.iceAdapter = iceAdapter;
     this.modService = modService;
     this.platformService = platformService;
+    this.eventPublisher = eventPublisher;
 
     faWindowTitle = clientProperties.getForgedAlliance().getWindowTitle();
-    this.eventPublisher = eventPublisher;
-    this.discordRichPresenceService = discordRichPresenceService;
     uidToGameInfoBean = FXCollections.observableMap(new ConcurrentHashMap<>());
     searching1v1 = new SimpleBooleanProperty();
     gameRunning = new SimpleBooleanProperty();
@@ -231,6 +226,11 @@ public class GameService implements InitializingBean {
       }
     });
     JavaFxUtil.attachListToMap(games, uidToGameInfoBean);
+
+    gameStateChangeListeners = Map.of(
+      GameState.CLOSED, this::onGameClosed,
+      GameState.PLAYING, this::onGamePlaying
+    );
   }
 
   @EventListener
@@ -612,51 +612,45 @@ public class GameService implements InitializingBean {
 
   @EventListener
   public void onGameInfos(GameInfosServerMessage message) {
-    // Since all game updates are usually reflected on the UI and to prevent deadlocks
-    JavaFxUtil.runLater(() -> message.getGames().forEach(this::onGameInfo));
+    message.getGames().forEach(this::onGameInfo);
   }
 
   @EventListener
   public void onGameInfo(GameInfoServerMessage gameInfoMessage) {
     // Since all game updates are usually reflected on the UI and to prevent deadlocks
     JavaFxUtil.runLater(() -> {
-      // We may receive game info before we receive our player info
-      Optional<Player> currentPlayerOptional = playerService.getCurrentPlayer();
       Game game = createOrUpdateGame(gameInfoMessage);
-
-      boolean isCurrentPlayersInGame = currentPlayerOptional.isPresent()
-        && Objects.equals(currentPlayerOptional.get().getGame().getId(), game.getId());
-
-      if (GameState.CLOSED == game.getState()) {
-        if (isCurrentPlayersInGame) {
-          removeGame(gameInfoMessage);
-          setCurrentGame(null);
-          return;
-        }
-
-        // Don't remove the game until the current player closed it. TODO: Why?
-        currentPlayerOptional.ifPresent(player -> JavaFxUtil.addListener(player.gameProperty(), (observable, oldValue, newValue) -> {
-          if (newValue == null && oldValue.getState() == GameState.CLOSED) {
-            removeGame(gameInfoMessage);
-            setCurrentGame(null);
-          }
-        }));
-      }
-
-      if (Objects.equals(currentGame.get(), game) && !isCurrentPlayersInGame) {
-        setCurrentGame(null);
-      }
-
-      JavaFxUtil.addListener(game.stateProperty(), (observable, oldValue, newValue) -> {
-        if (oldValue == GameState.OPEN
-          && newValue == GameState.PLAYING
-          && currentPlayerOptional.isPresent()
-          && game.getId() == currentPlayerOptional.get().getGame().getId()
-          && !platformService.isWindowFocused(faWindowTitle)) {
-          platformService.focusWindow(faWindowTitle);
-        }
-      });
+      gameStateChangeListeners.get(game.getState()).accept(game);
     });
+  }
+
+  private void onGamePlaying(Game game) {
+    if (isCurrentGame(game) && !platformService.isWindowFocused(faWindowTitle)) {
+      platformService.focusWindow(faWindowTitle);
+    }
+  }
+
+  private void onGameClosed(Game game) {
+    if (!isCurrentGame(game)) {
+      removeGame(game.getId());
+      return;
+    }
+
+    // Don't remove the current game until the current player closed it. TODO: Why?
+    JavaFxUtil.addListener(currentGame, new ChangeListener<>() {
+      @Override
+      public void changed(ObservableValue<? extends Game> observable, Game oldValue, Game newValue) {
+        if (newValue == null) {
+          GameService.this.removeGame(game.getId());
+          GameService.this.setCurrentGame(null);
+          JavaFxUtil.removeListener(currentGame, this);
+        }
+      }
+    });
+  }
+
+  private boolean isCurrentGame(Game game) {
+    return currentGame.get() != null && currentGame.get().getId() == game.getId();
   }
 
   private Game createOrUpdateGame(int gameId) {
@@ -673,9 +667,9 @@ public class GameService implements InitializingBean {
     return game;
   }
 
-  private void removeGame(GameInfoServerMessage gameInfoMessage) {
+  private void removeGame(int gameId) {
     synchronized (uidToGameInfoBean) {
-      uidToGameInfoBean.remove(gameInfoMessage.getId());
+      uidToGameInfoBean.remove(gameId);
     }
   }
 

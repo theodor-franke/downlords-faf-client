@@ -34,7 +34,7 @@ subprojects {
   apply plugin: 'idea'
   apply plugin: 'propdeps'
   apply plugin: 'jacoco'
-  
+
   idea.module.outputDir file("out/production/classes")
 
   group = 'org.supcomhub.client'
@@ -74,7 +74,13 @@ subprojects {
   task sendCoverageToCodacy(type: JavaExec, dependsOn: jacocoTestReport) {
     main = "com.codacy.CodacyCoverageReporter"
     classpath = configurations.codacy
-    args = ["-l", "Java", "-r", "${buildDir}/reports/jacoco/test/jacocoTestReport.xml"]
+    args = [
+        "report",
+        "-l",
+        "Java",
+        "-r",
+        "${buildDir}/reports/jacoco/test/jacocoTestReport.xml"
+    ]
   }
 
   dependencies {

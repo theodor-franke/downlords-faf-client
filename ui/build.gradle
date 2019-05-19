@@ -1,9 +1,135 @@
+import com.install4j.gradle.Install4jTask
+import de.undercouch.gradle.tasks.download.Download
+import groovy.json.JsonSlurper
+import groovyx.net.http.ContentType
+import groovyx.net.http.HTTPBuilder
+import groovyx.net.http.Method
+import groovyx.net.http.ParserRegistry
+
 plugins {
   id 'java'
 }
 
 apply plugin: 'io.spring.dependency-management'
 apply plugin: 'org.springframework.boot'
+apply plugin: 'distribution'
+
+bootJar.enabled = false
+jar.enabled = true
+
+distributions {
+  main {
+    contents {
+      from {
+        [
+            configurations.runtime,
+            jar,
+            downloadIceAdapter.outputs.files,
+            downloadUnixUid.outputs.files,
+            downloadWindowsUid.outputs.files
+        ]
+      }
+      exclude('**/i4jruntime*.jar')
+    }
+  }
+}
+
+class HttpBuilder extends HTTPBuilder {
+
+  HttpBuilder(String url) {
+    super(url)
+    this.parser.'text/json' = { resp ->
+      def bufferedText = resp.entity.content.getText(ParserRegistry.getCharset(resp)).trim()
+      return new JsonSlurper().parseText(bufferedText)
+    }
+    this.parser.'application/json' = this.parser.'text/json'
+  }
+}
+
+def httpRequest(Method method, String url, onSuccess) {
+  def http = new HttpBuilder(url)
+
+  http.request(method) {
+    requestContentType = ContentType.JSON
+
+    headers.'User-Agent' = 'downlords-faf-client-gradle'
+    headers.'Authorization' = "token ${project.github.token}"
+    headers.'Accept' = 'application/vnd.github.v3+json'
+
+    response.success = onSuccess
+
+    response.failure = { resp, json ->
+      logger.debug 'Response headers: \n' + resp.headers.collect { "< $it" }.join('\n')
+      def errorMessage = json ? json.message : resp.statusLine
+      def ref = json ? "See $json.documentation_url" : ''
+      def errorDetails = json && json.errors ? "Details: " + json.errors.collect { it }.join('\n') : ''
+      throw new GradleScriptException("$errorMessage. $ref. $errorDetails", null)
+    }
+  }
+}
+
+install4j {
+  if (project.hasProperty('install4jHomeDir')) {
+    installDir = file(install4jHomeDir)
+  }
+  if (project.hasProperty('install4jLicense')) {
+    license = install4jLicense
+  }
+}
+
+println "Building for JavaFX platform: ${javafxPlatform}"
+task buildInstall4jMediaFiles(type: Install4jTask) {
+  group "distribution"
+  description 'Creates install4j media files'
+  dependsOn 'installDist'
+
+  projectFile = file('downlords-faf-client.install4j')
+  release = version
+
+  switch (project.ext.javafxPlatform) {
+    case "linux":
+      mediaTypes = ['unixInstaller', 'unixArchive']
+      break
+    case "mac":
+      mediaTypes = ['macos', 'macosFolder', 'macosArchive', 'macosFolderArchive']
+      break
+    case "win":
+      mediaTypes = ['windows', 'windowsArchive']
+      break
+  }
+
+  doFirst {
+    println "Building version ${version}"
+    if (!project.hasProperty('install4jHomeDir')) {
+      throw new RuntimeException('Specify install4jHomeDir in gradle.properties and set it to an install4j installation directory')
+    }
+  }
+}
+
+task downloadIceAdapter(type: Download) {
+  group "native dependencies"
+  src "https://github.com/FAForever/java-ice-adapter/releases/download/v${faf_ice_adapter_version}/faf-ice-adapter.jar"
+  dest file("${buildDir}/resources/native/faf-ice-adapter.jar")
+  onlyIfNewer true
+}
+
+task downloadUnixUid(type: Download) {
+  group "native dependencies"
+  src "https://github.com/FAForever/uid/releases/download/v${faf_uid_version}/faf-uid"
+  dest file("${buildDir}/resources/native/faf-uid")
+  onlyIfNewer true
+}
+
+task downloadWindowsUid(type: Download) {
+  group "native dependencies"
+  src "https://github.com/FAForever/uid/releases/download/v${faf_uid_version}/faf-uid.exe"
+  dest file("${buildDir}/resources/native/faf-uid.exe")
+  onlyIfNewer true
+}
+
+task downloadNativeDependencies(dependsOn: [downloadUnixUid, downloadWindowsUid, downloadIceAdapter]) {
+  group "native dependencies"
+}
 
 dependencies {
   implementation("org.springframework.boot:spring-boot-starter")
@@ -12,6 +138,8 @@ dependencies {
 //  implementation 'com.github.jfoenixadmin:JFoenix:JFoenix-9.0.0-SNAPSHOT'
   compile("com.github.micheljung:FX-BorderlessScene:3.5.0")
   compile project(":service")
+  compile project(":webview-patch")
+  compile("org.javassist:javassist:${project.ext['javassist.version']}")
 
   testCompile project(":test-commons")
   testCompile("org.springframework.boot:spring-boot-starter-test")

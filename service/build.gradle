@@ -5,6 +5,18 @@ plugins {
 apply plugin: 'io.spring.dependency-management'
 apply plugin: 'org.springframework.boot'
 
+bootJar.enabled = false
+jar.enabled = true
+
+compileJava.dependsOn(processResources)
+processResources {
+  filesMatching('**/application.yml') {
+    filter {
+      it.replace('#faf-server.version#', project.version.toString())
+    }
+  }
+}
+
 dependencies {
   implementation("org.springframework.boot:spring-boot-starter")
   implementation("org.springframework.boot:spring-boot-starter-cache")

@@ -11,10 +11,6 @@ import net.arikia.dev.drpc.DiscordUser;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
-import com.faforever.client.discord.DiscordSpectateSecret;
-import com.faforever.client.discord.DiscordSpectateEvent;
-import com.faforever.client.discord.DiscordJoinEvent;
-import com.faforever.client.discord.DiscordJoinSecret;
 
 import static com.github.nocatch.NoCatch.noCatch;
 

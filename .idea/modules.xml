@@ -23,8 +23,6 @@
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/webview-patch/downlords-faf-client.webview-patch.iml" filepath="$PROJECT_DIR$/.idea/modules/webview-patch/downlords-faf-client.webview-patch.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/webview-patch/downlords-faf-client.webview-patch.main.iml" filepath="$PROJECT_DIR$/.idea/modules/webview-patch/downlords-faf-client.webview-patch.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/webview-patch/downlords-faf-client.webview-patch.test.iml" filepath="$PROJECT_DIR$/.idea/modules/webview-patch/downlords-faf-client.webview-patch.test.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/downlords-faf-client_main.iml" filepath="$PROJECT_DIR$/.idea/modules/downlords-faf-client_main.iml" group="downlords-faf-client" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/downlords-faf-client_test.iml" filepath="$PROJECT_DIR$/.idea/modules/downlords-faf-client_test.iml" group="downlords-faf-client" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/service.iml" filepath="$PROJECT_DIR$/.idea/modules/service.iml" group="downlords-faf-client/service" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/service/service.iml" filepath="$PROJECT_DIR$/.idea/modules/service/service.iml" group="downlords-faf-client/service" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/service/service_main.iml" filepath="$PROJECT_DIR$/.idea/modules/service/service_main.iml" group="downlords-faf-client/service" />

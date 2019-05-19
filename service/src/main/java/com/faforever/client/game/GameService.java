@@ -110,8 +110,6 @@ public class GameService implements InitializingBean {
   private final ReportingService reportingService;
   private final IceAdapter iceAdapter;
   private final ModService modService;
-  private final PlatformService platformService;
-  private final String faWindowTitle;
   private final ApplicationEventPublisher eventPublisher;
 
   //TODO: circular reference
@@ -154,10 +152,8 @@ public class GameService implements InitializingBean {
     this.reportingService = reportingService;
     this.iceAdapter = iceAdapter;
     this.modService = modService;
-    this.platformService = platformService;
     this.eventPublisher = eventPublisher;
 
-    faWindowTitle = clientProperties.getForgedAlliance().getWindowTitle();
     uidToGameInfoBean = FXCollections.observableMap(new ConcurrentHashMap<>());
     searching1v1 = new SimpleBooleanProperty();
     gameRunning = new SimpleBooleanProperty();
@@ -625,9 +621,7 @@ public class GameService implements InitializingBean {
   }
 
   private void onGamePlaying(Game game) {
-    if (isCurrentGame(game) && !platformService.isWindowFocused(faWindowTitle)) {
-      platformService.focusWindow(faWindowTitle);
-    }
+    eventPublisher.publishEvent(new GamePlayingEvent(game));
   }
 
   private void onGameClosed(Game game) {
@@ -649,7 +643,7 @@ public class GameService implements InitializingBean {
     });
   }
 
-  private boolean isCurrentGame(Game game) {
+  public boolean isCurrentGame(Game game) {
     return currentGame.get() != null && currentGame.get().getId() == game.getId();
   }
 

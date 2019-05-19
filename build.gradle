@@ -34,7 +34,6 @@ subprojects {
   apply plugin: 'idea'
   apply plugin: 'propdeps'
   apply plugin: 'jacoco'
-  apply plugin: 'com.github.kt3k.coveralls'
   idea.module.outputDir file("out/production/classes")
 
   group = 'org.supcomhub.client'

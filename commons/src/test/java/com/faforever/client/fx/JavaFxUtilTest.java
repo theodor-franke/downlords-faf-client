@@ -1,5 +1,6 @@
 package com.faforever.client.fx;
 
+import com.faforever.client.test.AbstractPlainJavaFxTest;
 import com.faforever.client.test.IsUtilityClassMatcher;
 import javafx.scene.paint.Color;
 import org.hamcrest.CoreMatchers;
@@ -14,7 +15,7 @@ import java.nio.file.Paths;
 
 
 @RunWith(MockitoJUnitRunner.class)
-public class JavaFxUtilTest {
+public class JavaFxUtilTest extends AbstractPlainJavaFxTest {
 
   @Test
   public void testPathToStringConverter() {

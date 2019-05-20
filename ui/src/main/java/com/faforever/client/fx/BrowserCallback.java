@@ -1,6 +1,7 @@
 package com.faforever.client.fx;
 
 import com.faforever.client.chat.InitiatePrivateChatEvent;
+import com.faforever.client.chat.JoinChannelEvent;
 import com.faforever.client.chat.UrlPreviewResolver;
 import com.faforever.client.clan.ClanService;
 import com.faforever.client.clan.ClanTooltipController;
@@ -93,6 +94,14 @@ public class BrowserCallback {
             notificationService.addNotification(new ImmediateNotification(i18n.get("replay.notFoundTitle"), i18n.get("replay.replayNotFoundText", replayId), Severity.WARN));
           }
         }));
+  }
+
+  /**
+   * Called from JavaScript when user clicked a channel link.
+   */
+  @SuppressWarnings("unused")
+  public void openChannel(String channelName) {
+    eventBus.post(new JoinChannelEvent(channelName));
   }
 
   /**

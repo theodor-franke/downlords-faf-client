@@ -30,7 +30,6 @@ public class PlatformService {
   /**
    * Opens the specified URI in a new browser window or tab.
    */
-
   public void showDocument(String url) {
     hostServices.showDocument(url);
   }
@@ -38,7 +37,6 @@ public class PlatformService {
   /**
    * Show a file in its parent directory, if possible selecting the file (not possible on all platforms).
    */
-
   public void reveal(Path path) {
     noCatch(() -> Platform.show(path.toFile()));
   }
@@ -48,7 +46,6 @@ public class PlatformService {
    * Show a Window, restore it to it's state before minimizing (normal/restored or maximized) and move it to foreground
    * will only work on windows systems
    */
-
   public void focusWindow(String windowTitle) {
     if (!isWindows) {
       return;
@@ -78,7 +75,6 @@ public class PlatformService {
     }
   }
 
-
   public void startFlashingWindow(String windowTitle) {
     if (!isWindows) {
       return;
@@ -95,7 +91,6 @@ public class PlatformService {
 
     User32.INSTANCE.FlashWindowEx(flashwinfo);
   }
-
 
   public void stopFlashingWindow(String windowTitle) {
     if (!isWindows) {
@@ -128,7 +123,6 @@ public class PlatformService {
     User32.INSTANCE.GetWindowText(window, textBuffer, 255);
     return new String(textBuffer).trim();
   }
-
 
   public boolean isWindowFocused(String windowTitle) {
     return windowTitle.equals(getForegroundWindowTitle());

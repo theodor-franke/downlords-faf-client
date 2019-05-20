@@ -36,6 +36,7 @@ public class ChatController extends AbstractViewController<Node> {
   private final UiService uiService;
   private final UserService userService;
   private final EventBus eventBus;
+
   public Node chatRoot;
   public TabPane tabPane;
   public Pane connectingProgressPane;
@@ -120,6 +121,7 @@ public class ChatController extends AbstractViewController<Node> {
     if (chatService.isDefaultChannel(playerOrChannelName)) {
       tabPane.getTabs().add(0, tab);
       tabPane.getSelectionModel().select(tab);
+      nameToChatTabController.get(tab.getId()).onDisplay();
     } else {
       tabPane.getTabs().add(tab);
     }
@@ -131,6 +133,11 @@ public class ChatController extends AbstractViewController<Node> {
     eventBus.register(this);
 
     tabPane.getTabs().addListener((InvalidationListener) observable -> noOpenTabsContainer.setVisible(tabPane.getTabs().isEmpty()));
+    tabPane.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+        Optional.ofNullable(oldValue).ifPresent(tab -> nameToChatTabController.get(tab.getId()).onHide());
+        Optional.ofNullable(newValue).ifPresent(tab -> nameToChatTabController.get(tab.getId()).onDisplay());
+      }
+    );
 
     chatService.addChannelsListener(change -> {
       if (change.wasRemoved()) {
@@ -209,7 +216,9 @@ public class ChatController extends AbstractViewController<Node> {
       return;
     }
     AbstractChatTabController controller = addAndGetPrivateMessageTab(username);
-    tabPane.getSelectionModel().select(controller.getRoot());
+    Tab tab = controller.getRoot();
+    tabPane.getSelectionModel().select(tab);
+    nameToChatTabController.get(tab.getId()).onDisplay();
   }
 
   public void onJoinChannelButtonClicked() {
@@ -236,7 +245,7 @@ public class ChatController extends AbstractViewController<Node> {
   private void onUserJoinedChannel(ChatChannelUser chatUser, String channelName) {
     Platform.runLater(() -> {
       if (isCurrentUser(chatUser)) {
-        AbstractChatTabController tabController = getOrCreateChannelTab(channelName);
+        getOrCreateChannelTab(channelName);
         onConnected();
       }
     });
@@ -248,6 +257,7 @@ public class ChatController extends AbstractViewController<Node> {
 
   @Override
   protected void onDisplay(NavigateEvent navigateEvent) {
+    super.onDisplay(navigateEvent);
     if (!tabPane.getTabs().isEmpty()) {
       Tab tab = tabPane.getSelectionModel().getSelectedItem();
       nameToChatTabController.get(tab.getId()).onDisplay();

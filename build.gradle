@@ -95,7 +95,9 @@ configure([project(':commons'), project(':service'), project(':ui')]) {
         "-l",
         "Java",
         "-r",
-        "${buildDir}/reports/jacoco/test/jacocoTestReport.xml"
+        "${buildDir}/reports/jacoco/test/jacocoTestReport.xml",
+        "debug",
+        "false"
     ]
   }
   

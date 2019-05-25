@@ -19,18 +19,14 @@ public class ReflectionUtil {
    */
   public Class<?> getFieldType(String fieldName, Class<?> targetClass) throws NoSuchFieldException {
     Class currentClass = targetClass;
-    Class clazz = null;
-    while (clazz == null) {
+    while (currentClass != null) {
       try {
-        clazz = currentClass.getDeclaredField(fieldName).getType();
+        return currentClass.getDeclaredField(fieldName).getType();
       } catch (NoSuchFieldException e) {
-        currentClass = targetClass.getSuperclass();
-        if (currentClass == null) {
-          throw new NoSuchFieldException(fieldName);
-        }
+        currentClass = currentClass.getSuperclass();
       }
     }
-    return clazz;
+    throw new NoSuchFieldException(fieldName);
   }
 
   @SneakyThrows

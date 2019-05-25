@@ -9,6 +9,7 @@ import com.faforever.client.mod.FeaturedMod;
 import com.faforever.client.mod.ModService;
 import com.faforever.client.play.GameTileController;
 import com.faforever.client.play.JoinGameHelper;
+import com.faforever.client.player.PlayerService;
 import com.faforever.client.test.AbstractPlainJavaFxTest;
 import com.faforever.client.theme.UiService;
 import javafx.scene.input.MouseButton;
@@ -40,6 +41,8 @@ public class GameTileControllerTest extends AbstractPlainJavaFxTest {
   private MapService mapService;
   @Mock
   private MapPreviewService mapPreviewService;
+  @Mock
+  private PlayerService playerService;
 
   private Game game;
 
@@ -48,7 +51,7 @@ public class GameTileControllerTest extends AbstractPlainJavaFxTest {
 
   @Before
   public void setUp() throws Exception {
-    instance = new GameTileController(mapService, mapPreviewService, i18n, joinGameHelper, modService, uiService);
+    instance = new GameTileController(mapService, mapPreviewService, i18n, joinGameHelper, modService, uiService, playerService);
 
     game = new Game();
 

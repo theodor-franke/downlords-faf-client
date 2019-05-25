@@ -183,7 +183,7 @@ public class PlayerService {
   }
 
 
-  public boolean isOnline(Integer playerId) {
+  public boolean isOnline(int playerId) {
     return playersById.containsKey(playerId);
   }
 

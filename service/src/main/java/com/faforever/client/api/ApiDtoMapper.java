@@ -9,6 +9,7 @@ import com.faforever.client.coop.CoopResult;
 import com.faforever.client.event.PlayerEvent;
 import com.faforever.client.leaderboard.LeaderboardEntry;
 import com.faforever.client.map.FaMap;
+import com.faforever.client.map.FaMap.Type;
 import com.faforever.client.mapstruct.MapStructConfig;
 import com.faforever.client.mod.FeaturedMod;
 import com.faforever.client.mod.FeaturedModFile;
@@ -31,7 +32,6 @@ import org.supcomhub.api.dto.Account;
 import org.supcomhub.api.dto.ClanMembership;
 import org.supcomhub.api.dto.GameReview;
 import org.supcomhub.api.dto.GameReviewSummary;
-import org.supcomhub.api.dto.LadderMap;
 import org.supcomhub.api.dto.MapReview;
 import org.supcomhub.api.dto.MapVersion;
 import org.supcomhub.api.dto.MapVersionReview;
@@ -119,10 +119,6 @@ public interface ApiDtoMapper {
   @Mapping(target = "type", source = "map.battleType")
   @Mapping(target = "size", expression = "java(com.faforever.client.map.MapSize.valueOf(mapVersion.getWidth(), mapVersion.getHeight()))")
   FaMap map(MapVersion mapVersion);
-
-  default FaMap map(LadderMap ladderMap) {
-    return map(ladderMap.getMapVersion());
-  }
 
   @Mapping(target = "type", source = "battleType")
   @Mapping(target = "author", source = "uploader.displayName")
@@ -213,5 +209,9 @@ public interface ApiDtoMapper {
     return Arrays.stream(tags.split(","))
       .map(NewsTag::fromString)
       .collect(Collectors.toList());
+  }
+
+  default FaMap.Type mapMapType(String key) {
+    return Type.fromString(key);
   }
 }

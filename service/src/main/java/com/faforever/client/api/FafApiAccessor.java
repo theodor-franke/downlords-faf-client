@@ -16,8 +16,8 @@ import org.supcomhub.api.dto.Game;
 import org.supcomhub.api.dto.GameParticipant;
 import org.supcomhub.api.dto.GameReview;
 import org.supcomhub.api.dto.GameReviewSummary;
-import org.supcomhub.api.dto.LadderMap;
 import org.supcomhub.api.dto.LeaderboardEntry;
+import org.supcomhub.api.dto.Map;
 import org.supcomhub.api.dto.MapReview;
 import org.supcomhub.api.dto.MapVersion;
 import org.supcomhub.api.dto.MapVersionReview;
@@ -64,11 +64,11 @@ public interface FafApiAccessor {
 
   List<GameParticipant> getGameParticipants(int playerId, KnownFeaturedMod knownFeaturedMod);
 
-  List<org.supcomhub.api.dto.Map> getMostPlayedMaps(int count, int page);
+  List<MapVersion> getMostPlayedMaps(int count, int page);
 
-  List<org.supcomhub.api.dto.Map> getHighestRatedMaps(int count, int page);
+  List<MapVersion> getHighestRatedMaps(int count, int page);
 
-  List<org.supcomhub.api.dto.Map> getNewestMaps(int count, int page);
+  List<MapVersion> getNewestMaps(int count, int page);
 
   List<Game> getLastGamesOnMap(int playerId, String mapVersionId, int count);
 
@@ -112,7 +112,7 @@ public interface FafApiAccessor {
 
   Optional<Clan> getClanByTag(String tag);
 
-  List<org.supcomhub.api.dto.Map> findMapsByQuery(SearchConfig searchConfig, int page, int count);
+  List<Map> findMapsByQuery(SearchConfig searchConfig, int page, int count);
 
   Optional<MapVersion> findMapVersionById(String id);
 
@@ -124,7 +124,7 @@ public interface FafApiAccessor {
 
   List<Mod> findModsByQuery(SearchConfig query, int page, int maxResults);
 
-  List<LadderMap> getLadder1v1Maps(int count, int page);
+  List<MapVersion> getLadder1v1Maps(int count, int page);
 
   List<Tournament> getAllTournaments();
 

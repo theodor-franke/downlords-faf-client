@@ -1,80 +1,114 @@
 package com.faforever.client.query;
 
+import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableMap;
+import org.supcomhub.api.dto.Account;
+import org.supcomhub.api.dto.FeaturedMod;
+import org.supcomhub.api.dto.Map;
+import org.supcomhub.api.dto.MapVersion.Fields;
+import org.supcomhub.api.dto.Mod;
+import org.supcomhub.api.dto.ModVersion;
 
-import java.util.Map;
+import static org.supcomhub.api.dto.AbstractEntity.Fields.createTime;
+import static org.supcomhub.api.dto.AbstractEntity.Fields.id;
+import static org.supcomhub.api.dto.AbstractEntity.Fields.updateTime;
+import static org.supcomhub.api.dto.FeaturedMod.Fields.technicalName;
+import static org.supcomhub.api.dto.Game.Fields.endTime;
+import static org.supcomhub.api.dto.Game.Fields.host;
+import static org.supcomhub.api.dto.Game.Fields.name;
+import static org.supcomhub.api.dto.Game.Fields.playerStats;
+import static org.supcomhub.api.dto.Game.Fields.startTime;
+import static org.supcomhub.api.dto.Game.Fields.validity;
+import static org.supcomhub.api.dto.Game.Fields.victoryCondition;
+import static org.supcomhub.api.dto.GameParticipant.Fields.faction;
+import static org.supcomhub.api.dto.GameParticipant.Fields.participant;
+import static org.supcomhub.api.dto.GameParticipant.Fields.rankBefore;
+import static org.supcomhub.api.dto.GameParticipant.Fields.startSpot;
+import static org.supcomhub.api.dto.GameParticipant.Fields.team;
+import static org.supcomhub.api.dto.MapVersion.Fields.description;
+import static org.supcomhub.api.dto.MapVersion.Fields.folderName;
+import static org.supcomhub.api.dto.MapVersion.Fields.height;
+import static org.supcomhub.api.dto.MapVersion.Fields.maxPlayers;
+import static org.supcomhub.api.dto.MapVersion.Fields.ranked;
+import static org.supcomhub.api.dto.MapVersion.Fields.version;
+import static org.supcomhub.api.dto.MapVersion.Fields.width;
+import static org.supcomhub.api.dto.ReviewSummary.Fields.lowerBound;
 
 /**
- * Contains mappings of searchable properties (as the API expects it) to their respective i18n key. The reason
- * the i18n keys are not build dynamically is that it makes it impossible for the IDE to detect which key is used where,
- * breaks its refactor capability, and the actual UI text might depend on the context it is used in. Also, this way
- * i18n keys and API keys are nicely decoupled and can therefore be changed independently.
+ * Contains mappings of searchable properties (as the API expects it) to their respective i18n key. The reason the i18n
+ * keys are not builz dynamically is that it makes it impossible for the IDE to detect which key is used where, breaks
+ * its refactor capability, and the actual UI text might depend on the context it is used in. Also, this way i18n keys
+ * and API keys are nicely decoupled and can therefore be changed independently.
  */
 public class SearchableProperties {
-  public static final Map<String, String> GAME_PROPERTIES = ImmutableMap.<String, String>builder()
-      .put("playerStats.player.login", "game.player.username")
-      .put("playerStats.player.globalRating.rating", "game.player.globalRating")
-      .put("playerStats.player.ladder1v1Rating.rating", "game.player.ladderRating")
-      .put("featuredMod.technicalName", "featuredMod.technicalName")
-      .put("mapVersion.map.displayName", "game.map.displayName")
-      .put("playerStats.faction", "game.player.faction")
-      .put("playerStats.startSpot", "game.player.startSpot")
-      .put("mapVersion.maxPlayers", "map.maxPlayers")
-      .put("mapVersion.ranked", "game.map.isRanked")
-      .put("id", "game.id")
-      .put("playerStats.player.id", "game.player.id")
-      .put("name", "game.title")
-      .put("startTime", "game.startTime")
-      .put("endTime", "game.endTime")
-      .put("validity", "game.validity")
-      .put("victoryCondition", "game.victoryCondition")
-      .put("playerStats.team", "game.player.team")
-      .put("host.login", "game.host.username")
-      .put("host.id", "game.host.id")
-      .put("featuredMod.displayName", "featuredMod.displayName")
-      .put("mapVersion.description", "map.description")
-      .put("mapVersion.width", "game.map.width")
-      .put("mapVersion.height", "game.map.height")
-      .put("mapVersion.version", "game.map.version")
-      .put("mapVersion.folderName", "game.map.folderName")
+  public static final java.util.Map<String, String> GAME_PROPERTIES = ImmutableMap.<String, String>builder()
+    .put(field(playerStats, participant, Account.Fields.displayName), "game.player.username")
+    .put(field(playerStats, rankBefore), "game.filter.player.rank")
+    .put(field(technicalName), "featuredMod.technicalName")
+    .put(field(Fields.map, Map.Fields.displayName), "game.map.displayName")
+    .put(field(playerStats, faction), "game.player.faction")
+    .put(field(playerStats, startSpot), "game.player.startSpot")
+    .put(field(maxPlayers), "map.maxPlayers")
+    .put(field(ranked), "game.map.isRanked")
+    .put(field(id), "game.id")
+    .put(field(playerStats, id), "game.player.id")
+    .put(field(name), "game.title")
+    .put(field(startTime), "game.startTime")
+    .put(field(endTime), "game.endTime")
+    .put(field(validity), "game.validity")
+    .put(field(victoryCondition), "game.victoryCondition")
+    .put(field(playerStats, team), "game.player.team")
+    .put(field(host, Account.Fields.displayName), "game.host.username")
+    .put(field(host, id), "game.host.username")
+    .put(field(FeaturedMod.Fields.displayName), "featuredMod.displayName")
+    .put(field(description), "map.description")
+    .put(field(width), "game.map.width")
+    .put(field(height), "game.map.height")
+    .put(field(version), "game.map.version")
+    .put(field(folderName), "game.map.folderName")
 
       .build();
 
-  public static final Map<String, String> MAP_PROPERTIES = ImmutableMap.<String, String>builder()
-      .put("displayName", "map.name")
-      .put("author.login", "map.author")
+  public static final java.util.Map<String, String> MAP_PROPERTIES = ImmutableMap.<String, String>builder()
+    .put(field(Map.Fields.displayName), "map.name")
+    .put(field(Map.Fields.uploader, Account.Fields.displayName), "map.uploader")
 
-      .put("statistics.plays", "map.playCount")
-      .put("statistics.downloads", "map.numberOfDownloads")
+    // TODO continue here. Unfortunately, map statistics are not part of Map yet.
+//      .put("statistics.plays", "map.playCount")
+//      .put("statistics.downloads", "map.numberOfDownloads")
 
-      .put("latestVersion.createTime", "map.uploadedDateTime")
-      .put("latestVersion.updateTime", "map.updatedDateTime")
-      .put("latestVersion.description", "map.description")
-      .put("latestVersion.maxPlayers", "map.maxPlayers")
-      .put("latestVersion.width", "map.width")
-      .put("latestVersion.height", "map.height")
-      .put("latestVersion.version", "map.version")
-      .put("latestVersion.folderName", "map.folderName")
-      .put("latestVersion.ranked", "map.ranked")
-
-      .build();
-
-  public static final Map<String, String> MOD_PROPERTIES = ImmutableMap.<String, String>builder()
-      .put("displayName", "mod.displayName")
-      .put("author", "mod.author")
-
-      .put("latestVersion.createTime", "mod.uploadedDateTime")
-      .put("latestVersion.updateTime", "mod.updatedDateTime")
-      .put("latestVersion.description", "mod.description")
-      .put("latestVersion.id", "mod.id")
-      .put("latestVersion.uid", "mod.uid")
-      .put("latestVersion.type", "mod.type")
-      .put("latestVersion.ranked", "mod.ranked")
-      .put("latestVersion.version", "mod.version")
-      .put("latestVersion.filename", "mod.filename")
+    .put(field(Map.Fields.latestVersion, createTime), "map.uploadedDateTime")
+    .put(field(Map.Fields.latestVersion, updateTime), "map.updatedDateTime")
+    .put(field(Map.Fields.latestVersion, description), "map.description")
+    .put(field(Map.Fields.latestVersion, maxPlayers), "map.maxPlayers")
+    .put(field(Map.Fields.latestVersion, width), "map.width")
+    .put(field(Map.Fields.latestVersion, height), "map.height")
+    .put(field(Map.Fields.latestVersion, version), "map.version")
+    .put(field(Map.Fields.latestVersion, folderName), "map.folderName")
+    .put(field(Map.Fields.latestVersion, ranked), "map.ranked")
 
       .build();
 
-  public static final String NEWEST_MOD_KEY = "latestVersion.createTime";
-  public static final String HIGHEST_RATED_MOD_KEY = "latestVersion.reviewsSummary.lowerBound";
+  public static final java.util.Map<String, String> MOD_PROPERTIES = ImmutableMap.<String, String>builder()
+    .put(field(Mod.Fields.displayName), "mod.displayName")
+    .put(field(Mod.Fields.uploader, Account.Fields.displayName), "mod.author")
+
+    .put(field(Mod.Fields.latestVersion, createTime), "mod.uploadedDateTime")
+    .put(field(Mod.Fields.latestVersion, updateTime), "mod.updatedDateTime")
+    .put(field(Mod.Fields.latestVersion, ModVersion.Fields.description), "mod.description")
+    .put(field(Mod.Fields.latestVersion, id), "mod.id")
+    .put(field(Mod.Fields.latestVersion, ModVersion.Fields.type), "mod.type")
+    .put(field(Mod.Fields.latestVersion, ModVersion.Fields.ranked), "mod.ranked")
+    .put(field(Mod.Fields.latestVersion, ModVersion.Fields.version), "mod.version")
+    .put(field(Mod.Fields.latestVersion, ModVersion.Fields.filename), "mod.filename")
+
+      .build();
+
+  public static final String NEWEST_MOD_KEY = field(Mod.Fields.latestVersion, createTime);
+
+  public static final String HIGHEST_RATED_MOD_KEY = field(Mod.Fields.latestVersion, ModVersion.Fields.reviewSummary, lowerBound);
+
+  private static String field(String... path) {
+    return Joiner.on('.').join(path);
+  }
 }

@@ -130,6 +130,8 @@ public class SearchController implements Controller<Pane> {
     String savedSortProperty = searchableProperties.get(sortConfigObjectProperty.get().getSortProperty());
     if (savedSortProperty != null) {
       sortPropertyComboBox.getSelectionModel().select(savedSortProperty);
+    } else {
+      sortPropertyComboBox.getSelectionModel().selectFirst();
     }
 
     sortPropertyComboBox.valueProperty().addListener((observable, oldValue, newValue) -> {

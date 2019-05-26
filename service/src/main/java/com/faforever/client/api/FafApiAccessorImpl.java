@@ -33,7 +33,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.RestOperations;
+import org.springframework.web.client.RestClientException;
+import org.springframework.web.client.RestClientResponseException;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 import org.supcomhub.api.dto.Account;
@@ -48,8 +50,8 @@ import org.supcomhub.api.dto.Game;
 import org.supcomhub.api.dto.GameParticipant;
 import org.supcomhub.api.dto.GameReview;
 import org.supcomhub.api.dto.GameReviewSummary;
-import org.supcomhub.api.dto.LadderMap;
 import org.supcomhub.api.dto.LeaderboardEntry;
+import org.supcomhub.api.dto.LeaderboardEntry.Fields;
 import org.supcomhub.api.dto.Map;
 import org.supcomhub.api.dto.MapReview;
 import org.supcomhub.api.dto.MapVersion;
@@ -65,6 +67,7 @@ import org.supcomhub.api.dto.PlayerEvent;
 import org.supcomhub.api.dto.challonge.Tournament;
 
 import java.io.Serializable;
+import java.lang.reflect.Field;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collection;
@@ -83,8 +86,9 @@ import java.util.stream.Collectors;
 public class FafApiAccessorImpl implements FafApiAccessor, InitializingBean {
 
   private static final String MAP_ENDPOINT = "/data/map";
+  private static final String MAP_VERSION_ENDPOINT = "/data/mapVersion";
   private static final String TOURNAMENT_LIST_ENDPOINT = "/challonge/v1/tournaments.json";
-  private static final String REPLAY_INCLUDES = "featuredMod,playerStats,playerStats.player,reviews,reviews.player,mapVersion,mapVersion.map,mapVersion.reviews,reviewsSummary";
+  private static final String REPLAY_INCLUDES = "featuredMod,playerStats,playerStats.player,reviews,reviews.player,mapVersion,mapVersion.map,mapVersion.reviews,reviewSummary";
   private static final String COOP_RESULT_INCLUDES = "game.playerStats.player";
   private static final String COOP_MISSION_INCLUDES = "map";
   private static final String PLAYER_INCLUDES = "globalRating,ladder1v1Rating,names";
@@ -97,7 +101,7 @@ public class FafApiAccessorImpl implements FafApiAccessor, InitializingBean {
   private final HttpComponentsClientHttpRequestFactory requestFactory;
 
   private CountDownLatch authorizedLatch;
-  private RestOperations restOperations;
+  private RestTemplate restTemplate;
 
 
   public FafApiAccessorImpl(EventBus eventBus, RestTemplateBuilder restTemplateBuilder,
@@ -130,7 +134,7 @@ public class FafApiAccessorImpl implements FafApiAccessor, InitializingBean {
   @Subscribe
   public void onLoggedOutEvent(LoggedOutEvent event) {
     authorizedLatch = new CountDownLatch(1);
-    restOperations = null;
+    restTemplate = null;
   }
 
   @Subscribe
@@ -171,7 +175,7 @@ public class FafApiAccessorImpl implements FafApiAccessor, InitializingBean {
   @Cacheable(CacheNames.MODS)
   public List<Mod> getMods() {
     return getAll("/data/mod", ImmutableMap.of(
-      "include", "latestVersion,latestVersion.reviewsSummary"));
+      "include", "latestVersion,latestVersion.reviewSummary"));
   }
 
   @Override
@@ -188,7 +192,13 @@ public class FafApiAccessorImpl implements FafApiAccessor, InitializingBean {
         .string("leaderboard.technicalName").eq(leaderboardName)
       ),
       "sort", "-rating",
-      "include", "account.id,account.displayName"
+      "include", "account",
+      String.format("fields[%s]", Account.TYPE_NAME), "displayName",
+      // Unfortunately, because of the account field filter above, all leaderboard fields need to be specified.
+      // maybe it's time to look into GraphQL?
+      String.format("fields[%s]", LeaderboardEntry.TYPE_NAME), Arrays.stream(Fields.class.getDeclaredFields())
+        .map(Field::getName)
+        .collect(Collectors.joining(","))
     ));
   }
 
@@ -199,7 +209,7 @@ public class FafApiAccessorImpl implements FafApiAccessor, InitializingBean {
         .string("leaderboard.technicalName").eq(leaderboardName)
         .and().intNum("account.id").eq(playerId)
       ),
-      "include", "account.id,account.displayName"
+      "include", "account"
     ));
     return all.stream().findFirst();
   }
@@ -217,7 +227,7 @@ public class FafApiAccessorImpl implements FafApiAccessor, InitializingBean {
 
   @Override
   @Cacheable(CacheNames.MAPS)
-  public List<org.supcomhub.api.dto.Map> getMostPlayedMaps(int count, int page) {
+  public List<MapVersion> getMostPlayedMaps(int count, int page) {
     // FIXME not yet provided by the new API
     return Collections.emptyList();
 //    return this.<MapStatistics>getPage("/data/mapStatistics", count, page, ImmutableMap.of(
@@ -228,20 +238,20 @@ public class FafApiAccessorImpl implements FafApiAccessor, InitializingBean {
   }
 
   @Override
-  public List<org.supcomhub.api.dto.Map> getHighestRatedMaps(int count, int page) {
+  public List<MapVersion> getHighestRatedMaps(int count, int page) {
     // FIXME not yet provided by the new API
     return Collections.emptyList();
 //    return this.<MapStatistics>getPage("/data/mapStatistics", count, page, ImmutableMap.of(
-//      "include", "map.statistics,map,map.latestVersion,map.author,map.versions.reviews,map.versions.reviews.player,map.latestVersion.reviewsSummary",
-//      "sort", "-map.latestVersion.reviewsSummary.lowerBound")).stream()
+//      "include", "map.statistics,map,map.latestVersion,map.author,map.versions.reviews,map.versions.reviews.player,map.latestVersion.reviewSummary",
+//      "sort", "-map.latestVersion.reviewSummary.lowerBound")).stream()
 //      .map(MapStatistics::getMap)
 //      .collect(Collectors.toList());
   }
 
   @Override
-  public List<org.supcomhub.api.dto.Map> getNewestMaps(int count, int page) {
+  public List<MapVersion> getNewestMaps(int count, int page) {
     return getPage(MAP_ENDPOINT, count, page, ImmutableMap.of(
-      "include", "statistics,latestVersion,author,versions.reviews,versions.reviews.player",
+      "include", "latestVersion,uploader,versions.reviews,versions.reviews.player",
       "sort", "-updateTime",
       "filter", "latestVersion.hidden==\"false\""
     ));
@@ -307,7 +317,7 @@ public class FafApiAccessorImpl implements FafApiAccessor, InitializingBean {
 
   @Override
   public List<Game> getHighestRatedReplays(int count, int page) {
-    return this.<GameReviewSummary>getPage("/data/gameReviewsSummary", count, page, ImmutableMap.of(
+    return this.<GameReviewSummary>getPage("/data/gameReviewSummary", count, page, ImmutableMap.of(
       "sort", "-lowerBound",
       // TODO this was done in a rush, check what is actually needed
       "include", "game,game.featuredMod,game.playerStats,game.playerStats.player,game.reviews,game.reviews.player,game.mapVersion,game.mapVersion.map,game.mapVersion.reviews",
@@ -330,7 +340,7 @@ public class FafApiAccessorImpl implements FafApiAccessor, InitializingBean {
   public Optional<MapVersion> findMapByFolderName(String folderName) {
     List<MapVersion> maps = getMany("/data/mapVersion", 1, ImmutableMap.of(
       "filter", String.format("filename==\"*%s*\"", folderName),
-      "include", "map,map.statistics,reviews"));
+      "include", "map,reviews"));
     if (maps.isEmpty()) {
       return Optional.empty();
     }
@@ -393,7 +403,7 @@ public class FafApiAccessorImpl implements FafApiAccessor, InitializingBean {
     if (searchConfig.hasQuery()) {
       parameterMap.add("filter", searchConfig.getSearchQuery() + ";latestVersion.hidden==\"false\"");
     }
-    parameterMap.add("include", "latestVersion,latestVersion.reviews,latestVersion.reviews.player,latestVersion.reviewsSummary");
+    parameterMap.add("include", "latestVersion,latestVersion.reviews,latestVersion.reviews.player,latestVersion.reviewSummary");
     parameterMap.add("sort", searchConfig.getSortConfig().toQuery());
     return getPage(MOD_ENDPOINT, count, page, parameterMap);
   }
@@ -409,16 +419,16 @@ public class FafApiAccessorImpl implements FafApiAccessor, InitializingBean {
   }
 
   @Override
-  public List<LadderMap> getLadder1v1Maps(int count, int page) {
+  public List<MapVersion> getLadder1v1Maps(int count, int page) {
     return getPage("/data/matchmakerMap", count, page, ImmutableMap.of(
-      "include", "mapVersion,mapVersion.map,mapVersion.map.latestVersion,mapVersion.map.latestVersion.reviews,mapVersion.map.author,mapVersion.map.statistics"));
+      "include", "mapVersion,mapVersion.map,mapVersion.map.latestVersion,mapVersion.map.latestVersion.reviews,mapVersion.map.uploader"));
   }
 
   @Override
   public List<MapVersion> getOwnedMaps(int playerId, int loadMoreCount, int page) {
     return getPage("/data/mapVersion", loadMoreCount, page, ImmutableMap.of(
-      "include", "map,map.latestVersion,map.latestVersion.reviews,map.author,map.statistics",
-      "filter", rsql(qBuilder().string("map.author.id").eq(String.valueOf(playerId)))
+      "include", "map,map.latestVersion,map.latestVersion.reviews,map.uploader",
+      "filter", rsql(qBuilder().string("map.uploader.id").eq(String.valueOf(playerId)))
     ));
   }
 
@@ -498,7 +508,7 @@ public class FafApiAccessorImpl implements FafApiAccessor, InitializingBean {
     if (searchConfig.hasQuery()) {
       parameterMap.add("filter", searchConfig.getSearchQuery() + ";latestVersion.hidden==\"false\"");
     }
-    parameterMap.add("include", "latestVersion,latestVersion.reviews,latestVersion.reviews.player,author,statistics,latestVersion.reviewsSummary");
+    parameterMap.add("include", "latestVersion,latestVersion.reviews,latestVersion.reviews.player,uploader,latestVersion.reviewSummary");
     parameterMap.add("sort", searchConfig.getSortConfig().toQuery());
     return getPage(MAP_ENDPOINT, count, page, parameterMap);
   }
@@ -537,7 +547,7 @@ public class FafApiAccessorImpl implements FafApiAccessor, InitializingBean {
   @Override
   @SneakyThrows
   public List<Tournament> getAllTournaments() {
-    return Arrays.asList(restOperations.getForObject(TOURNAMENT_LIST_ENDPOINT, Tournament[].class));
+    return Arrays.asList(restTemplate.getForObject(TOURNAMENT_LIST_ENDPOINT, Tournament[].class));
   }
 
   @Override
@@ -553,7 +563,7 @@ public class FafApiAccessorImpl implements FafApiAccessor, InitializingBean {
     details.setUsername(username);
     details.setPassword(password);
 
-    restOperations = restTemplateBuilder
+    restTemplate = restTemplateBuilder
       // Base URL can be changed in login window
       .rootUri(apiProperties.getBaseUrl())
       .configure(new OAuth2RestTemplate(details));
@@ -575,7 +585,7 @@ public class FafApiAccessorImpl implements FafApiAccessor, InitializingBean {
 
     try {
       // Don't use Void.class here, otherwise Spring won't even try to deserialize error messages in the body
-      restOperations.postForEntity(endpointPath, request, String.class);
+      restTemplate.postForEntity(endpointPath, request, String.class);
     } finally {
       requestFactory.setBufferRequestBody(true);
     }
@@ -584,23 +594,23 @@ public class FafApiAccessorImpl implements FafApiAccessor, InitializingBean {
   @SneakyThrows
   private <T> T post(String endpointPath, Object request, Class<T> type) {
     authorizedLatch.await();
-    ResponseEntity<T> entity = restOperations.postForEntity(endpointPath, request, type);
+    ResponseEntity<T> entity = restTemplate.postForEntity(endpointPath, request, type);
     return entity.getBody();
   }
 
   @SneakyThrows
   private <T> T patch(String endpointPath, Object request, Class<T> type) {
     authorizedLatch.await();
-    return restOperations.patchForObject(endpointPath, request, type);
+    return restTemplate.patchForObject(endpointPath, request, type);
   }
 
   private void delete(String endpointPath) {
-    restOperations.delete(endpointPath);
+    restTemplate.delete(endpointPath);
   }
 
   @SneakyThrows
   private <T> T getOne(String endpointPath, Class<T> type) {
-    return restOperations.getForObject(endpointPath, type, Collections.emptyMap());
+    return restTemplate.getForObject(endpointPath, type, Collections.emptyMap());
   }
 
   @SneakyThrows
@@ -654,6 +664,16 @@ public class FafApiAccessorImpl implements FafApiAccessor, InitializingBean {
       .build();
 
     authorizedLatch.await();
-    return (List<T>) restOperations.getForObject(uriComponents.toUriString(), List.class);
+    try {
+      return (List<T>) restTemplate.getForObject(uriComponents.toUriString(), List.class);
+    } catch (RestClientResponseException e) {
+      // One of the rare cases where it makes sense to log-and-rethrow
+      String responseBody = e.getResponseBodyAsString();
+      log.warn("Request failed: {}\n{}", restTemplate.getUriTemplateHandler().expand(uriComponents.toUriString()), responseBody);
+      throw e;
+    } catch (RestClientException e) {
+      log.warn("Request failed: {}", restTemplate.getUriTemplateHandler().expand(uriComponents.toUriString()));
+      throw e;
+    }
   }
 }

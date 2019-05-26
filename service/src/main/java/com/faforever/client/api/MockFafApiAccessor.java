@@ -20,7 +20,6 @@ import org.supcomhub.api.dto.Game;
 import org.supcomhub.api.dto.GameParticipant;
 import org.supcomhub.api.dto.GameReview;
 import org.supcomhub.api.dto.GameReviewSummary;
-import org.supcomhub.api.dto.LadderMap;
 import org.supcomhub.api.dto.LeaderboardEntry;
 import org.supcomhub.api.dto.Map;
 import org.supcomhub.api.dto.MapReview;
@@ -169,17 +168,17 @@ public class MockFafApiAccessor implements FafApiAccessor {
   }
 
   @Override
-  public List<Map> getMostPlayedMaps(int count, int page) {
+  public List<MapVersion> getMostPlayedMaps(int count, int page) {
     return Collections.emptyList();
   }
 
   @Override
-  public List<Map> getHighestRatedMaps(int count, int page) {
+  public List<MapVersion> getHighestRatedMaps(int count, int page) {
     return Collections.emptyList();
   }
 
   @Override
-  public List<Map> getNewestMaps(int count, int page) {
+  public List<MapVersion> getNewestMaps(int count, int page) {
     return Collections.emptyList();
   }
 
@@ -304,7 +303,7 @@ public class MockFafApiAccessor implements FafApiAccessor {
   }
 
   @Override
-  public List<LadderMap> getLadder1v1Maps(int count, int page) {
+  public List<MapVersion> getLadder1v1Maps(int count, int page) {
     return Collections.emptyList();
   }
 

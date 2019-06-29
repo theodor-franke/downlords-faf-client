@@ -153,8 +153,8 @@ header h2 {
 }
 
 #head {
-  background: url('../images/header.jpg') no-repeat;
-  height: 304px;
+  background: url('../images/splash.png') no-repeat top;
+  width: 800px;
 }
 
 code, pre {

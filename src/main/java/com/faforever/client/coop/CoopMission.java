@@ -9,15 +9,15 @@ import javafx.beans.property.StringProperty;
 
 public class CoopMission {
 
-  private StringProperty id;
-  private StringProperty name;
-  private StringProperty description;
-  private IntegerProperty version;
-  private ObjectProperty<CoopCategory> category;
-  private StringProperty downloadUrl;
-  private StringProperty thumbnailUrlSmall;
-  private StringProperty thumbnailUrlLarge;
-  private StringProperty mapFolderName;
+  private final StringProperty id;
+  private final StringProperty name;
+  private final StringProperty description;
+  private final IntegerProperty version;
+  private final ObjectProperty<CoopCategory> category;
+  private final StringProperty downloadUrl;
+  private final StringProperty thumbnailUrlSmall;
+  private final StringProperty thumbnailUrlLarge;
+  private final StringProperty mapFolderName;
 
   public CoopMission() {
     id = new SimpleStringProperty();
@@ -31,7 +31,7 @@ public class CoopMission {
     mapFolderName = new SimpleStringProperty();
   }
 
-  public static CoopMission fromCoopInfo(com.faforever.client.api.dto.CoopMission mission) {
+  public static CoopMission fromCoopInfo(com.faforever.commons.api.dto.CoopMission mission) {
     CoopMission bean = new CoopMission();
     bean.setId(mission.getId());
     bean.setDescription(mission.getDescription());

@@ -1,6 +1,5 @@
 package com.faforever.client.replay;
 
-import com.faforever.client.api.dto.Validity;
 import com.faforever.client.config.ClientProperties;
 import com.faforever.client.fx.Controller;
 import com.faforever.client.fx.JavaFxUtil;
@@ -25,6 +24,7 @@ import com.faforever.client.util.TimeService;
 import com.faforever.client.vault.review.Review;
 import com.faforever.client.vault.review.ReviewService;
 import com.faforever.client.vault.review.ReviewsController;
+import com.faforever.commons.api.dto.Validity;
 import com.faforever.commons.io.Bytes;
 import javafx.application.Platform;
 import javafx.collections.ObservableMap;
@@ -104,7 +104,7 @@ public class ReplayDetailController implements Controller<Node> {
   @Setter
   private Runnable onClosure;
   private Replay replay;
-  private ArrayList<TeamCardController> teamCardControllers = new ArrayList<>();
+  private final ArrayList<TeamCardController> teamCardControllers = new ArrayList<>();
   private ObservableMap<String, List<PlayerStats>> teams;
 
   public ReplayDetailController(TimeService timeService, I18n i18n, UiService uiService, ReplayService replayService,

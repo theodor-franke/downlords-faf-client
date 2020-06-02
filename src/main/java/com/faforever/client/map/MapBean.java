@@ -1,7 +1,7 @@
 package com.faforever.client.map;
 
-import com.faforever.client.api.dto.MapVersion;
 import com.faforever.client.vault.review.Review;
+import com.faforever.commons.api.dto.MapVersion;
 import javafx.beans.Observable;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
@@ -69,7 +69,7 @@ public class MapBean implements Comparable<MapBean> {
     ranked = new SimpleBooleanProperty();
   }
 
-  public static MapBean fromMapDto(com.faforever.client.api.dto.Map map) {
+  public static MapBean fromMapDto(com.faforever.commons.api.dto.Map map) {
     MapVersion mapVersion = map.getLatestVersion();
 
     MapBean mapBean = new MapBean();
@@ -98,7 +98,7 @@ public class MapBean implements Comparable<MapBean> {
     return mapBean;
   }
 
-  public static MapBean fromMapVersionDto(com.faforever.client.api.dto.MapVersion mapVersion) {
+  public static MapBean fromMapVersionDto(com.faforever.commons.api.dto.MapVersion mapVersion) {
     MapBean mapBean = new MapBean();
     Optional.ofNullable(mapVersion.getMap().getAuthor()).ifPresent(author -> mapBean.setAuthor(author.getLogin()));
     mapBean.setDescription(mapVersion.getDescription());
@@ -354,7 +354,7 @@ public class MapBean implements Comparable<MapBean> {
       }
     }
 
-    private String string;
+    private final String string;
 
     Type(String string) {
       this.string = string;

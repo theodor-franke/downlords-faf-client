@@ -1,31 +1,31 @@
 package com.faforever.client.api;
 
-import com.faforever.client.api.dto.AchievementDefinition;
-import com.faforever.client.api.dto.Clan;
-import com.faforever.client.api.dto.CoopMission;
-import com.faforever.client.api.dto.CoopResult;
-import com.faforever.client.api.dto.FeaturedModFile;
-import com.faforever.client.api.dto.Game;
-import com.faforever.client.api.dto.GamePlayerStats;
-import com.faforever.client.api.dto.GameReview;
-import com.faforever.client.api.dto.GlobalLeaderboardEntry;
-import com.faforever.client.api.dto.Ladder1v1LeaderboardEntry;
-import com.faforever.client.api.dto.Ladder1v1Map;
-import com.faforever.client.api.dto.Map;
-import com.faforever.client.api.dto.MapVersion;
-import com.faforever.client.api.dto.MapVersionReview;
-import com.faforever.client.api.dto.Mod;
-import com.faforever.client.api.dto.ModVersion;
-import com.faforever.client.api.dto.ModVersionReview;
-import com.faforever.client.api.dto.Player;
-import com.faforever.client.api.dto.PlayerAchievement;
-import com.faforever.client.api.dto.PlayerEvent;
-import com.faforever.client.api.dto.Tournament;
-import com.faforever.client.api.dto.TutorialCategory;
 import com.faforever.client.game.KnownFeaturedMod;
 import com.faforever.client.mod.FeaturedMod;
 import com.faforever.client.vault.search.SearchController.SearchConfig;
 import com.faforever.client.vault.search.SearchController.SortConfig;
+import com.faforever.commons.api.dto.AchievementDefinition;
+import com.faforever.commons.api.dto.Clan;
+import com.faforever.commons.api.dto.CoopMission;
+import com.faforever.commons.api.dto.CoopResult;
+import com.faforever.commons.api.dto.FeaturedModFile;
+import com.faforever.commons.api.dto.Game;
+import com.faforever.commons.api.dto.GamePlayerStats;
+import com.faforever.commons.api.dto.GameReview;
+import com.faforever.commons.api.dto.GlobalLeaderboardEntry;
+import com.faforever.commons.api.dto.Ladder1v1LeaderboardEntry;
+import com.faforever.commons.api.dto.Ladder1v1Map;
+import com.faforever.commons.api.dto.Map;
+import com.faforever.commons.api.dto.MapVersion;
+import com.faforever.commons.api.dto.MapVersionReview;
+import com.faforever.commons.api.dto.Mod;
+import com.faforever.commons.api.dto.ModVersion;
+import com.faforever.commons.api.dto.ModVersionReview;
+import com.faforever.commons.api.dto.Player;
+import com.faforever.commons.api.dto.PlayerAchievement;
+import com.faforever.commons.api.dto.PlayerEvent;
+import com.faforever.commons.api.dto.Tournament;
+import com.faforever.commons.api.dto.TutorialCategory;
 import com.faforever.commons.io.ByteCountListener;
 
 import java.io.IOException;
@@ -53,7 +53,7 @@ public interface FafApiAccessor {
 
   List<Mod> getMods();
 
-  List<com.faforever.client.api.dto.FeaturedMod> getFeaturedMods();
+  List<com.faforever.commons.api.dto.FeaturedMod> getFeaturedMods();
 
   List<Ladder1v1LeaderboardEntry> getLadder1v1Leaderboard();
 
@@ -95,7 +95,7 @@ public interface FafApiAccessor {
 
   Optional<MapVersion> findMapByFolderName(String folderName);
 
-  List<com.faforever.client.api.dto.Player> getPlayersByIds(Collection<Integer> playerIds);
+  List<com.faforever.commons.api.dto.Player> getPlayersByIds(Collection<Integer> playerIds);
 
   GameReview createGameReview(GameReview review);
 

@@ -1,6 +1,5 @@
 package com.faforever.client.replay;
 
-import com.faforever.client.api.dto.Game;
 import com.faforever.client.fx.AbstractViewController;
 import com.faforever.client.fx.JavaFxUtil;
 import com.faforever.client.i18n.I18n;
@@ -19,6 +18,7 @@ import com.faforever.client.vault.search.SearchController;
 import com.faforever.client.vault.search.SearchController.SearchConfig;
 import com.faforever.client.vault.search.SearchController.SortConfig;
 import com.faforever.client.vault.search.SearchController.SortOrder;
+import com.faforever.commons.api.dto.Game;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
@@ -80,7 +80,7 @@ public class OnlineReplayVaultController extends AbstractViewController<Node> {
   private int currentPage;
   private Supplier<CompletableFuture<List<Replay>>> currentSupplier;
   private final ObjectProperty<State> state;
-  private Boolean newestReplaysLoaded = false;
+  private final Boolean newestReplaysLoaded = false;
 
   public OnlineReplayVaultController(ReplayService replayService, UiService uiService, NotificationService notificationService, I18n i18n, PreferencesService preferencesService, ReportingService reportingService) {
     this.replayService = replayService;

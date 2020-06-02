@@ -1,21 +1,21 @@
 package com.faforever.client.api;
 
-import com.faforever.client.api.dto.AchievementDefinition;
-import com.faforever.client.api.dto.Event;
-import com.faforever.client.api.dto.Game;
-import com.faforever.client.api.dto.GamePlayerStats;
-import com.faforever.client.api.dto.GameReview;
-import com.faforever.client.api.dto.Ladder1v1LeaderboardEntry;
-import com.faforever.client.api.dto.MapVersion;
-import com.faforever.client.api.dto.MapVersionReview;
-import com.faforever.client.api.dto.ModVersionReview;
-import com.faforever.client.api.dto.PlayerAchievement;
-import com.faforever.client.api.dto.PlayerEvent;
 import com.faforever.client.config.ClientProperties;
 import com.faforever.client.game.KnownFeaturedMod;
 import com.faforever.client.leaderboard.LeaderboardEntry;
 import com.faforever.client.mod.ModInfoBeanBuilder;
 import com.faforever.client.mod.ModVersion;
+import com.faforever.commons.api.dto.AchievementDefinition;
+import com.faforever.commons.api.dto.Event;
+import com.faforever.commons.api.dto.Game;
+import com.faforever.commons.api.dto.GamePlayerStats;
+import com.faforever.commons.api.dto.GameReview;
+import com.faforever.commons.api.dto.Ladder1v1LeaderboardEntry;
+import com.faforever.commons.api.dto.MapVersion;
+import com.faforever.commons.api.dto.MapVersionReview;
+import com.faforever.commons.api.dto.ModVersionReview;
+import com.faforever.commons.api.dto.PlayerAchievement;
+import com.faforever.commons.api.dto.PlayerEvent;
 import com.google.common.eventbus.EventBus;
 import org.junit.Before;
 import org.junit.Rule;
@@ -308,7 +308,7 @@ public class FafApiAccessorImplTest {
     when(restOperations.postForEntity(eq("/data/modVersion/5/reviews"), eq(modVersionReview), eq(ModVersionReview.class)))
         .thenReturn(new ResponseEntity<>(HttpStatus.OK));
 
-    instance.createModVersionReview(modVersionReview.setModVersion(new com.faforever.client.api.dto.ModVersion().setId("5")));
+    instance.createModVersionReview(modVersionReview.setModVersion(new com.faforever.commons.api.dto.ModVersion().setId("5")));
 
     ArgumentCaptor<ModVersionReview> captor = ArgumentCaptor.forClass(ModVersionReview.class);
     verify(restOperations).postForEntity(eq("/data/modVersion/5/reviews"), captor.capture(), eq(ModVersionReview.class));

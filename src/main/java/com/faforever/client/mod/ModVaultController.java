@@ -121,7 +121,7 @@ public class ModVaultController extends AbstractViewController<Node> {
 
     eventBus.register(this);
 
-    searchController.setRootType(com.faforever.client.api.dto.Mod.class);
+    searchController.setRootType(com.faforever.commons.api.dto.Mod.class);
     searchController.setSearchListener(this::searchByQuery);
     searchController.setSearchableProperties(SearchablePropertyMappings.MOD_PROPERTY_MAPPING);
     searchController.setSortConfig(preferencesService.getPreferences().getVaultPrefs().modVaultConfigProperty());

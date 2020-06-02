@@ -1,16 +1,6 @@
 package com.faforever.client.remote;
 
 import com.faforever.client.api.FafApiAccessor;
-import com.faforever.client.api.dto.AchievementDefinition;
-import com.faforever.client.api.dto.CoopResult;
-import com.faforever.client.api.dto.FeaturedModFile;
-import com.faforever.client.api.dto.Game;
-import com.faforever.client.api.dto.GamePlayerStats;
-import com.faforever.client.api.dto.GameReview;
-import com.faforever.client.api.dto.MapVersion;
-import com.faforever.client.api.dto.MapVersionReview;
-import com.faforever.client.api.dto.ModVersionReview;
-import com.faforever.client.api.dto.PlayerAchievement;
 import com.faforever.client.chat.avatar.AvatarBean;
 import com.faforever.client.chat.avatar.event.AvatarChangedEvent;
 import com.faforever.client.clan.Clan;
@@ -40,6 +30,16 @@ import com.faforever.client.tutorial.TutorialCategory;
 import com.faforever.client.vault.review.Review;
 import com.faforever.client.vault.search.SearchController.SearchConfig;
 import com.faforever.client.vault.search.SearchController.SortConfig;
+import com.faforever.commons.api.dto.AchievementDefinition;
+import com.faforever.commons.api.dto.CoopResult;
+import com.faforever.commons.api.dto.FeaturedModFile;
+import com.faforever.commons.api.dto.Game;
+import com.faforever.commons.api.dto.GamePlayerStats;
+import com.faforever.commons.api.dto.GameReview;
+import com.faforever.commons.api.dto.MapVersion;
+import com.faforever.commons.api.dto.MapVersionReview;
+import com.faforever.commons.api.dto.ModVersionReview;
+import com.faforever.commons.api.dto.PlayerAchievement;
 import com.faforever.commons.io.ByteCountListener;
 import com.google.common.eventbus.EventBus;
 import javafx.beans.property.ReadOnlyObjectProperty;
@@ -230,7 +230,7 @@ public class FafService {
   @Async
   public CompletableFuture<List<FeaturedMod>> getFeaturedMods() {
     return CompletableFuture.completedFuture(fafApiAccessor.getFeaturedMods().stream()
-        .sorted(Comparator.comparingInt(com.faforever.client.api.dto.FeaturedMod::getOrder))
+        .sorted(Comparator.comparingInt(com.faforever.commons.api.dto.FeaturedMod::getOrder))
         .map(FeaturedMod::fromFeaturedMod)
         .collect(Collectors.toList()));
   }
@@ -327,7 +327,7 @@ public class FafService {
       GameReview updatedReview = fafApiAccessor.createGameReview(
           (GameReview) gameReview
               .setGame(new Game().setId(String.valueOf(gameId)))
-              .setPlayer(new com.faforever.client.api.dto.Player().setId(String.valueOf(review.getPlayer().getId())))
+              .setPlayer(new com.faforever.commons.api.dto.Player().setId(String.valueOf(review.getPlayer().getId())))
       );
       review.setId(updatedReview.getId());
     } else {
@@ -346,9 +346,9 @@ public class FafService {
       Assert.notNull(review.getPlayer(), "Player ID must be set");
       ModVersionReview updatedReview = fafApiAccessor.createModVersionReview(
           (ModVersionReview) modVersionReview
-              .setModVersion(new com.faforever.client.api.dto.ModVersion().setId(String.valueOf(modVersionId)))
+              .setModVersion(new com.faforever.commons.api.dto.ModVersion().setId(String.valueOf(modVersionId)))
               .setId(String.valueOf(review.getId()))
-              .setPlayer(new com.faforever.client.api.dto.Player().setId(String.valueOf(review.getPlayer().getId())))
+              .setPlayer(new com.faforever.commons.api.dto.Player().setId(String.valueOf(review.getPlayer().getId())))
       );
       review.setId(updatedReview.getId());
     } else {
@@ -369,7 +369,7 @@ public class FafService {
           (MapVersionReview) mapVersionReview
               .setMapVersion(new MapVersion().setId(mapVersionId))
               .setId(String.valueOf(review.getId()))
-              .setPlayer(new com.faforever.client.api.dto.Player().setId(String.valueOf(review.getPlayer().getId())))
+              .setPlayer(new com.faforever.commons.api.dto.Player().setId(String.valueOf(review.getPlayer().getId())))
       );
       review.setId(updatedReview.getId());
     } else {

@@ -1,11 +1,11 @@
 package com.faforever.client.player;
 
-import com.faforever.client.api.dto.GlobalRating;
-import com.faforever.client.api.dto.Ladder1v1Rating;
 import com.faforever.client.chat.ChatChannelUser;
 import com.faforever.client.game.Game;
 import com.faforever.client.game.PlayerStatus;
 import com.faforever.client.remote.domain.GameStatus;
+import com.faforever.commons.api.dto.GlobalRating;
+import com.faforever.commons.api.dto.Ladder1v1Rating;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.FloatProperty;
 import javafx.beans.property.IntegerProperty;
@@ -88,7 +88,7 @@ public class Player {
     this.username.set(username);
   }
 
-  public static Player fromDto(com.faforever.client.api.dto.Player dto) {
+  public static Player fromDto(com.faforever.commons.api.dto.Player dto) {
     Player player = new Player(dto.getLogin());
     player.setId(Integer.parseInt(dto.getId()));
     player.setUsername(dto.getLogin());

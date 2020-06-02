@@ -138,7 +138,7 @@ public class MapVaultController extends AbstractViewController<Node> {
 
     eventBus.register(this);
 
-    searchController.setRootType(com.faforever.client.api.dto.Map.class);
+    searchController.setRootType(com.faforever.commons.api.dto.Map.class);
     searchController.setSearchListener(this::searchByQuery);
     searchController.setSearchableProperties(SearchablePropertyMappings.MAP_PROPERTY_MAPPING);
     searchController.setSortConfig(preferencesService.getPreferences().getVaultPrefs().mapSortConfigProperty());

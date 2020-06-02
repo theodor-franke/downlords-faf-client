@@ -1,6 +1,6 @@
 package com.faforever.client.mod;
 
-import com.faforever.client.api.dto.Player;
+import com.faforever.commons.api.dto.Player;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -33,7 +33,7 @@ public class Mod {
     versions = FXCollections.observableArrayList();
   }
 
-  public static Mod fromDto(com.faforever.client.api.dto.Mod dto) {
+  public static Mod fromDto(com.faforever.commons.api.dto.Mod dto) {
     Mod mod = new Mod();
     mod.setId(dto.getId());
     mod.setDisplayName(dto.getDisplayName());

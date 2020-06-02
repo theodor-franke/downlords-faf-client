@@ -1,10 +1,10 @@
 package com.faforever.client.moderator;
 
 import com.faforever.client.api.FafApiAccessor;
-import com.faforever.client.api.dto.LegacyAccessLevel;
-import com.faforever.client.api.dto.LobbyGroup;
 import com.faforever.client.remote.FafService;
 import com.faforever.client.remote.domain.PeriodType;
+import com.faforever.commons.api.dto.LegacyAccessLevel;
+import com.faforever.commons.api.dto.LobbyGroup;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;

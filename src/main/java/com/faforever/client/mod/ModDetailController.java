@@ -154,7 +154,7 @@ public class ModDetailController implements Controller<Node> {
 
   private void setUploaderAndAuthor(ModVersion modVersion) {
     if (modVersion.getMod() != null) {
-      com.faforever.client.api.dto.Player uploader = modVersion.getMod().getUploader();
+      com.faforever.commons.api.dto.Player uploader = modVersion.getMod().getUploader();
 
       if (uploader != null && uploader.getLogin() != null) {
         uploaderLabel.setText(i18n.get("modVault.details.uploader", uploader.getLogin()));

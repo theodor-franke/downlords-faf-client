@@ -113,7 +113,7 @@ public class ModVersion {
     return modVersion;
   }
 
-  public static ModVersion fromDto(com.faforever.client.api.dto.ModVersion dto, Mod parent) {
+  public static ModVersion fromDto(com.faforever.commons.api.dto.ModVersion dto, Mod parent) {
     ModVersion modVersionVersion = new ModVersion();
     modVersionVersion.setVersion(dto.getVersion());
     modVersionVersion.setId(dto.getId());
@@ -137,8 +137,8 @@ public class ModVersion {
     return modVersionVersion;
   }
 
-  public static ModVersion fromModDto(com.faforever.client.api.dto.Mod dto) {
-    com.faforever.client.api.dto.ModVersion modVersionVersion = dto.getLatestVersion();
+  public static ModVersion fromModDto(com.faforever.commons.api.dto.Mod dto) {
+    com.faforever.commons.api.dto.ModVersion modVersionVersion = dto.getLatestVersion();
 
     ModVersion modVersion = new ModVersion();
     Optional.ofNullable(dto.getUploader()).ifPresent(uploader -> modVersion.setUploader(uploader.getLogin()));
@@ -494,8 +494,8 @@ public class ModVersion {
       this.i18nKey = i18nKey;
     }
 
-    public static ModType fromDto(com.faforever.client.api.dto.ModType modType) {
-      return modType == com.faforever.client.api.dto.ModType.UI ? UI : SIM;
+    public static ModType fromDto(com.faforever.commons.api.dto.ModType modType) {
+      return modType == com.faforever.commons.api.dto.ModType.UI ? UI : SIM;
     }
   }
 }

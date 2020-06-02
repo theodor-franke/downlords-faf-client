@@ -1,7 +1,7 @@
 package com.faforever.client.leaderboard;
 
-import com.faforever.client.api.dto.GlobalLeaderboardEntry;
-import com.faforever.client.api.dto.Ladder1v1LeaderboardEntry;
+import com.faforever.commons.api.dto.GlobalLeaderboardEntry;
+import com.faforever.commons.api.dto.Ladder1v1LeaderboardEntry;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.FloatProperty;
 import javafx.beans.property.IntegerProperty;
@@ -13,11 +13,11 @@ import javafx.beans.property.StringProperty;
 
 public class LeaderboardEntry {
 
-  private StringProperty username;
-  private IntegerProperty rank;
-  private DoubleProperty rating;
-  private IntegerProperty gamesPlayed;
-  private FloatProperty winLossRatio;
+  private final StringProperty username;
+  private final IntegerProperty rank;
+  private final DoubleProperty rating;
+  private final IntegerProperty gamesPlayed;
+  private final FloatProperty winLossRatio;
 
   public LeaderboardEntry() {
     username = new SimpleStringProperty();

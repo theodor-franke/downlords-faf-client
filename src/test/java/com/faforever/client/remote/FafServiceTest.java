@@ -1,13 +1,13 @@
 package com.faforever.client.remote;
 
 import com.faforever.client.api.FafApiAccessor;
-import com.faforever.client.api.dto.GameReview;
-import com.faforever.client.api.dto.MapVersionReview;
-import com.faforever.client.api.dto.ModVersionReview;
-import com.faforever.client.api.dto.Player;
 import com.faforever.client.chat.avatar.AvatarBean;
 import com.faforever.client.chat.avatar.event.AvatarChangedEvent;
 import com.faforever.client.vault.review.Review;
+import com.faforever.commons.api.dto.GameReview;
+import com.faforever.commons.api.dto.MapVersionReview;
+import com.faforever.commons.api.dto.ModVersionReview;
+import com.faforever.commons.api.dto.Player;
 import com.google.common.eventbus.EventBus;
 import org.junit.Before;
 import org.junit.Test;

@@ -1,6 +1,6 @@
 package com.faforever.client.mod;
 
-import com.faforever.client.api.dto.Mod;
+import com.faforever.commons.api.dto.Mod;
 
 public class ModInfoBuilder {
 

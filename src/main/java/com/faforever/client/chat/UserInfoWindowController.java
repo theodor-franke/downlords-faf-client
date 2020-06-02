@@ -4,9 +4,6 @@ import ch.micheljung.fxborderlessscene.borderless.BorderlessScene;
 import com.faforever.client.achievements.AchievementItemController;
 import com.faforever.client.achievements.AchievementService;
 import com.faforever.client.achievements.AchievementService.AchievementState;
-import com.faforever.client.api.dto.AchievementDefinition;
-import com.faforever.client.api.dto.PlayerAchievement;
-import com.faforever.client.api.dto.PlayerEvent;
 import com.faforever.client.domain.RatingHistoryDataPoint;
 import com.faforever.client.events.EventService;
 import com.faforever.client.fx.Controller;
@@ -24,6 +21,9 @@ import com.faforever.client.util.Assert;
 import com.faforever.client.util.IdenticonUtil;
 import com.faforever.client.util.RatingUtil;
 import com.faforever.client.util.TimeService;
+import com.faforever.commons.api.dto.AchievementDefinition;
+import com.faforever.commons.api.dto.PlayerAchievement;
+import com.faforever.commons.api.dto.PlayerEvent;
 import com.neovisionaries.i18n.CountryCode;
 import javafx.application.Platform;
 import javafx.beans.InvalidationListener;
@@ -133,8 +133,8 @@ public class UserInfoWindowController implements Controller<Node> {
   public TableColumn<NameRecord, OffsetDateTime> changeDateColumn;
   public TableColumn<NameRecord, String> nameColumn;
   private Player player;
-  private Map<String, AchievementItemController> achievementItemById = new HashMap<>();
-  private Map<String, AchievementDefinition> achievementDefinitionById= new HashMap<>();
+  private final Map<String, AchievementItemController> achievementItemById = new HashMap<>();
+  private final Map<String, AchievementDefinition> achievementDefinitionById = new HashMap<>();
   private Window ownerWindow;
 
   private static boolean isUnlocked(PlayerAchievement playerAchievement) {

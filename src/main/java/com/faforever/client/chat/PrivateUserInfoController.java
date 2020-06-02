@@ -1,7 +1,6 @@
 package com.faforever.client.chat;
 
 import com.faforever.client.achievements.AchievementService;
-import com.faforever.client.api.dto.AchievementState;
 import com.faforever.client.fx.Controller;
 import com.faforever.client.fx.JavaFxUtil;
 import com.faforever.client.game.Game;
@@ -10,6 +9,7 @@ import com.faforever.client.i18n.I18n;
 import com.faforever.client.player.Player;
 import com.faforever.client.util.IdenticonUtil;
 import com.faforever.client.util.RatingUtil;
+import com.faforever.commons.api.dto.AchievementState;
 import com.neovisionaries.i18n.CountryCode;
 import javafx.application.Platform;
 import javafx.beans.InvalidationListener;

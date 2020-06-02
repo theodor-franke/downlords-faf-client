@@ -1,6 +1,5 @@
 package com.faforever.client.replay;
 
-import com.faforever.client.api.dto.Validity;
 import com.faforever.client.config.ClientProperties;
 import com.faforever.client.fx.MouseEvents;
 import com.faforever.client.i18n.I18n;
@@ -18,6 +17,7 @@ import com.faforever.client.vault.review.ReviewService;
 import com.faforever.client.vault.review.ReviewsController;
 import com.faforever.client.vault.review.StarController;
 import com.faforever.client.vault.review.StarsController;
+import com.faforever.commons.api.dto.Validity;
 import javafx.collections.FXCollections;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;

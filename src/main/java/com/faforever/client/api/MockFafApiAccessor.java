@@ -1,33 +1,33 @@
 package com.faforever.client.api;
 
 import com.faforever.client.FafClientApplication;
-import com.faforever.client.api.dto.AchievementDefinition;
-import com.faforever.client.api.dto.AchievementType;
-import com.faforever.client.api.dto.Clan;
-import com.faforever.client.api.dto.CoopMission;
-import com.faforever.client.api.dto.CoopResult;
-import com.faforever.client.api.dto.FeaturedModFile;
-import com.faforever.client.api.dto.Game;
-import com.faforever.client.api.dto.GamePlayerStats;
-import com.faforever.client.api.dto.GameReview;
-import com.faforever.client.api.dto.GlobalLeaderboardEntry;
-import com.faforever.client.api.dto.Ladder1v1LeaderboardEntry;
-import com.faforever.client.api.dto.Ladder1v1Map;
-import com.faforever.client.api.dto.Map;
-import com.faforever.client.api.dto.MapVersion;
-import com.faforever.client.api.dto.MapVersionReview;
-import com.faforever.client.api.dto.Mod;
-import com.faforever.client.api.dto.ModVersion;
-import com.faforever.client.api.dto.ModVersionReview;
-import com.faforever.client.api.dto.Player;
-import com.faforever.client.api.dto.PlayerAchievement;
-import com.faforever.client.api.dto.PlayerEvent;
-import com.faforever.client.api.dto.Tournament;
-import com.faforever.client.api.dto.TutorialCategory;
 import com.faforever.client.game.KnownFeaturedMod;
 import com.faforever.client.mod.FeaturedMod;
 import com.faforever.client.vault.search.SearchController.SearchConfig;
 import com.faforever.client.vault.search.SearchController.SortConfig;
+import com.faforever.commons.api.dto.AchievementDefinition;
+import com.faforever.commons.api.dto.AchievementType;
+import com.faforever.commons.api.dto.Clan;
+import com.faforever.commons.api.dto.CoopMission;
+import com.faforever.commons.api.dto.CoopResult;
+import com.faforever.commons.api.dto.FeaturedModFile;
+import com.faforever.commons.api.dto.Game;
+import com.faforever.commons.api.dto.GamePlayerStats;
+import com.faforever.commons.api.dto.GameReview;
+import com.faforever.commons.api.dto.GlobalLeaderboardEntry;
+import com.faforever.commons.api.dto.Ladder1v1LeaderboardEntry;
+import com.faforever.commons.api.dto.Ladder1v1Map;
+import com.faforever.commons.api.dto.Map;
+import com.faforever.commons.api.dto.MapVersion;
+import com.faforever.commons.api.dto.MapVersionReview;
+import com.faforever.commons.api.dto.Mod;
+import com.faforever.commons.api.dto.ModVersion;
+import com.faforever.commons.api.dto.ModVersionReview;
+import com.faforever.commons.api.dto.Player;
+import com.faforever.commons.api.dto.PlayerAchievement;
+import com.faforever.commons.api.dto.PlayerEvent;
+import com.faforever.commons.api.dto.Tournament;
+import com.faforever.commons.api.dto.TutorialCategory;
 import com.faforever.commons.io.ByteCountListener;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Profile;
@@ -80,14 +80,14 @@ public class MockFafApiAccessor implements FafApiAccessor {
   public List<Mod> getMods() {
     Player uploader = new Player();
     return Arrays.asList(
-        new com.faforever.client.api.dto.Mod("1", "Mod Number One", "Mock", OffsetDateTime.now(), OffsetDateTime.now(), uploader, Collections.emptyList(), mod()),
-        new com.faforever.client.api.dto.Mod("2", "Mod Number Two", "Mock", OffsetDateTime.now(), OffsetDateTime.now(), uploader, Collections.emptyList(), mod()),
-        new com.faforever.client.api.dto.Mod("3", "Mod Number Three", "Mock", OffsetDateTime.now(), OffsetDateTime.now(), uploader, Collections.emptyList(), mod()),
-        new com.faforever.client.api.dto.Mod("4", "Mod Number Four", "Mock", OffsetDateTime.now(), OffsetDateTime.now(), uploader, Collections.emptyList(), mod()),
-        new com.faforever.client.api.dto.Mod("5", "Mod Number Five", "Mock", OffsetDateTime.now(), OffsetDateTime.now(), uploader, Collections.emptyList(), mod()),
-        new com.faforever.client.api.dto.Mod("6", "Mod Number Six", "Mock", OffsetDateTime.now(), OffsetDateTime.now(), uploader, Collections.emptyList(), mod()),
-        new com.faforever.client.api.dto.Mod("7", "Mod Number Seven", "Mock", OffsetDateTime.now(), OffsetDateTime.now(), uploader, Collections.emptyList(), mod()),
-        new com.faforever.client.api.dto.Mod("8", "Mod Number Eight", "Mock", OffsetDateTime.now(), OffsetDateTime.now(), uploader, Collections.emptyList(), mod())
+        new com.faforever.commons.api.dto.Mod("1", "Mod Number One", "Mock", OffsetDateTime.now(), OffsetDateTime.now(), uploader, Collections.emptyList(), mod()),
+        new com.faforever.commons.api.dto.Mod("2", "Mod Number Two", "Mock", OffsetDateTime.now(), OffsetDateTime.now(), uploader, Collections.emptyList(), mod()),
+        new com.faforever.commons.api.dto.Mod("3", "Mod Number Three", "Mock", OffsetDateTime.now(), OffsetDateTime.now(), uploader, Collections.emptyList(), mod()),
+        new com.faforever.commons.api.dto.Mod("4", "Mod Number Four", "Mock", OffsetDateTime.now(), OffsetDateTime.now(), uploader, Collections.emptyList(), mod()),
+        new com.faforever.commons.api.dto.Mod("5", "Mod Number Five", "Mock", OffsetDateTime.now(), OffsetDateTime.now(), uploader, Collections.emptyList(), mod()),
+        new com.faforever.commons.api.dto.Mod("6", "Mod Number Six", "Mock", OffsetDateTime.now(), OffsetDateTime.now(), uploader, Collections.emptyList(), mod()),
+        new com.faforever.commons.api.dto.Mod("7", "Mod Number Seven", "Mock", OffsetDateTime.now(), OffsetDateTime.now(), uploader, Collections.emptyList(), mod()),
+        new com.faforever.commons.api.dto.Mod("8", "Mod Number Eight", "Mock", OffsetDateTime.now(), OffsetDateTime.now(), uploader, Collections.emptyList(), mod())
     );
   }
 
@@ -96,8 +96,8 @@ public class MockFafApiAccessor implements FafApiAccessor {
   }
 
   @Override
-  public List<com.faforever.client.api.dto.FeaturedMod> getFeaturedMods() {
-    com.faforever.client.api.dto.FeaturedMod featuredMod = new com.faforever.client.api.dto.FeaturedMod();
+  public List<com.faforever.commons.api.dto.FeaturedMod> getFeaturedMods() {
+    com.faforever.commons.api.dto.FeaturedMod featuredMod = new com.faforever.commons.api.dto.FeaturedMod();
     featuredMod.setDisplayName("Forged Alliance Forever");
     featuredMod.setTechnicalName("faf");
     featuredMod.setVisible(true);
@@ -197,7 +197,7 @@ public class MockFafApiAccessor implements FafApiAccessor {
   }
 
   @Override
-  public List<com.faforever.client.api.dto.Player> getPlayersByIds(Collection<Integer> playerIds) {
+  public List<com.faforever.commons.api.dto.Player> getPlayersByIds(Collection<Integer> playerIds) {
     return Collections.emptyList();
   }
 

@@ -82,7 +82,7 @@ public class PrivateChatTabControllerTest extends AbstractPlainJavaFxTest {
 
   @Before
   public void setUp() throws IOException, ExecutionException, InterruptedException {
-    PreferencesService preferencesService = new PreferencesService(new ClientProperties());
+    PreferencesService preferencesService = new PreferencesService(objectMapper, new ClientProperties());
     preferencesService.afterPropertiesSet();
 
     instance = new PrivateChatTabController(userService, preferencesService, playerService, timeService,

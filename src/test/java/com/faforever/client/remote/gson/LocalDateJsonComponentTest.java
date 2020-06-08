@@ -12,16 +12,16 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class LocalDateDeserializerTest {
+public class LocalDateJsonComponentTest {
 
-  private LocalDateDeserializer instance;
+  private LocalDateJsonComponent instance;
   private JsonElement json;
   private Type typeOfT;
   private JsonDeserializationContext context;
 
   @Before
   public void setUp() throws Exception {
-    instance = LocalDateDeserializer.INSTANCE;
+    instance = LocalDateJsonComponent.INSTANCE;
 
     json = mock(JsonElement.class);
     typeOfT = mock(Type.class);

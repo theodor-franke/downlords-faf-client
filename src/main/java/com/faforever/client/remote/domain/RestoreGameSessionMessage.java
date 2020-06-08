@@ -1,10 +1,10 @@
 package com.faforever.client.remote.domain;
 
-import com.google.gson.annotations.SerializedName;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class RestoreGameSessionMessage extends ClientMessage {
 
-  @SerializedName("game_id")
+  @JsonProperty("game_id")
   private final int gameId;
 
   public RestoreGameSessionMessage(int gameId) {

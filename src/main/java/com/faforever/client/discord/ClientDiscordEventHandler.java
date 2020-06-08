@@ -3,7 +3,8 @@ package com.faforever.client.discord;
 
 import com.faforever.client.notification.NotificationService;
 import com.faforever.client.preferences.PreferencesService;
-import com.google.gson.Gson;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import net.arikia.dev.drpc.DiscordEventHandlers;
 import net.arikia.dev.drpc.DiscordRPC;
@@ -18,11 +19,18 @@ public class ClientDiscordEventHandler extends DiscordEventHandlers {
   private final ApplicationEventPublisher applicationEventPublisher;
   private final NotificationService notificationService;
   private final PreferencesService preferencesService;
+  private final ObjectMapper objectMapper;
 
-  public ClientDiscordEventHandler(ApplicationEventPublisher applicationEventPublisher, NotificationService notificationService, PreferencesService preferencesService) {
+  public ClientDiscordEventHandler(
+      ApplicationEventPublisher applicationEventPublisher,
+      NotificationService notificationService,
+      PreferencesService preferencesService,
+      ObjectMapper objectMapper
+  ) {
     this.applicationEventPublisher = applicationEventPublisher;
     this.notificationService = notificationService;
     this.preferencesService = preferencesService;
+    this.objectMapper = objectMapper;
     ready = this::onDiscordReady;
     disconnected = this::onDisconnected;
     errored = this::onError;
@@ -35,8 +43,9 @@ public class ClientDiscordEventHandler extends DiscordEventHandlers {
     DiscordRPC.discordRespond(discordUser.userId, DiscordReply.YES);
   }
 
+  @SneakyThrows
   private void onJoinGame(String joinSecret) {
-    DiscordJoinSecret discordJoinSecret = new Gson().fromJson(joinSecret, DiscordJoinSecret.class);
+    DiscordJoinSecret discordJoinSecret = objectMapper.readValue(joinSecret, DiscordJoinSecret.class);
     try {
       applicationEventPublisher.publishEvent(new DiscordJoinEvent(discordJoinSecret.getGameId()));
     } catch (Exception e) {
@@ -45,8 +54,9 @@ public class ClientDiscordEventHandler extends DiscordEventHandlers {
     }
   }
 
+  @SneakyThrows
   private void onSpectate(String spectateSecret) {
-    DiscordSpectateSecret discordSpectateSecret = new Gson().fromJson(spectateSecret, DiscordSpectateSecret.class);
+    DiscordSpectateSecret discordSpectateSecret = objectMapper.readValue(spectateSecret, DiscordSpectateSecret.class);
     try {
       applicationEventPublisher.publishEvent(new DiscordSpectateEvent(discordSpectateSecret.getGameId()));
     } catch (Exception e) {

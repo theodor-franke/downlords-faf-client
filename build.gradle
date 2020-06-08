@@ -300,7 +300,7 @@ dependencies {
 
   provided("com.install4j:install4j-runtime:${install4jRuntimeVersion}")
 
-  testCompile 'junit:junit:4.11'
+  compile("org.springframework.boot:spring-boot-starter-test")
   testCompile("org.testfx:testfx-core:4.0.8-alpha") {
     exclude module: 'guava'
   }

@@ -1,155 +1,113 @@
 package com.faforever.client.preferences.gson;
 
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonNull;
-import com.google.gson.JsonParseException;
-import com.google.gson.JsonPrimitive;
-import com.google.gson.JsonSerializationContext;
-import com.google.gson.JsonSerializer;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.FloatProperty;
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.ListProperty;
-import javafx.beans.property.LongProperty;
-import javafx.beans.property.MapProperty;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.Property;
-import javafx.beans.property.SetProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.property.SimpleFloatProperty;
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleListProperty;
-import javafx.beans.property.SimpleLongProperty;
-import javafx.beans.property.SimpleMapProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleSetProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.databind.type.CollectionLikeType;
+import com.fasterxml.jackson.databind.type.MapLikeType;
+import javafx.beans.property.*;
 import javafx.beans.value.WritableObjectValue;
 import javafx.collections.FXCollections;
+import org.springframework.boot.jackson.JsonComponent;
 
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class PropertyTypeAdapter implements JsonSerializer<Property<?>>, JsonDeserializer<Property<?>> {
+@JsonComponent
+public class PropertyTypeAdapter {
 
-  public static final PropertyTypeAdapter INSTANCE = new PropertyTypeAdapter();
+  @SuppressWarnings("unused")
+  public static class Serializer extends JsonSerializer<Property<?>> {
+    @Override
+    public void serialize(Property<?> value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
+      if (value.getValue() == null) {
+        gen.writeNull();
+      }
+      if (value instanceof StringProperty) {
+        gen.writeString(((StringProperty) value).get());
+      }
+      if (value instanceof IntegerProperty) {
+        gen.writeNumber(((IntegerProperty) value).get());
+      }
+      if (value instanceof DoubleProperty) {
+        gen.writeNumber(((DoubleProperty) value).get());
+      }
+      if (value instanceof LongProperty) {
+        gen.writeNumber(((LongProperty) value).get());
+      }
+      if (value instanceof FloatProperty) {
+        gen.writeNumber(((FloatProperty) value).get());
+      }
+      if (value instanceof BooleanProperty) {
+        gen.writeBoolean(((BooleanProperty) value).get());
+      }
+      if (value instanceof WritableObjectValue) {
+        gen.writeObject(((WritableObjectValue<?>) value).get());
+      }
 
-  private PropertyTypeAdapter() {
-
+      throw new IllegalStateException("Unhandled object type: " + value.getClass());
+    }
   }
 
-  @Override
-  public JsonElement serialize(Property src, Type typeOfSrc, JsonSerializationContext context) {
-    if (src.getValue() == null) {
-      return JsonNull.INSTANCE;
-    }
-    if (src instanceof StringProperty) {
-      return new JsonPrimitive(((StringProperty) src).get());
-    }
-    if (src instanceof IntegerProperty) {
-      return new JsonPrimitive(((IntegerProperty) src).get());
-    }
-    if (src instanceof DoubleProperty) {
-      return new JsonPrimitive(((DoubleProperty) src).get());
-    }
-    if (src instanceof LongProperty) {
-      return new JsonPrimitive(((LongProperty) src).get());
-    }
-    if (src instanceof FloatProperty) {
-      return new JsonPrimitive(((FloatProperty) src).get());
-    }
-    if (src instanceof BooleanProperty) {
-      return new JsonPrimitive(((BooleanProperty) src).get());
-    }
-    if (src instanceof WritableObjectValue) {
-      return context.serialize(((WritableObjectValue) src).get());
-    }
+  @SuppressWarnings("unused")
+  public static class Deserializer extends JsonDeserializer<Property<?>> {
 
-    throw new IllegalStateException("Unhandled object type: " + src.getClass());
-  }
+    @Override
+    public Property<?> deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
+      JavaType contextualType = ctxt.getContextualType();
 
-  @Override
-  public Property deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-    if (typeOfT instanceof Class) {
-      Class clazz = (Class) typeOfT;
+      Class<?> clazz = contextualType.getRawClass();
       if (StringProperty.class.isAssignableFrom(clazz)) {
-        return new SimpleStringProperty(json.getAsString());
+        return new SimpleStringProperty(p.getValueAsString());
       }
       if (IntegerProperty.class.isAssignableFrom(clazz)) {
-        return new SimpleIntegerProperty(json.getAsInt());
+        return new SimpleIntegerProperty(p.getValueAsInt());
       }
       if (DoubleProperty.class.isAssignableFrom(clazz)) {
-        return new SimpleDoubleProperty(json.getAsDouble());
+        return new SimpleDoubleProperty(p.getDoubleValue());
       }
       if (LongProperty.class.isAssignableFrom(clazz)) {
-        return new SimpleLongProperty(json.getAsLong());
+        return new SimpleLongProperty(p.getValueAsLong());
       }
       if (FloatProperty.class.isAssignableFrom(clazz)) {
-        return new SimpleFloatProperty(json.getAsFloat());
+        return new SimpleFloatProperty(p.getFloatValue());
       }
       if (BooleanProperty.class.isAssignableFrom(clazz)) {
-        return new SimpleBooleanProperty(json.getAsBoolean());
+        return new SimpleBooleanProperty(p.getBooleanValue());
       }
-      if (SetProperty.class.isAssignableFrom(clazz)) {
-        return new SimpleSetProperty<>(context.deserialize(json, Set.class));
+
+      if (contextualType.isCollectionLikeType()) {
+        CollectionLikeType collectionLikeType = (CollectionLikeType) contextualType;
+        JavaType contentType = collectionLikeType.getContentType();
+
+        if (clazz == ObjectProperty.class) {
+          return new SimpleObjectProperty<>(ctxt.readValue(p, contentType));
+        } else if (clazz == ListProperty.class) {
+          return new SimpleListProperty<>(FXCollections.observableList(
+            ctxt.readValue(p, ctxt.getTypeFactory().constructCollectionType(List.class, contentType)))
+          );
+        } else if (clazz == SetProperty.class) {
+          return new SimpleSetProperty<>(FXCollections.observableSet(
+            ctxt.<Set<Object>>readValue(p, ctxt.getTypeFactory().constructCollectionType(Set.class, contentType))
+          ));
+        }
       }
-      if (MapProperty.class.isAssignableFrom(clazz)) {
-        return new SimpleMapProperty<>(context.deserialize(json, Map.class));
+
+      if (contextualType.isMapLikeType()) {
+        MapLikeType mapType = (MapLikeType) contextualType;
+        JavaType keyType = mapType.getKeyType();
+        JavaType contentType = mapType.getContentType();
+
+        if (clazz == MapProperty.class) {
+          return new SimpleMapProperty<>(FXCollections.observableMap(
+            ctxt.readValue(p, ctxt.getTypeFactory().constructMapType(Map.class, keyType, contentType)))
+          );
+        }
       }
-    }
-    if (typeOfT instanceof ParameterizedType) {
-      ParameterizedType parameterizedType = (ParameterizedType) typeOfT;
-      Type rawType = parameterizedType.getRawType();
 
-      if (rawType == ObjectProperty.class) {
-        return new SimpleObjectProperty<>(context.deserialize(json, parameterizedType.getActualTypeArguments()[0]));
-      } else if (rawType == ListProperty.class) {
-        CustomType type = new CustomType(List.class, parameterizedType.getActualTypeArguments());
-        return new SimpleListProperty<>(FXCollections.observableList(context.deserialize(json, type)));
-      } else if (rawType == SetProperty.class) {
-        CustomType type = new CustomType(Set.class, parameterizedType.getActualTypeArguments());
-        // Why is this the only call that needs parameterization?
-        return new SimpleSetProperty<>(FXCollections.observableSet(context.<Set<Object>>deserialize(json, type)));
-      } else if (rawType == MapProperty.class) {
-        CustomType type = new CustomType(Map.class, parameterizedType.getActualTypeArguments());
-        return new SimpleMapProperty<>(FXCollections.observableMap(context.deserialize(json, type)));
-      }
-    }
-
-    throw new IllegalStateException("Unhandled object type: " + typeOfT);
-  }
-
-  private class CustomType implements ParameterizedType {
-
-    private final Class<?> rawType;
-    private final Type[] typeArguments;
-
-    public CustomType(Class<?> rawType, Type[] typeArguments) {
-      this.rawType = rawType;
-      this.typeArguments = typeArguments;
-    }
-
-    @Override
-    public Type[] getActualTypeArguments() {
-      return typeArguments;
-    }
-
-    @Override
-    public Type getRawType() {
-      return rawType;
-    }
-
-    @Override
-    public Type getOwnerType() {
-      return null;
+      throw new IllegalStateException("Unhandled object type: " + contextualType);
     }
   }
 }

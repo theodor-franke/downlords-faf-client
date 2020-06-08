@@ -1,5 +1,8 @@
 package com.faforever.client.game;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
+
 import java.util.HashMap;
 
 public enum GameVisibility {
@@ -21,10 +24,12 @@ public enum GameVisibility {
     this.string = string;
   }
 
+  @JsonValue
   public String getString() {
     return string;
   }
 
+  @JsonCreator
   public static GameVisibility fromString(String string) {
     return fromString.get(string);
   }

@@ -3,7 +3,7 @@ package com.faforever.client.rankedmatch;
 import com.faforever.client.remote.domain.FafServerMessage;
 import com.faforever.client.remote.domain.FafServerMessageType;
 import com.faforever.client.remote.domain.RatingRange;
-import com.google.gson.annotations.SerializedName;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.List;
 
@@ -13,13 +13,13 @@ public class MatchmakerInfoMessage extends FafServerMessage {
 
     private QueueName queueName;
     private String queuePopTime;
-    @SerializedName("boundary_75s")
+    @JsonProperty("boundary_75s")
     private List<RatingRange> boundary75s;
-    @SerializedName("boundary_80s")
+    @JsonProperty("boundary_80s")
     private List<RatingRange> boundary80s;
 
-    public static enum QueueName {
-      @SerializedName("ladder1v1")
+    public enum QueueName {
+      @JsonProperty("ladder1v1")
       LADDER_1V1
     }
 

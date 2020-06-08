@@ -110,7 +110,7 @@ public class ChannelTabControllerTest extends AbstractPlainJavaFxTest {
         audioService, timeService, i18n, imageUploadService,
         notificationService, reportingService,
         uiService, eventBus, webViewConfigurer, countryFlagService,
-        platformService);
+        platformService, objectMapper);
 
     defaultChannel = new Channel(CHANNEL_NAME);
     preferences = new Preferences();

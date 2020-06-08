@@ -1,5 +1,8 @@
 package com.faforever.client.remote.domain;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -23,10 +26,12 @@ public enum MessageTarget {
     this.string = string;
   }
 
+  @JsonCreator
   public static MessageTarget fromString(String string) {
     return fromString.get(string);
   }
 
+  @JsonValue
   public String getString() {
     return string;
   }

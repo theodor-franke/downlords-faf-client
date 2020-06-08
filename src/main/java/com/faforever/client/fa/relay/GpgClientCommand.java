@@ -1,5 +1,7 @@
 package com.faforever.client.fa.relay;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,6 +48,7 @@ public enum GpgClientCommand {
     this.string = string;
   }
 
+  @JsonCreator
   public static GpgClientCommand fromString(String string) {
     GpgClientCommand action = fromString.get(string);
     if (action == null) {
@@ -54,6 +57,7 @@ public enum GpgClientCommand {
     return action;
   }
 
+  @JsonValue
   public String getString() {
     return string;
   }

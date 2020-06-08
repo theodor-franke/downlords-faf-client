@@ -1,5 +1,7 @@
 package com.faforever.client.remote.domain;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,6 +33,7 @@ public enum VictoryCondition {
     this.value = value;
   }
 
+  @JsonCreator
   public static VictoryCondition fromNumber(Object number) {
     VictoryCondition victoryCondition = fromNumber.get(number);
     if (victoryCondition == null) {
@@ -40,6 +43,7 @@ public enum VictoryCondition {
     return victoryCondition;
   }
 
+  @JsonValue
   public Object getValue() {
     return value;
   }

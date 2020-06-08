@@ -39,9 +39,11 @@ public class CheckForBetaUpdateTask extends CompletableTask<UpdateInfo> {
     HttpEntity<String> entity = new HttpEntity<>(null, headers);
 
     ClientConfiguration clientConfiguration = preferencesService.getRemotePreferences();
-    //Important List<GitHubRelease> needs to stay in  new ParameterizedTypeReference<List<GitHubRelease>>() {}), because of a openjdk compiler bug
-    ResponseEntity<List<GitHubRelease>> response = restTemplate.exchange(clientConfiguration.getGitHubRepo().getApiUrl() + PATH_FOR_RELEASE, HttpMethod.GET, entity, new ParameterizedTypeReference<List<GitHubRelease>>() {
-    });
+    ResponseEntity<List<GitHubRelease>> response = restTemplate.exchange(clientConfiguration.getGitHubRepo().getApiUrl() + PATH_FOR_RELEASE,
+        HttpMethod.GET,
+        entity,
+        new ParameterizedTypeReference<>() {
+        });
     List<GitHubRelease> responseBody = response.getBody();
     if (responseBody == null || responseBody.isEmpty()) {
       return null;

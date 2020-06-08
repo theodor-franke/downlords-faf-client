@@ -1,5 +1,7 @@
 package com.faforever.client.remote.domain;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,6 +33,7 @@ public enum GameStatus {
     this.string = string;
   }
 
+  @JsonCreator
   public static GameStatus fromString(String string) {
     GameStatus gameStatus = fromString.get(string != null ? string.toLowerCase(Locale.US) : null);
     if (gameStatus == null) {
@@ -40,6 +43,7 @@ public enum GameStatus {
     return gameStatus;
   }
 
+  @JsonValue
   public String getString() {
     return string;
   }

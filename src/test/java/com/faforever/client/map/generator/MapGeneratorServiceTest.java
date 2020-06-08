@@ -72,7 +72,7 @@ public class MapGeneratorServiceTest extends AbstractPlainJavaFxTest {
     when(preferencesService.getPreferences()).thenReturn(preferences);
     preferences.getForgedAlliance().setVaultBaseDirectory(Paths.get(vaultBaseDir.getRoot().getAbsolutePath()));
 
-    instance = new MapGeneratorService(applicationContext, preferencesService, taskService, clientProperties);
+    instance = new MapGeneratorService(applicationContext, preferencesService, taskService, clientProperties, objectMapper);
 
     instance.afterPropertiesSet();
 

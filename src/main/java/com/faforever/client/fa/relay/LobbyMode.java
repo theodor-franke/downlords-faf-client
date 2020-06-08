@@ -1,5 +1,8 @@
 package com.faforever.client.fa.relay;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
+
 /**
  * See values for description.
  */
@@ -21,7 +24,13 @@ public enum LobbyMode {
     this.mode = mode;
   }
 
+  @JsonValue
   public int getMode() {
     return mode;
+  }
+
+  @JsonCreator
+  public static LobbyMode fromIndex(int index) {
+    return values()[index];
   }
 }

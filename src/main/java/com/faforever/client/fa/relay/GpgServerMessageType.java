@@ -3,6 +3,8 @@ package com.faforever.client.fa.relay;
 import com.faforever.client.remote.domain.IceServerMessage;
 import com.faforever.client.remote.domain.ServerMessage;
 import com.faforever.client.remote.domain.ServerMessageType;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -35,6 +37,7 @@ public enum GpgServerMessageType implements ServerMessageType {
     this.type = type;
   }
 
+  @JsonCreator
   public static GpgServerMessageType fromString(String string) {
     GpgServerMessageType gpgServerMessageType = fromString.get(string);
     if (gpgServerMessageType == null) {
@@ -47,6 +50,7 @@ public enum GpgServerMessageType implements ServerMessageType {
     return gpgServerMessageType;
   }
 
+  @JsonValue
   public String getString() {
     return string;
   }

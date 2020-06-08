@@ -1,6 +1,6 @@
 package com.faforever.client.preferences;
 
-import com.faforever.client.preferences.gson.ExcludeFromGson;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sun.jna.platform.win32.Shell32Util;
 import com.sun.jna.platform.win32.ShlObj;
 import javafx.beans.binding.Bindings;
@@ -44,9 +44,9 @@ public class ForgedAlliancePrefs {
   private final ObjectProperty<Path> installationPath;
   private final ObjectProperty<Path> preferencesFile;
   private final ObjectProperty<Path> vaultBaseDirectory;
-  @ExcludeFromGson
+  @JsonIgnore
   private final ObjectProperty<Path> customMapsDirectory;
-  @ExcludeFromGson
+  @JsonIgnore
   private final ObjectProperty<Path> modsDirectory;
   private final BooleanProperty forceRelay;
   private final BooleanProperty autoDownloadMaps;

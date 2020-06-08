@@ -33,7 +33,7 @@ public class GamePathHandlerTest {
   @Before
   public void setUp() throws Exception {
     MockitoAnnotations.initMocks(this);
-    PreferencesService preferenceService = new PreferencesService(new ClientProperties());
+    PreferencesService preferenceService = new PreferencesService(objectMapper, new ClientProperties());
     instance = new GamePathHandler(notificationService, i18n, eventBus, preferenceService);
   }
 

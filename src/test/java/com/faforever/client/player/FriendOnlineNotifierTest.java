@@ -31,7 +31,7 @@ public class FriendOnlineNotifierTest {
   @Before
   public void setUp() throws Exception {
     MockitoAnnotations.initMocks(this);
-    preferencesService = new PreferencesService(new ClientProperties());
+    preferencesService = new PreferencesService(objectMapper, new ClientProperties());
     preferencesService.afterPropertiesSet();
 
     instance = new FriendOnlineNotifier(notificationService, i18n, eventBus, audioService, playerService, preferencesService);

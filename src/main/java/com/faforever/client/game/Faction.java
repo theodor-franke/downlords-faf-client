@@ -32,6 +32,13 @@ public enum Faction {
   }
 
   @JsonCreator
+  public static Faction from(Object value) {
+    if (value instanceof Number) {
+      return fromFaValue(((Number) value).intValue());
+    }
+    return fromString(String.valueOf(value));
+  }
+
   public static Faction fromFaValue(int value) {
     return Faction.values()[value - 1];
   }
@@ -40,10 +47,11 @@ public enum Faction {
     return fromString.get(string);
   }
 
+  // FIXME how to determine the @JsonValue?
+
   /**
    * Returns the faction value used as in "Forged Alliance Forever".
    */
-  @JsonValue
   public int toFaValue() {
     return ordinal() + 1;
   }

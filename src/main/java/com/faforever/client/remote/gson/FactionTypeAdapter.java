@@ -1,10 +1,6 @@
 package com.faforever.client.remote.gson;
 
 import com.faforever.client.game.Faction;
-import com.google.gson.TypeAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonToken;
-import com.google.gson.stream.JsonWriter;
 
 import java.io.IOException;
 

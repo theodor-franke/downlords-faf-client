@@ -1,5 +1,7 @@
 package com.faforever.client.remote.domain;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
 import org.jetbrains.annotations.NotNull;
 
 public class RatingRange implements Comparable<RatingRange> {
@@ -23,5 +25,15 @@ public class RatingRange implements Comparable<RatingRange> {
 
   public Integer getMax() {
     return max;
+  }
+
+  @JsonValue
+  public int[] toArray() {
+    return new int[]{min, max};
+  }
+
+  @JsonCreator
+  public static RatingRange fromArray(int[] array) {
+    return new RatingRange(array[0], array[1]);
   }
 }

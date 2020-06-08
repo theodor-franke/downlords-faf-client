@@ -2,6 +2,8 @@ package com.faforever.client.remote;
 
 import com.faforever.client.remote.domain.SerializableMessage;
 import com.faforever.client.remote.io.QDataWriter;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -26,7 +28,7 @@ public class JsonMessageSerializer<T extends SerializableMessage> implements Ser
 
   private static final String CONFIDENTIAL_INFORMATION_MASK = "********";
 
-  private Gson gson;
+  private final ObjectMapper objectMapper;
 
   // TODO Clean this up, such that the message is logged within ServerWriter and everything makes much more sense
   @Override
@@ -35,8 +37,10 @@ public class JsonMessageSerializer<T extends SerializableMessage> implements Ser
 
     Writer jsonStringWriter = new StringWriter();
 
+    JsonGenerator jsonGenerator = new Json
+
     // Serialize the object into a StringWriter which is later send as one string block with its size prepended.
-    getGson().toJson(message, message.getClass(), fixedJsonWriter(jsonStringWriter));
+    objectMapper.writeValue(jsonStringWriter, message);
 
     QDataWriter qDataWriter = new QDataWriter(byteArrayOutputStream);
     qDataWriter.append(jsonStringWriter.toString());
@@ -68,22 +72,6 @@ public class JsonMessageSerializer<T extends SerializableMessage> implements Ser
       gson = gsonBuilder.create();
     }
     return gson;
-  }
-
-  private JsonWriter fixedJsonWriter(Writer writer) {
-    // Does GSON suck because its separator can't be set, or python because it can't handle JSON without a space after colon?
-    try {
-      JsonWriter jsonWriter = new JsonWriter(writer);
-      jsonWriter.setSerializeNulls(false);
-
-      Field separatorField = JsonWriter.class.getDeclaredField("separator");
-      separatorField.setAccessible(true);
-      separatorField.set(jsonWriter, ": ");
-
-      return jsonWriter;
-    } catch (NoSuchFieldException | IllegalAccessException e) {
-      throw new RuntimeException(e);
-    }
   }
 
   /**

@@ -17,11 +17,11 @@ import com.faforever.client.theme.UiService;
 import com.faforever.client.uploader.ImageUploadService;
 import com.faforever.client.user.UserService;
 import com.faforever.client.util.TimeService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Strings;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-import com.google.gson.Gson;
 import javafx.application.Platform;
 import javafx.beans.InvalidationListener;
 import javafx.beans.WeakInvalidationListener;
@@ -54,6 +54,7 @@ import javafx.scene.text.TextFlow;
 import javafx.scene.web.WebView;
 import javafx.stage.Popup;
 import javafx.stage.PopupWindow;
+import lombok.SneakyThrows;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
@@ -154,21 +155,33 @@ public class ChannelTabController extends AbstractChatTabController {
   /** For a set of usernames. */
   @SuppressWarnings("FieldCanBeLocal")
   private SetChangeListener<String> moderatorsChangedListener;
+  private final ObjectMapper objectMapper;
 
   // TODO cut dependencies
-  public ChannelTabController(UserService userService, ChatService chatService,
-                              PreferencesService preferencesService,
-                              PlayerService playerService, AudioService audioService, TimeService timeService,
-                              I18n i18n, ImageUploadService imageUploadService,
-                              NotificationService notificationService, ReportingService reportingService,
-                              UiService uiService, EventBus eventBus,
-                              WebViewConfigurer webViewConfigurer,
-                              CountryFlagService countryFlagService, PlatformService platformService) {
+  public ChannelTabController(
+      UserService userService,
+      ChatService chatService,
+      PreferencesService preferencesService,
+      PlayerService playerService,
+      AudioService audioService,
+      TimeService timeService,
+      I18n i18n,
+      ImageUploadService imageUploadService,
+      NotificationService notificationService,
+      ReportingService reportingService,
+      UiService uiService,
+      EventBus eventBus,
+      WebViewConfigurer webViewConfigurer,
+      CountryFlagService countryFlagService,
+      PlatformService platformService,
+      ObjectMapper objectMapper
+  ) {
 
     super(webViewConfigurer, userService, chatService, preferencesService, playerService, audioService,
         timeService, i18n, imageUploadService, notificationService, reportingService, uiService,
         eventBus, countryFlagService);
     this.platformService = platformService;
+    this.objectMapper = objectMapper;
 
     hideFoeMessagesListeners = new HashMap<>();
     socialStatusMessagesListeners = new HashMap<>();
@@ -314,11 +327,12 @@ public class ChannelTabController extends AbstractChatTabController {
         .collect(Collectors.toList());
   }
 
+  @SneakyThrows
   private void setAllMessageColors() {
     Map<String, String> userToColor = new HashMap<>();
     channel.getUsers().stream().filter(chatUser -> chatUser.getColor() != null).forEach(chatUser
         -> userToColor.put(chatUser.getUsername(), JavaFxUtil.toRgbCode(chatUser.getColor())));
-    getJsObject().call("setAllMessageColors", new Gson().toJson(userToColor));
+    getJsObject().call("setAllMessageColors", objectMapper.writeValueAsString(userToColor));
   }
 
   private void removeAllMessageColors() {

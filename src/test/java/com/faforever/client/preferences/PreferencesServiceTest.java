@@ -27,7 +27,7 @@ public class PreferencesServiceTest {
 
   @Before
   public void setUp() throws Exception {
-    instance = new PreferencesService(clientProperties);
+    instance = new PreferencesService(objectMapper, clientProperties);
   }
 
   @Test

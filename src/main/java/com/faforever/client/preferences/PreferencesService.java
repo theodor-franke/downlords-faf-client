@@ -2,15 +2,13 @@ package com.faforever.client.preferences;
 
 import com.faforever.client.config.ClientProperties;
 import com.faforever.client.game.Faction;
-import com.faforever.client.preferences.gson.ColorTypeAdapter;
-import com.faforever.client.preferences.gson.ExcludeFieldsWithExcludeAnnotationStrategy;
-import com.faforever.client.preferences.gson.PathTypeAdapter;
+import com.faforever.client.preferences.gson.ColorJsonComponent;
+import com.faforever.client.preferences.gson.PathJsonComponent;
 import com.faforever.client.preferences.gson.PropertyTypeAdapter;
 import com.faforever.client.remote.gson.FactionTypeAdapter;
 import com.faforever.client.update.ClientConfiguration;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.nocatch.NoCatch.NoCatchRunnable;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.sun.jna.platform.win32.Shell32Util;
 import com.sun.jna.platform.win32.ShlObj;
 import javafx.application.Platform;
@@ -109,7 +107,7 @@ public class PreferencesService implements InitializingBean {
   }
 
   private final Path preferencesFilePath;
-  private final Gson gson;
+  private final ObjectMapper objectMapper;
   /**
    * @see #storeInBackground()
    */
@@ -121,18 +119,18 @@ public class PreferencesService implements InitializingBean {
   private Preferences preferences;
   private TimerTask storeInBackgroundTask;
 
-  public PreferencesService(ClientProperties clientProperties) {
+  public PreferencesService(ObjectMapper objectMapper, ClientProperties clientProperties) {
+    this.objectMapper = objectMapper;
     this.clientProperties = clientProperties;
+
     updateListeners = new ArrayList<>();
     this.preferencesFilePath = getPreferencesDirectory().resolve(PREFS_FILE_NAME);
     timer = new Timer("PrefTimer", true);
     gson = new GsonBuilder()
         .setPrettyPrinting()
-        .addDeserializationExclusionStrategy(new ExcludeFieldsWithExcludeAnnotationStrategy())
-        .addSerializationExclusionStrategy(new ExcludeFieldsWithExcludeAnnotationStrategy())
         .registerTypeHierarchyAdapter(Property.class, PropertyTypeAdapter.INSTANCE)
-        .registerTypeHierarchyAdapter(Path.class, PathTypeAdapter.INSTANCE)
-        .registerTypeAdapter(Color.class, new ColorTypeAdapter())
+        .registerTypeHierarchyAdapter(Path.class, PathJsonComponent.INSTANCE)
+        .registerTypeAdapter(Color.class, new ColorJsonComponent())
         .registerTypeAdapter(Faction.class, FactionTypeAdapter.INSTANCE)
         .registerTypeAdapter(ObservableMap.class, FactionTypeAdapter.INSTANCE)
         .create();
@@ -231,7 +229,7 @@ public class PreferencesService implements InitializingBean {
 
     try (Reader reader = Files.newBufferedReader(path, CHARSET)) {
       logger.debug("Reading preferences file {}", preferencesFilePath.toAbsolutePath());
-      preferences = gson.fromJson(reader, Preferences.class);
+      preferences = objectMapper.readValue(reader, Preferences.class);
       migratePreferences(preferences);
     } catch (Exception e) {
       logger.warn("Preferences file " + path.toAbsolutePath() + " could not be read", e);
@@ -280,7 +278,7 @@ public class PreferencesService implements InitializingBean {
 
     try (Writer writer = Files.newBufferedWriter(preferencesFilePath, CHARSET)) {
       logger.debug("Writing preferences file {}", preferencesFilePath.toAbsolutePath());
-      gson.toJson(preferences, writer);
+      objectMapper.writeValue(writer, preferences);
     } catch (IOException e) {
       logger.warn("Preferences file " + preferencesFilePath.toAbsolutePath() + " could not be written", e);
     }
@@ -419,7 +417,7 @@ public class PreferencesService implements InitializingBean {
     urlConnection.setConnectTimeout((int) clientProperties.getClientConfigConnectTimeout().toMillis());
 
     try (Reader reader = new InputStreamReader(urlConnection.getInputStream(), StandardCharsets.UTF_8)) {
-      clientConfiguration = gson.fromJson(reader, ClientConfiguration.class);
+      clientConfiguration = objectMapper.readValue(reader, ClientConfiguration.class);
       return clientConfiguration;
     }
   }

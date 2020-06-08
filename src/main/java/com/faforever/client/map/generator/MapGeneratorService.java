@@ -4,16 +4,15 @@ import com.faforever.client.config.ClientProperties;
 import com.faforever.client.io.FileUtils;
 import com.faforever.client.preferences.PreferencesService;
 import com.faforever.client.task.TaskService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.annotations.VisibleForTesting;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import javafx.scene.image.Image;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
@@ -25,6 +24,7 @@ import org.springframework.web.client.RestTemplate;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.CompletableFuture;
 import java.util.regex.Matcher;
@@ -61,14 +61,17 @@ public class MapGeneratorService implements InitializingBean {
 
   @Getter
   private Image generatedMapPreviewImage;
+  private final ObjectMapper objectMapper;
 
-  public MapGeneratorService(ApplicationContext applicationContext, PreferencesService preferencesService, TaskService taskService, ClientProperties clientProperties) {
+  public MapGeneratorService(ApplicationContext applicationContext, PreferencesService preferencesService, TaskService taskService, ClientProperties clientProperties, ObjectMapper objectMapper) {
     this.applicationContext = applicationContext;
     this.preferencesService = preferencesService;
     this.taskService = taskService;
 
     generatorExecutablePath = preferencesService.getFafDataDirectory().resolve(GENERATOR_EXECUTABLE_SUB_DIRECTORY);
     this.clientProperties = clientProperties;
+    this.objectMapper = objectMapper;
+
     if (!Files.exists(generatorExecutablePath)) {
       try {
         Files.createDirectory(generatorExecutablePath);
@@ -120,11 +123,13 @@ public class MapGeneratorService implements InitializingBean {
     headers.add("Accept", "application/vnd.github.v3+json");
     HttpEntity<String> entity = new HttpEntity<>(null, headers);
 
-    ResponseEntity<String> response = restTemplate.exchange(clientProperties.getMapGenerator().getQueryLatestVersionUrl(), HttpMethod.GET, entity, String.class);
-    JsonElement jsonElement = new JsonParser().parse(response.getBody());
-    JsonObject mainObject = jsonElement.getAsJsonObject();
-
-    return mainObject.get("tag_name").getAsString();
+    ResponseEntity<Map<String, String>> response = restTemplate.exchange(
+        clientProperties.getMapGenerator().getQueryLatestVersionUrl(),
+        HttpMethod.GET,
+        entity,
+        new ParameterizedTypeReference<>() {
+        });
+    return response.getBody().get("tag_name");
   }
 
   public CompletableFuture<String> generateMap(String mapName) {

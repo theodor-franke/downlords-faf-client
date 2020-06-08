@@ -2,6 +2,8 @@ package com.faforever.client.remote.domain;
 
 import com.faforever.client.rankedmatch.MatchmakerInfoMessage;
 import com.faforever.client.remote.UpdatedAchievementsMessage;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -37,11 +39,13 @@ public enum FafServerMessageType implements ServerMessageType {
     this.type = type;
   }
 
+  @JsonCreator
   public static FafServerMessageType fromString(String string) {
     return fromString.get(string);
   }
 
   @Override
+  @JsonValue
   public String getString() {
     return string;
   }

@@ -1,6 +1,6 @@
 package com.faforever.client.remote.domain;
 
-import com.google.gson.annotations.SerializedName;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -13,13 +13,13 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = true)
 public class IceServersServerMessage extends FafServerMessage {
 
-  @SerializedName("ice_servers")
+  @JsonProperty("ice_servers")
   private List<IceServer> iceServers;
 
   @Data
   public static class IceServer {
     private String url;
-    private String urls[];
+    private String[] urls;
     private String credential;
     private String credentialType;
     private String username;

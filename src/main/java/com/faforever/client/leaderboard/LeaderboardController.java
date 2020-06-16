@@ -136,4 +136,11 @@ public class LeaderboardController extends AbstractViewController<Node> {
       }
     }
   }
+
+  public void handleEnterPressed(KeyEvent keyEvent) {
+    if (keyEvent.getCode() == KeyCode.ENTER) {
+      handleSearchButtonClicked(new ActionEvent()); //it logically wouldn't accept any other type
+      keyEvent.consume();
+    }
+  }
 }

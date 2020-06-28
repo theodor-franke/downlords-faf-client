@@ -10,6 +10,8 @@ import javafx.beans.property.SimpleFloatProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 
 public class LeaderboardEntry {
 
@@ -124,6 +126,12 @@ public class LeaderboardEntry {
 
     return !(username.get() != null ? !username.get().equalsIgnoreCase(that.username.get()) : that.username.get() != null);
 
+  }
+
+  public void onClick(MouseEvent mouseEvent) {
+    if (mouseEvent.getButton() == MouseButton.PRIMARY && mouseEvent.getClickCount() == 2) {
+
+    }
   }
 
   @Override

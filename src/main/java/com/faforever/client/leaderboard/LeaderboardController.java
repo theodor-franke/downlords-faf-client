@@ -7,24 +7,21 @@ import com.faforever.client.i18n.I18n;
 import com.faforever.client.main.event.NavigateEvent;
 import com.faforever.client.notification.ImmediateErrorNotification;
 import com.faforever.client.notification.NotificationService;
-import com.faforever.client.remote.FafService;
 import com.faforever.client.reporting.ReportingService;
+import com.faforever.client.theme.UiService;
 import com.faforever.client.util.Assert;
-import com.faforever.client.util.Validator;
 import com.jfoenix.controls.JFXButton;
 import javafx.application.Platform;
-import javafx.beans.InvalidationListener;
-import javafx.beans.property.SimpleFloatProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
+import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.scene.Node;
 import javafx.scene.control.Pagination;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TableView.TableViewSelectionModel;
 import javafx.scene.control.TextField;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
+import javafx.scene.input.ContextMenuEvent;
 import javafx.scene.layout.Pane;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -34,6 +31,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.lang.invoke.MethodHandles;
+import java.lang.ref.WeakReference;
 
 import static javafx.collections.FXCollections.observableList;
 
@@ -62,7 +60,9 @@ public class LeaderboardController extends AbstractViewController<Node> {
   public Pagination paginationControl;
   private KnownFeaturedMod ratingType;
   private final static int NUMBER_OF_PLAYERS_PER_PAGE = 15;
-
+  private WeakReference<LeaderboardUserContextMenuController> contextMenuController;
+  private final UiService uiService;
+  public LeaderboardEntry selectedEntry;
 
 
   @Override
@@ -86,8 +86,6 @@ public class LeaderboardController extends AbstractViewController<Node> {
     contentPane.managedProperty().bind(contentPane.visibleProperty());
     connectionProgressPane.managedProperty().bind(connectionProgressPane.visibleProperty());
     connectionProgressPane.visibleProperty().bind(contentPane.visibleProperty().not());
-
-
   }
 
 
@@ -95,13 +93,7 @@ public class LeaderboardController extends AbstractViewController<Node> {
   protected void onDisplay(NavigateEvent navigateEvent) {
     paginationControl.currentPageIndexProperty().setValue(0);//initialize table
     updateTable(0);
-
-      paginationControl.currentPageIndexProperty().addListener(new ChangeListener<Number>() {
-        @Override
-        public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
-          updateTable(newValue.intValue());
-        }
-      });
+    paginationControl.currentPageIndexProperty().addListener((observable, oldValue, newValue) -> updateTable(newValue.intValue()));
   }
 
   public Node getRoot() {
@@ -123,7 +115,7 @@ public class LeaderboardController extends AbstractViewController<Node> {
     Assert.checkNullIllegalState(ratingType, "ratingType must not be null");
 
     contentPane.setVisible(false);
-    leaderboardService.getSearchResults(ratingType, searchTextFieldText,currentPage+1, NUMBER_OF_PLAYERS_PER_PAGE).thenAccept(leaderboardEntryBeans -> {
+    leaderboardService.getSearchResults(ratingType, searchTextFieldText,currentPage + 1, NUMBER_OF_PLAYERS_PER_PAGE).thenAccept(leaderboardEntryBeans -> {
       Platform.runLater(() -> {
         ratingTable.setItems(observableList(leaderboardEntryBeans));
         contentPane.setVisible(true);
@@ -143,5 +135,29 @@ public class LeaderboardController extends AbstractViewController<Node> {
   }
 
 
+  public void onContextMenuRequested(ContextMenuEvent contextMenuEvent) {
 
+    if (contextMenuController != null) {
+      LeaderboardUserContextMenuController controller = contextMenuController.get();
+      if (controller != null) {
+        controller.getContextMenu().show(leaderboardRoot.getScene().getWindow(), contextMenuEvent.getScreenX(), contextMenuEvent.getScreenY());
+        return;
+      }
+    }
+
+    TableViewSelectionModel<LeaderboardEntry> leaderboardEntryTableViewSelectionModel = ratingTable.getSelectionModel();
+    ObservableList<LeaderboardEntry> selectedEntry = leaderboardEntryTableViewSelectionModel.getSelectedItems();
+    selectedEntry.addListener(new ListChangeListener<LeaderboardEntry>() {
+      @Override
+      public void onChanged(Change<? extends LeaderboardEntry> change) {
+        LeaderboardController.this.selectedEntry = change.getList().get(0);  //do not do it like this
+      }
+    });
+
+    LeaderboardUserContextMenuController controller = uiService.loadFxml("theme\\leaderboard\\leaderboard_user_context_menu.fxml");
+    controller.setPlayer(null);
+    controller.getContextMenu().show(leaderboardRoot.getScene().getWindow(), contextMenuEvent.getScreenX(), contextMenuEvent.getScreenY());
+
+    contextMenuController = new WeakReference<>(controller);
+  }
 }

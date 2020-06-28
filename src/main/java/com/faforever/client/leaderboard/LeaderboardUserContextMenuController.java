@@ -20,10 +20,9 @@ import static com.faforever.client.player.SocialStatus.FRIEND;
 
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 @Component
-
 public class LeaderboardUserContextMenuController {
   private final UiService uiService;
-  private final Player player;
+  private Player player;
   private final EventBus eventBus;
   private final PlayerService playerService;
   public ContextMenu LeaderboardContextMenuRoot;
@@ -33,6 +32,10 @@ public class LeaderboardUserContextMenuController {
     this.player = player;
     this.eventBus = eventBus;
     this.playerService = playerService;
+  }
+
+  public void setPlayer(Player player) {
+    this.player = player;
   }
 
   public void onShowUserInfoSelected() {
@@ -81,6 +84,5 @@ public class LeaderboardUserContextMenuController {
   ContextMenu getContextMenu() {
     return LeaderboardContextMenuRoot;
   }
-}
 
-//hello world
+}

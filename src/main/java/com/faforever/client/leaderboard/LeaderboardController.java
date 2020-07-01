@@ -154,9 +154,14 @@ public class LeaderboardController extends AbstractViewController<Node> {
       }
     });
 
-    LeaderboardUserContextMenuController controller = uiService.loadFxml("theme\\leaderboard\\leaderboard_user_context_menu.fxml"); //ClassCastException ...LeaderboardUserContextMenuController cannot be cast to class ...fx.Controller
-    controller.setPlayer(null);
-    controller.getContextMenu().show(leaderboardRoot.getScene().getWindow(), contextMenuEvent.getScreenX(), contextMenuEvent.getScreenY());
+    LeaderboardUserContextMenuController controller = uiService.loadFxml("theme\\leaderboard\\leaderboard_user_context_menu.fxml");
+
+    leaderboardService.getPlayerObjectsById(selectedEntry.get(0).getId()).thenAccept(players -> {
+      Platform.runLater(() -> {
+        controller.setPlayer(players.get(0));
+        controller.getContextMenu().show(leaderboardRoot.getScene().getWindow(), contextMenuEvent.getScreenX(), contextMenuEvent.getScreenY());
+      });
+    });
 
     contextMenuController = new WeakReference<>(controller);
   }

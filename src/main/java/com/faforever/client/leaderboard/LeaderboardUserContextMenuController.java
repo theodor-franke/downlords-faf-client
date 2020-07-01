@@ -3,12 +3,14 @@ package com.faforever.client.leaderboard;
 import com.faforever.client.chat.InitiatePrivateChatEvent;
 import com.faforever.client.chat.UserInfoWindowController;
 import com.faforever.client.fx.Controller;
+import com.faforever.client.main.event.NavigateEvent;
 import com.faforever.client.main.event.ShowUserReplaysEvent;
 import com.faforever.client.player.Player;
 import com.faforever.client.player.PlayerService;
 import com.faforever.client.theme.UiService;
 import com.google.common.eventbus.EventBus;
 import javafx.scene.control.ContextMenu;
+import javafx.scene.control.MenuItem;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
@@ -17,6 +19,7 @@ import org.springframework.stereotype.Component;
 
 import static com.faforever.client.player.SocialStatus.FOE;
 import static com.faforever.client.player.SocialStatus.FRIEND;
+import static com.faforever.client.player.SocialStatus.SELF;
 
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 @Component
@@ -26,6 +29,11 @@ public class LeaderboardUserContextMenuController implements Controller<ContextM
   private final EventBus eventBus;
   private final PlayerService playerService;
   public ContextMenu leaderboardUserContextMenuRoot;
+  public MenuItem addFriendItem;
+  public MenuItem removeFriendItem;
+  public MenuItem addFoeItem;
+  public MenuItem removeFoeItem;
+  public MenuItem sendPrivateMessageItem;
 
   public LeaderboardUserContextMenuController (UiService uiService, EventBus eventBus, PlayerService playerService) {
     this.uiService = uiService;
@@ -35,6 +43,14 @@ public class LeaderboardUserContextMenuController implements Controller<ContextM
 
   public void setPlayer(Player player) {
     this.player = player;
+
+    sendPrivateMessageItem.visibleProperty().bind(player.socialStatusProperty().isNotEqualTo(SELF));
+    addFriendItem.visibleProperty().bind(
+        player.socialStatusProperty().isNotEqualTo(FRIEND).and(player.socialStatusProperty().isNotEqualTo(SELF))
+    );
+    removeFriendItem.visibleProperty().bind(player.socialStatusProperty().isEqualTo(FRIEND));
+    addFoeItem.visibleProperty().bind(player.socialStatusProperty().isNotEqualTo(FOE).and(player.socialStatusProperty().isNotEqualTo(SELF)));
+    removeFoeItem.visibleProperty().bind(player.socialStatusProperty().isEqualTo(FOE));
   }
 
   public void onShowUserInfoSelected() {
@@ -91,4 +107,5 @@ public class LeaderboardUserContextMenuController implements Controller<ContextM
   public void initialize() {
 
   }
+
 }

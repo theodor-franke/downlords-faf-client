@@ -216,7 +216,7 @@ public class PlayerService implements InitializingBean {
   /**
    * Gets a player for the given username. A new player is created and registered if it does not yet exist.
    */
-  Player createAndGetPlayerForUsername(@NotNull String username) {
+  public Player createAndGetPlayerForUsername(@NotNull String username) {
     Assert.checkNullArgument(username, "username must not be null");
 
     synchronized (playersByName) {
@@ -243,7 +243,6 @@ public class PlayerService implements InitializingBean {
     playersByName.get(player.getUsername()).setSocialStatus(FRIEND);
     friendList.add(player.getId());
     foeList.remove((Integer) player.getId());
-
     fafService.addFriend(player);
   }
 

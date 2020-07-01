@@ -27,6 +27,7 @@
                 text="%chat.userContext.addFoe"/>
       <MenuItem fx:id="removeFoeItem" mnemonicParsing="false" onAction="#onRemoveFoeSelected"
                 text="%chat.userContext.removeFoe"/>
+      <SeparatorMenuItem fx:id="gameActionSeparator" mnemonicParsing="false"/>
       <MenuItem fx:id="viewReplaysItem" mnemonicParsing="false" onAction="#onViewReplaysSelected"
                 text="%chat.userContext.viewReplays"/>
 

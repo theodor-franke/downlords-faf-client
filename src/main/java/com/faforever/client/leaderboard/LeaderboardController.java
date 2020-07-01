@@ -154,7 +154,7 @@ public class LeaderboardController extends AbstractViewController<Node> {
       }
     });
 
-    LeaderboardUserContextMenuController controller = uiService.loadFxml("theme\\leaderboard\\leaderboard_user_context_menu.fxml");
+    LeaderboardUserContextMenuController controller = uiService.loadFxml("theme\\leaderboard\\leaderboard_user_context_menu.fxml"); //ClassCastException ...LeaderboardUserContextMenuController cannot be cast to class ...fx.Controller
     controller.setPlayer(null);
     controller.getContextMenu().show(leaderboardRoot.getScene().getWindow(), contextMenuEvent.getScreenX(), contextMenuEvent.getScreenY());
 

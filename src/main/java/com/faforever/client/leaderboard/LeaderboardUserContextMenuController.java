@@ -27,9 +27,8 @@ public class LeaderboardUserContextMenuController {
   private final PlayerService playerService;
   public ContextMenu LeaderboardContextMenuRoot;
 
-  public LeaderboardUserContextMenuController (UiService uiService, EventBus eventBus, Player player, PlayerService playerService) {
+  public LeaderboardUserContextMenuController (UiService uiService, EventBus eventBus, PlayerService playerService) {
     this.uiService = uiService;
-    this.player = player;
     this.eventBus = eventBus;
     this.playerService = playerService;
   }

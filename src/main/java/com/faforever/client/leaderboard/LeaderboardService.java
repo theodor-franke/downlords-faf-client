@@ -4,6 +4,7 @@ import com.faforever.client.FafClientApplication;
 import com.faforever.client.api.dto.GlobalRating;
 import com.faforever.client.api.dto.Rating;
 import com.faforever.client.game.KnownFeaturedMod;
+import com.faforever.client.player.Player;
 import com.faforever.client.query.SearchablePropertyMappings;
 import com.faforever.client.remote.FafService;
 import com.faforever.client.util.RatingUtil;
@@ -15,6 +16,8 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -77,5 +80,10 @@ public class LeaderboardService {
         throw new IllegalArgumentException("Not supported: " + ratingType);
     }
 
+  }
+
+  public CompletableFuture<List<Player>> getPlayerObjectsById(String id)
+  {
+    return fafService.getPlayersByIds(Arrays.asList(Integer.parseInt(id)));
   }
 }

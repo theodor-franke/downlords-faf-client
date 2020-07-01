@@ -2,6 +2,7 @@ package com.faforever.client.leaderboard;
 
 import com.faforever.client.chat.InitiatePrivateChatEvent;
 import com.faforever.client.chat.UserInfoWindowController;
+import com.faforever.client.fx.Controller;
 import com.faforever.client.main.event.ShowUserReplaysEvent;
 import com.faforever.client.player.Player;
 import com.faforever.client.player.PlayerService;
@@ -10,7 +11,6 @@ import com.google.common.eventbus.EventBus;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -20,12 +20,12 @@ import static com.faforever.client.player.SocialStatus.FRIEND;
 
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 @Component
-public class LeaderboardUserContextMenuController {
+public class LeaderboardUserContextMenuController implements Controller<ContextMenu> {
   private final UiService uiService;
   private Player player;
   private final EventBus eventBus;
   private final PlayerService playerService;
-  public ContextMenu LeaderboardContextMenuRoot;
+  public ContextMenu leaderboardUserContextMenuRoot;
 
   public LeaderboardUserContextMenuController (UiService uiService, EventBus eventBus, PlayerService playerService) {
     this.uiService = uiService;
@@ -40,7 +40,7 @@ public class LeaderboardUserContextMenuController {
   public void onShowUserInfoSelected() {
     UserInfoWindowController userInfoWindowController = uiService.loadFxml("theme/user_info_window.fxml");
     userInfoWindowController.setPlayer(player);
-    userInfoWindowController.setOwnerWindow(LeaderboardContextMenuRoot.getOwnerWindow());
+    userInfoWindowController.setOwnerWindow(leaderboardUserContextMenuRoot.getOwnerWindow());
     userInfoWindowController.show();
   }
 
@@ -81,7 +81,14 @@ public class LeaderboardUserContextMenuController {
   }
 
   ContextMenu getContextMenu() {
-    return LeaderboardContextMenuRoot;
+    return leaderboardUserContextMenuRoot;
   }
 
+  @Override
+  public ContextMenu getRoot() { return leaderboardUserContextMenuRoot; }
+
+  @Override
+  public void initialize() {
+
+  }
 }

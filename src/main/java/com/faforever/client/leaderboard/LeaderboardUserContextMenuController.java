@@ -41,6 +41,7 @@ public class LeaderboardUserContextMenuController implements Controller<ContextM
     this.playerService = playerService;
   }
 
+  /*This method doesn't just set the player: it also sets up the environment for the context menu*/
   public void setPlayer(Player player) {
     this.player = player;
 

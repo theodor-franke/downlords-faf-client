@@ -6,6 +6,7 @@ import com.faforever.client.main.event.OpenLadder1v1LeaderboardEvent;
 import com.faforever.client.notification.NotificationService;
 import com.faforever.client.reporting.ReportingService;
 import com.faforever.client.test.AbstractPlainJavaFxTest;
+import com.faforever.client.theme.UiService;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -35,10 +36,12 @@ public class LeaderboardControllerTest extends AbstractPlainJavaFxTest {
   private ReportingService reportingService;
   @Mock
   private I18n i18n;
+  @Mock
+  private UiService uiService;
 
   @Before
   public void setUp() throws Exception {
-    instance = new LeaderboardController(leaderboardService, notificationService, i18n, reportingService);
+    instance = new LeaderboardController(leaderboardService, notificationService, i18n, reportingService, uiService);
 
     loadFxml("theme/leaderboard/leaderboard.fxml", clazz -> instance);
   }
@@ -103,5 +106,10 @@ public class LeaderboardControllerTest extends AbstractPlainJavaFxTest {
   public void testGetRoot() throws Exception {
     assertThat(instance.getRoot(), is(instance.leaderboardRoot));
     assertThat(instance.getRoot().getParent(), is(nullValue()));
+  }
+
+  @Test
+  public void testOnContextMenuRequested() {
+
   }
 }

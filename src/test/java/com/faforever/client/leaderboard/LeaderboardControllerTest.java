@@ -4,12 +4,17 @@ import com.faforever.client.game.KnownFeaturedMod;
 import com.faforever.client.i18n.I18n;
 import com.faforever.client.main.event.OpenLadder1v1LeaderboardEvent;
 import com.faforever.client.notification.NotificationService;
+import com.faforever.client.player.Player;
 import com.faforever.client.reporting.ReportingService;
 import com.faforever.client.test.AbstractPlainJavaFxTest;
 import com.faforever.client.theme.UiService;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.input.ContextMenuEvent;
+import javafx.stage.Window;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
+import org.testfx.util.WaitForAsyncUtils;
 
 import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
@@ -21,6 +26,10 @@ import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyDouble;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
@@ -38,6 +47,14 @@ public class LeaderboardControllerTest extends AbstractPlainJavaFxTest {
   private I18n i18n;
   @Mock
   private UiService uiService;
+  @Mock
+  private ContextMenu contextMenu;
+  @Mock
+  private LeaderboardUserContextMenuController userContextMenuController;
+  @Mock
+  private ContextMenuEvent contextMenuEvent;
+  @Mock
+  private Player player;
 
   @Before
   public void setUp() throws Exception {
@@ -111,5 +128,12 @@ public class LeaderboardControllerTest extends AbstractPlainJavaFxTest {
   @Test
   public void testOnContextMenuRequested() {
 
+    when(userContextMenuController.getContextMenu()).thenReturn(contextMenu);
+    when(uiService.loadFxml("theme\\leaderboard\\leaderboard_user_context_menu.fxml")).thenReturn(userContextMenuController);
+
+    userContextMenuController.setPlayer(player);
+    instance.onContextMenuRequested(contextMenuEvent);
+
+    verify(contextMenu).show(any(Window.class), anyDouble(), anyDouble());
   }
 }

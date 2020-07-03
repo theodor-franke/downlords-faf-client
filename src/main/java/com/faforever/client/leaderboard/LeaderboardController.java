@@ -148,7 +148,7 @@ public class LeaderboardController extends AbstractViewController<Node> {
     TableViewSelectionModel<LeaderboardEntry> leaderboardEntryTableViewSelectionModel = ratingTable.getSelectionModel();
     ObservableList<LeaderboardEntry> selectedEntryList = leaderboardEntryTableViewSelectionModel.getSelectedItems();
     selectedEntryList.addListener((ListChangeListener<LeaderboardEntry>) change -> {
-      selectedEntry = change.getList().get(0);  //do not do it like this
+      selectedEntry = change.getList().get(0);
     });
 
     LeaderboardUserContextMenuController controller = uiService.loadFxml("theme\\leaderboard\\leaderboard_user_context_menu.fxml");

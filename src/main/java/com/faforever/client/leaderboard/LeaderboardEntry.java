@@ -141,12 +141,6 @@ public class LeaderboardEntry {
 
   }
 
-  public void onClick(MouseEvent mouseEvent) {
-    if (mouseEvent.getButton() == MouseButton.PRIMARY && mouseEvent.getClickCount() == 2) {
-
-    }
-  }
-
   @Override
   public String toString() {
     return "Ranked1v1EntryBean{" +

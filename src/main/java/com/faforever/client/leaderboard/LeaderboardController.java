@@ -59,7 +59,7 @@ public class LeaderboardController extends AbstractViewController<Node> {
   public JFXButton searchButton;
   public Pagination paginationControl;
   private KnownFeaturedMod ratingType;
-  private final static int NUMBER_OF_PLAYERS_PER_PAGE = 15;
+  private final static int NUMBER_OF_PLAYERS_PER_PAGE = 100;
   private WeakReference<LeaderboardUserContextMenuController> contextMenuController;
   private final UiService uiService;
   public LeaderboardEntry selectedEntry;

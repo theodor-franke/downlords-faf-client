@@ -5,10 +5,12 @@ import com.faforever.client.i18n.I18n;
 import com.faforever.client.main.event.OpenLadder1v1LeaderboardEvent;
 import com.faforever.client.notification.NotificationService;
 import com.faforever.client.player.Player;
+import com.faforever.client.player.PlayerBuilder;
 import com.faforever.client.reporting.ReportingService;
 import com.faforever.client.test.AbstractPlainJavaFxTest;
 import com.faforever.client.theme.UiService;
 import javafx.scene.control.ContextMenu;
+import javafx.scene.control.TableView.TableViewSelectionModel;
 import javafx.scene.input.ContextMenuEvent;
 import javafx.stage.Window;
 import org.junit.Before;
@@ -17,6 +19,7 @@ import org.mockito.Mock;
 import org.testfx.util.WaitForAsyncUtils;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -28,6 +31,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyDouble;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
@@ -48,13 +52,7 @@ public class LeaderboardControllerTest extends AbstractPlainJavaFxTest {
   @Mock
   private UiService uiService;
   @Mock
-  private ContextMenu contextMenu;
-  @Mock
   private LeaderboardUserContextMenuController userContextMenuController;
-  @Mock
-  private ContextMenuEvent contextMenuEvent;
-  @Mock
-  private Player player;
 
   @Before
   public void setUp() throws Exception {
@@ -127,11 +125,22 @@ public class LeaderboardControllerTest extends AbstractPlainJavaFxTest {
 
   @Test
   public void testOnContextMenuRequested() {
+    ContextMenu contextMenu = mock(ContextMenu.class);
+    ContextMenuEvent contextMenuEvent = mock(ContextMenuEvent.class);
+    LeaderboardEntry leaderboardEntry = new LeaderboardEntry();
 
     when(userContextMenuController.getContextMenu()).thenReturn(contextMenu);
     when(uiService.loadFxml("theme\\leaderboard\\leaderboard_user_context_menu.fxml")).thenReturn(userContextMenuController);
 
+    WaitForAsyncUtils.asyncFx(() -> getRoot().getChildren().setAll(instance.leaderboardRoot));
+
+    Player player = PlayerBuilder.create("mockito").defaultValues().get();
     userContextMenuController.setPlayer(player);
+    //when(instance.selectedEntryList.get(anyInt())).thenReturn(leaderboardEntry);
+    when(leaderboardService.getPlayerObjectsById(any(String.class))).thenReturn(CompletableFuture.completedFuture(Arrays.asList(player)));
+
+    WaitForAsyncUtils.waitForFxEvents();
+
     instance.onContextMenuRequested(contextMenuEvent);
 
     verify(contextMenu).show(any(Window.class), anyDouble(), anyDouble());

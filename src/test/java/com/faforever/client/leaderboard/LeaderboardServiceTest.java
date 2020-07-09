@@ -2,6 +2,7 @@ package com.faforever.client.leaderboard;
 
 
 import com.faforever.client.game.KnownFeaturedMod;
+import com.faforever.client.player.Player;
 import com.faforever.client.remote.FafService;
 import org.junit.Before;
 import org.junit.Rule;
@@ -177,5 +178,18 @@ public class LeaderboardServiceTest {
 
     verify(fafService).findLadder1v1LeaderboardEntryByQuery(nameToSearch, page, count);
     assertThat(resultList, is(globalEntries));
+  }
+
+  @Test
+  public void testGetPlayerObjectsById() throws Exception{
+
+    List<Player> playerList = Collections.emptyList();
+
+    when(fafService.getPlayersByIds(Collections.singletonList(11)))
+        .thenReturn(CompletableFuture.completedFuture(playerList));
+
+    List<Player> resultList = instance.getPlayerObjectsById("11").toCompletableFuture().get(2, TimeUnit.SECONDS);
+
+    assertThat(resultList, is(playerList));
   }
 }

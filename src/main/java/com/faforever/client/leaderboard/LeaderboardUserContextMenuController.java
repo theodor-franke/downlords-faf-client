@@ -13,6 +13,7 @@ import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -29,11 +30,6 @@ public class LeaderboardUserContextMenuController implements Controller<ContextM
   private final EventBus eventBus;
   private final PlayerService playerService;
   public ContextMenu leaderboardUserContextMenuRoot;
-  public MenuItem addFriendItem;
-  public MenuItem removeFriendItem;
-  public MenuItem addFoeItem;
-  public MenuItem removeFoeItem;
-  public MenuItem sendPrivateMessageItem;
 
   public LeaderboardUserContextMenuController (UiService uiService, EventBus eventBus, PlayerService playerService) {
     this.uiService = uiService;
@@ -41,16 +37,9 @@ public class LeaderboardUserContextMenuController implements Controller<ContextM
     this.playerService = playerService;
   }
 
-  public void setPlayer(Player player) {
+ 
+  public void setPlayer(@NotNull Player player) {
     this.player = player;
-
-    sendPrivateMessageItem.visibleProperty().bind(player.socialStatusProperty().isNotEqualTo(SELF));
-    addFriendItem.visibleProperty().bind(
-        player.socialStatusProperty().isNotEqualTo(FRIEND).and(player.socialStatusProperty().isNotEqualTo(SELF))
-    );
-    removeFriendItem.visibleProperty().bind(player.socialStatusProperty().isEqualTo(FRIEND));
-    addFoeItem.visibleProperty().bind(player.socialStatusProperty().isNotEqualTo(FOE).and(player.socialStatusProperty().isNotEqualTo(SELF)));
-    removeFoeItem.visibleProperty().bind(player.socialStatusProperty().isEqualTo(FOE));
   }
 
   public void onShowUserInfoSelected() {
@@ -60,36 +49,10 @@ public class LeaderboardUserContextMenuController implements Controller<ContextM
     userInfoWindowController.show();
   }
 
-  public void onSendPrivateMessageSelected() {
-    eventBus.post(new InitiatePrivateChatEvent(player.getUsername()));
-  }
-
   public void onCopyUsernameSelected() {
     ClipboardContent clipboardContent = new ClipboardContent();
     clipboardContent.putString(player.getUsername());
     Clipboard.getSystemClipboard().setContent(clipboardContent);
-  }
-
-  public void onAddFriendSelected() {
-    if (player.getSocialStatus() == FOE) {
-      playerService.removeFoe(player);
-    }
-    playerService.addFriend(player);
-  }
-
-  public void onRemoveFriendSelected() {
-    playerService.removeFriend(player);
-  }
-
-  public void onAddFoeSelected() {
-    if (player.getSocialStatus() == FRIEND) {
-      playerService.removeFriend(player);
-    }
-    playerService.addFoe(player);
-  }
-
-  public void onRemoveFoeSelected() {
-    playerService.removeFoe(player);
   }
 
   public void onViewReplaysSelected() {
@@ -103,7 +66,6 @@ public class LeaderboardUserContextMenuController implements Controller<ContextM
   @Override
   public ContextMenu getRoot() { return leaderboardUserContextMenuRoot; }
 
-  @Override
   public void initialize() {
 
   }

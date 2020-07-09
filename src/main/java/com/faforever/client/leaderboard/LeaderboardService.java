@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -84,6 +85,6 @@ public class LeaderboardService {
 
   public CompletableFuture<List<Player>> getPlayerObjectsById(String id)
   {
-    return fafService.getPlayersByIds(Arrays.asList(Integer.parseInt(id)));
+    return fafService.getPlayersByIds(Collections.singletonList(Integer.parseInt(id)));
   }
 }

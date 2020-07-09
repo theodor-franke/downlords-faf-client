@@ -59,7 +59,7 @@ public class LeaderboardController extends AbstractViewController<Node> {
   public JFXButton searchButton;
   public Pagination paginationControl;
   private KnownFeaturedMod ratingType;
-  private final static int NUMBER_OF_PLAYERS_PER_PAGE = 15;
+  private final static int NUMBER_OF_PLAYERS_PER_PAGE = 100;
   private WeakReference<LeaderboardUserContextMenuController> contextMenuController;
   private final UiService uiService;
   public LeaderboardEntry selectedEntry;
@@ -146,23 +146,17 @@ public class LeaderboardController extends AbstractViewController<Node> {
     }
 
     TableViewSelectionModel<LeaderboardEntry> leaderboardEntryTableViewSelectionModel = ratingTable.getSelectionModel();
-    ObservableList<LeaderboardEntry> selectedEntry = leaderboardEntryTableViewSelectionModel.getSelectedItems();
-    selectedEntry.addListener(new ListChangeListener<LeaderboardEntry>() {
-      @Override
-      public void onChanged(Change<? extends LeaderboardEntry> change) {
-        LeaderboardController.this.selectedEntry = change.getList().get(0);  //do not do it like this
-      }
+    ObservableList<LeaderboardEntry> selectedEntryList = leaderboardEntryTableViewSelectionModel.getSelectedItems();
+    selectedEntryList.addListener((ListChangeListener<LeaderboardEntry>) change -> {
+      selectedEntry = change.getList().get(0);
     });
 
     LeaderboardUserContextMenuController controller = uiService.loadFxml("theme\\leaderboard\\leaderboard_user_context_menu.fxml");
 
-    leaderboardService.getPlayerObjectsById(selectedEntry.get(0).getId()).thenAccept(players -> {
-      Platform.runLater(() -> {
-        controller.setPlayer(players.get(0));
-        controller.getContextMenu().show(leaderboardRoot.getScene().getWindow(), contextMenuEvent.getScreenX(), contextMenuEvent.getScreenY());
-      });
-    });
-
-    contextMenuController = new WeakReference<>(controller);
+    leaderboardService.getPlayerObjectsById(selectedEntryList.get(0).getId()).thenAccept(players -> Platform.runLater(() -> {
+      controller.setPlayer(players.get(0));
+      controller.getContextMenu().show(leaderboardRoot.getScene().getWindow(), contextMenuEvent.getScreenX(), contextMenuEvent.getScreenY());
+      contextMenuController = new WeakReference<>(controller);
+    }));
   }
 }

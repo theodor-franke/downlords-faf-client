@@ -86,6 +86,7 @@ public class LeaderboardController extends AbstractViewController<Node> {
     contentPane.managedProperty().bind(contentPane.visibleProperty());
     connectionProgressPane.managedProperty().bind(connectionProgressPane.visibleProperty());
     connectionProgressPane.visibleProperty().bind(contentPane.visibleProperty().not());
+    paginationControl.currentPageIndexProperty().addListener((observable, oldValue, newValue) -> updateTable(newValue.intValue()));
   }
 
 
@@ -93,7 +94,6 @@ public class LeaderboardController extends AbstractViewController<Node> {
   protected void onDisplay(NavigateEvent navigateEvent) {
     paginationControl.currentPageIndexProperty().setValue(0);//initialize table
     updateTable(0);
-    paginationControl.currentPageIndexProperty().addListener((observable, oldValue, newValue) -> updateTable(newValue.intValue()));
   }
 
   public Node getRoot() {

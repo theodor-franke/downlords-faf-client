@@ -266,16 +266,6 @@ public class MockFafApiAccessor implements FafApiAccessor {
   }
 
   @Override
-  public List<GlobalLeaderboardEntry> findGlobalLeaderboardEntryByQuery(String nameToSearch, int page, int count) {
-    return Collections.emptyList();
-  }
-
-  @Override
-  public List<Ladder1v1LeaderboardEntry> findLadder1v1LeaderboardEntryByQuery(String nameToSearch, int page, int count) {
-    return Collections.emptyList();
-  }
-
-  @Override
   public Optional<MapVersion> findMapVersionById(String id) {
     return Optional.empty();
   }

@@ -18,6 +18,7 @@ import javafx.event.ActionEvent;
 import javafx.scene.Node;
 import javafx.scene.control.Pagination;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TableView.TableViewSelectionModel;
 import javafx.scene.control.TextField;
@@ -52,6 +53,7 @@ public class LeaderboardController extends AbstractViewController<Node> {
   public TableColumn<LeaderboardEntry, Number> winLossColumn;
   public TableColumn<LeaderboardEntry, Number> gamesPlayedColumn;
   public TableColumn<LeaderboardEntry, Number> ratingColumn;
+  public TableRow<LeaderboardEntry> leaderboardEntryTableRow;
   public TableView<LeaderboardEntry> ratingTable;
   public TextField searchTextField;
   public Pane connectionProgressPane;
@@ -87,6 +89,12 @@ public class LeaderboardController extends AbstractViewController<Node> {
     connectionProgressPane.managedProperty().bind(connectionProgressPane.visibleProperty());
     connectionProgressPane.visibleProperty().bind(contentPane.visibleProperty().not());
     paginationControl.currentPageIndexProperty().addListener((observable, oldValue, newValue) -> updateTable(newValue.intValue()));
+
+    ratingTable.setRowFactory(param -> {
+      leaderboardEntryTableRow = new TableRow<>();
+      leaderboardEntryTableRow.setOnContextMenuRequested(this::onContextMenuRequested);
+      return leaderboardEntryTableRow;
+    });
   }
 
 

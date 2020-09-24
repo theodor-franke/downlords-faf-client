@@ -30,11 +30,6 @@ public class LeaderboardUserContextMenuController implements Controller<ContextM
   private final EventBus eventBus;
   private final PlayerService playerService;
   public ContextMenu leaderboardUserContextMenuRoot;
-  public MenuItem addFriendItem;
-  public MenuItem removeFriendItem;
-  public MenuItem addFoeItem;
-  public MenuItem removeFoeItem;
-  public MenuItem sendPrivateMessageItem;
 
   public LeaderboardUserContextMenuController (UiService uiService, EventBus eventBus, PlayerService playerService) {
     this.uiService = uiService;
@@ -45,14 +40,6 @@ public class LeaderboardUserContextMenuController implements Controller<ContextM
  
   public void setPlayer(@NotNull Player player) {
     this.player = player;
-
-    sendPrivateMessageItem.visibleProperty().bind(player.socialStatusProperty().isNotEqualTo(SELF));
-    addFriendItem.visibleProperty().bind(
-        player.socialStatusProperty().isNotEqualTo(FRIEND).and(player.socialStatusProperty().isNotEqualTo(SELF))
-    );
-    removeFriendItem.visibleProperty().bind(player.socialStatusProperty().isEqualTo(FRIEND));
-    addFoeItem.visibleProperty().bind(player.socialStatusProperty().isNotEqualTo(FOE).and(player.socialStatusProperty().isNotEqualTo(SELF)));
-    removeFoeItem.visibleProperty().bind(player.socialStatusProperty().isEqualTo(FOE));
   }
 
   public void onShowUserInfoSelected() {
@@ -79,10 +66,4 @@ public class LeaderboardUserContextMenuController implements Controller<ContextM
   @Override
   public ContextMenu getRoot() { return leaderboardUserContextMenuRoot; }
 
-  public void initialize() {
-
-  }
-
 }
-
-//hello world

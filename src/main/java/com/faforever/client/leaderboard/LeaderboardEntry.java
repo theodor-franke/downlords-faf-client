@@ -61,6 +61,11 @@ public class LeaderboardEntry {
     this.username.set(username);
   }
 
+  public StringProperty usernameProperty() {
+    return username;
+  }
+
+
   public String getId() {
     return id.get();
   }
@@ -69,9 +74,10 @@ public class LeaderboardEntry {
     this.id.set(id);
   }
 
-  public StringProperty usernameProperty() {
-    return username;
+  public StringProperty idProperty() {
+    return id;
   }
+
 
   public int getRank() {
     return rank.get();
@@ -85,6 +91,7 @@ public class LeaderboardEntry {
     return rank;
   }
 
+
   public double getRating() {
     return rating.get();
   }
@@ -97,6 +104,7 @@ public class LeaderboardEntry {
     return rating;
   }
 
+
   public int getGamesPlayed() {
     return gamesPlayed.get();
   }
@@ -108,6 +116,7 @@ public class LeaderboardEntry {
   public IntegerProperty gamesPlayedProperty() {
     return gamesPlayed;
   }
+
 
   public float getWinLossRatio() {
     return winLossRatio.get();

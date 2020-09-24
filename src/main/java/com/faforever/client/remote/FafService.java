@@ -548,4 +548,18 @@ public class FafService {
         .collect(Collectors.toList())
     );
   }
+
+  public CompletableFuture<List<LeaderboardEntry>> findGlobalLeaderboardEntryByQuery(String nameToSearch, int page, int count) {
+    return CompletableFuture.completedFuture(fafApiAccessor.findGlobalLeaderboardEntryByQuery(nameToSearch, page, count)
+        .stream()
+        .map(LeaderboardEntry::fromGlobalRating)
+        .collect(toList()));
+  }
+
+  public CompletableFuture<List<LeaderboardEntry>> findLadder1v1LeaderboardEntryByQuery(String nameToSearch, int page, int count) {
+    return CompletableFuture.completedFuture(fafApiAccessor.findLadder1v1LeaderboardEntryByQuery(nameToSearch, page, count)
+        .stream()
+        .map(LeaderboardEntry::fromLadder1v1)
+        .collect(toList()));
+  }
 }

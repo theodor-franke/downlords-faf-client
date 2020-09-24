@@ -61,6 +61,14 @@ public class LeaderboardEntry {
     this.username.set(username);
   }
 
+  public String getId() {
+    return id.get();
+  }
+
+  public void setId(String id) {
+    this.id.set(id);
+  }
+
   public StringProperty usernameProperty() {
     return username;
   }
@@ -148,6 +156,12 @@ public class LeaderboardEntry {
 
     return !(username.get() != null ? !username.get().equalsIgnoreCase(that.username.get()) : that.username.get() != null);
 
+  }
+
+  public void onClick(MouseEvent mouseEvent) {
+    if (mouseEvent.getButton() == MouseButton.PRIMARY && mouseEvent.getClickCount() == 2) {
+
+    }
   }
 
   @Override

@@ -85,7 +85,6 @@ public class ClientProperties {
     private String mapDownloadUrlFormat;
     private String mapPreviewUrlFormat;
     private String replayDownloadUrlFormat;
-    private String modDownloadUrlFormat;
   }
 
   @Data
@@ -128,6 +127,7 @@ public class ClientProperties {
     private String baseUrl;
     private String forgotPasswordUrl;
     private String createAccountUrl;
+    private String reportUrl;
     private String newsHubUrl;
   }
 
@@ -161,5 +161,7 @@ public class ClientProperties {
     private String smallImageKey;
     private String bigImageKey;
     private String discordPrereleaseFeedbackChannelUrl;
+    /** URL to join the FAF Discord server. */
+    private String joinUrl;
   }
 }

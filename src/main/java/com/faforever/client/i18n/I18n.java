@@ -98,6 +98,13 @@ public class I18n implements InitializingBean {
     return this.userSpecificLocale;
   }
 
+  public String getCountryNameLocalized(String isoCode) {
+    if (isoCode == null) {
+      return "";
+    }
+    return new Locale("", isoCode).getDisplayCountry(this.userSpecificLocale);
+  }
+
   public String getQuantized(String singularKey, String pluralKey, long arg) {
     Object[] args = {arg};
     if (Math.abs(arg) == 1) {

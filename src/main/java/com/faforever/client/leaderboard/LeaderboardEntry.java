@@ -61,14 +61,6 @@ public class LeaderboardEntry {
     this.username.set(username);
   }
 
-  public String getId() {
-    return id.get();
-  }
-
-  public void setId(String id) {
-    this.id.set(id);
-  }
-
   public StringProperty usernameProperty() {
     return username;
   }

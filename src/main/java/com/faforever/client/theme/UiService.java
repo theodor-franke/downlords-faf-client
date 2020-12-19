@@ -5,6 +5,8 @@ import ch.micheljung.waitomo.WaitomoTheme;
 import com.faforever.client.config.CacheNames;
 import com.faforever.client.fx.Controller;
 import com.faforever.client.fx.JavaFxUtil;
+import com.faforever.client.fxml.FxObject;
+import com.faforever.client.fxml.utils.StringUtils;
 import com.faforever.client.i18n.I18n;
 import com.faforever.client.preferences.PreferencesService;
 import com.faforever.client.ui.dialog.Dialog;
@@ -45,6 +47,8 @@ import java.io.InputStream;
 import java.io.Reader;
 import java.lang.ref.Reference;
 import java.lang.ref.WeakReference;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.nio.file.ClosedWatchServiceException;
 import java.nio.file.DirectoryStream;
@@ -120,6 +124,7 @@ public class UiService implements InitializingBean, DisposableBean {
    */
   private static final int THEME_VERSION = 1;
   private static final String METADATA_FILE_NAME = "theme.properties";
+  public static Theme DEFAULT_THEME = new Theme("Default", "Downlord", 1, "1");
   private final Set<Scene> scenes;
   private final Set<WeakReference<WebView>> webViews;
 
@@ -129,12 +134,11 @@ public class UiService implements InitializingBean, DisposableBean {
   private final MessageSource messageSource;
   private final ApplicationContext applicationContext;
   private final I18n i18n;
-
-  private WatchService watchService;
   private final ObservableMap<String, Theme> themesByFolderName;
   private final Map<Theme, String> folderNamesByTheme;
   private final Map<Path, WatchKey> watchKeys;
   private final ObjectProperty<Theme> currentTheme;
+  private WatchService watchService;
   private Path currentTempStyleSheet;
   private MessageSourceResourceBundle resources;
 
@@ -413,6 +417,22 @@ public class UiService implements InitializingBean, DisposableBean {
    */
   public <T extends Controller<?>> T loadFxml(String relativePath) {
     log.debug("Loading fxml {}", relativePath);
+    Class<FxObject<? extends Controller<?>>> javaClass = fxmlToJavaClass(relativePath);
+    if (javaClass != null) {
+      Constructor<?> constructor = javaClass.getConstructors()[0];
+      Class<?>[] parameterTypes = constructor.getParameterTypes();
+      Object[] parameters = new Object[parameterTypes.length];
+      for (int i = 0; i < parameterTypes.length; i++) {
+        parameters[i] = applicationContext.getBean(parameterTypes[i]);
+      }
+      try {
+        T controller = ((FxObject<T>) constructor.newInstance(parameters)).getController();
+        log.debug("compiled fxml {} loaded successfully controller class is {}", relativePath, controller.getClass().getSimpleName());
+        return controller;
+      } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
+        log.warn("Failed to load compiled FXML", e);
+      }
+    }
     FXMLLoader loader = new FXMLLoader();
     loader.setControllerFactory(applicationContext::getBean);
     loader.setLocation(getThemeFileUrl(relativePath));
@@ -435,6 +455,15 @@ public class UiService implements InitializingBean, DisposableBean {
     log.debug("Fxml {} with class {} loaded successfully controller class is {}", relativePath, controllerClass.getSimpleName(),
         controller.getClass().getSimpleName());
     return controller;
+  }
+
+  private <T extends FxObject<? extends Controller<?>>> Class<T> fxmlToJavaClass(String relativePath) {
+    Path path = Path.of(relativePath);
+    try {
+      return (Class<T>) ClassLoader.getSystemClassLoader().loadClass("com.faforever.client.fxml.compiled.Fx" + StringUtils.snakeToCapitalize(path.getFileName().toString().replace(".fxml", "")));
+    } catch (ClassNotFoundException e) {
+      return null;
+    }
   }
 
   private Path getThemeDirectory(Theme theme) {

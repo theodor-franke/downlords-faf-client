@@ -26,9 +26,17 @@ public class JoinDiscordEventHandler {
 
   private final ClientProperties clientProperties;
   private final PlatformService platformService;
+  private final EventBus eventBus;
 
-  @EventListener(value = JoinDiscordEvent.class)
-  public void onJoin() {
+  public JoinDiscordEventHandler(ClientProperties clientProperties, PlatformService platformService, EventBus eventBus) {
+    this.clientProperties = clientProperties;
+    this.platformService = platformService;
+    this.eventBus = eventBus;
+    eventBus.register(this);
+  }
+
+  @Subscribe
+  public void onJoin(JoinDiscordEvent joinDiscordEvent) {
     String joinUrl = clientProperties.getDiscord().getJoinUrl();
     joinViaDiscord(joinUrl);
   }

@@ -124,6 +124,7 @@ public class UiService implements InitializingBean, DisposableBean {
    */
   private static final int THEME_VERSION = 1;
   private static final String METADATA_FILE_NAME = "theme.properties";
+  private static final String COMPILED_FXML_PREFIX = "com.faforever.client.fxml.compiled.Fx";
   public static Theme DEFAULT_THEME = new Theme("Default", "Downlord", 1, "1");
   private final Set<Scene> scenes;
   private final Set<WeakReference<WebView>> webViews;
@@ -417,7 +418,7 @@ public class UiService implements InitializingBean, DisposableBean {
    */
   public <T extends Controller<?>> T loadFxml(String relativePath) {
     log.debug("Loading fxml {}", relativePath);
-    Class<FxObject<? extends Controller<?>>> javaClass = fxmlToJavaClass(relativePath);
+    Class<FxObject<T>> javaClass = fxmlToJavaClass(relativePath);
     if (javaClass != null) {
       Constructor<?> constructor = javaClass.getConstructors()[0];
       Class<?>[] parameterTypes = constructor.getParameterTypes();
@@ -426,9 +427,10 @@ public class UiService implements InitializingBean, DisposableBean {
         parameters[i] = applicationContext.getBean(parameterTypes[i]);
       }
       try {
-        T controller = ((FxObject<T>) constructor.newInstance(parameters)).controller;
+        FxObject<T> fxObject = (FxObject<T>) constructor.newInstance(parameters);
+        fxObject.initialize();
         log.debug("compiled fxml {} loaded successfully controller class is {}", relativePath, controller.getClass().getSimpleName());
-        return controller;
+        return fxObject.controller;
       } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
         log.warn("Failed to load compiled FXML", e);
       }
@@ -443,11 +445,36 @@ public class UiService implements InitializingBean, DisposableBean {
     return controller;
   }
 
-  public <T extends Controller<?>> T loadFxml(String relativePath, Class<?> controllerClass) {
+  public <T extends Controller<?>> T loadFxml(String relativePath, Class<? extends Controller<?>> controllerClass) {
     log.debug("Loading Fxml {} with class {}", relativePath, controllerClass.getSimpleName());
+    Class<FxObject<T>> javaClass = fxmlToJavaClass(relativePath);
+    if (javaClass != null) {
+      Constructor<?> constructor = javaClass.getConstructors()[0];
+      Class<?>[] parameterTypes = constructor.getParameterTypes();
+      Object[] parameters = new Object[parameterTypes.length];
+      for (int i = 0; i < parameterTypes.length; i++) {
+        parameters[i] = applicationContext.getBean(parameterTypes[i]);
+      }
+      Constructor<?> controllerConstructor = controllerClass.getConstructors()[0];
+      Class<?>[] controllerParameterTypes = controllerConstructor.getParameterTypes();
+      Object[] controllerParameters = new Object[controllerParameterTypes.length];
+      for (int i = 0; i < controllerParameterTypes.length; i++) {
+        controllerParameters[i] = applicationContext.getBean(controllerParameterTypes[i]);
+      }
+      try {
+        T controller = (T) controllerConstructor.newInstance(controllerParameters);
+        FxObject<T> fxObject = (FxObject<T>) constructor.newInstance(parameters);
+        fxObject.setController(controller);
+        fxObject.initialize();
+        log.debug("Fxml {} with class {} loaded successfully controller class is {}", relativePath, controllerClass.getSimpleName(),
+            controller.getClass().getSimpleName());
+        return fxObject.controller;
+      } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
+        log.warn("Failed to load compiled FXML", e);
+      }
+    }
     FXMLLoader loader = new FXMLLoader();
     loader.setControllerFactory(applicationContext::getBean);
-    loader.setController(applicationContext.getBean(controllerClass));
     loader.setLocation(getThemeFileUrl(relativePath));
     loader.setResources(resources);
     noCatch((NoCatchRunnable) loader::load);
@@ -460,7 +487,8 @@ public class UiService implements InitializingBean, DisposableBean {
   private <T extends FxObject<? extends Controller<?>>> Class<T> fxmlToJavaClass(String relativePath) {
     Path path = Path.of(relativePath);
     try {
-      return (Class<T>) ClassLoader.getSystemClassLoader().loadClass("com.faforever.client.fxml.compiled.Fx" + StringUtils.snakeToCapitalize(path.getFileName().toString().replace(".fxml", "")));
+      return (Class<T>) ClassLoader.getSystemClassLoader().loadClass(COMPILED_FXML_PREFIX +
+          StringUtils.snakeToCapitalize(path.getFileName().toString().replace(".fxml", "")));
     } catch (ClassNotFoundException e) {
       return null;
     }

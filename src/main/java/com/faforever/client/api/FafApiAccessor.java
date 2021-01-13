@@ -10,6 +10,7 @@ import com.faforever.client.api.dto.GameReview;
 import com.faforever.client.api.dto.Leaderboard;
 import com.faforever.client.api.dto.LeaderboardEntry;
 import com.faforever.client.api.dto.LeaderboardRatingJournal;
+import com.faforever.client.api.dto.LeagueLeaderboardEntry;
 import com.faforever.client.api.dto.Map;
 import com.faforever.client.api.dto.MapVersion;
 import com.faforever.client.api.dto.MapVersionReview;
@@ -66,9 +67,9 @@ public interface FafApiAccessor {
 
   List<LeaderboardEntry> getLeaderboardEntriesForPlayer(int playerId);
 
-  List<DivisionLeaderboardEntry> getDivisionLeaderboard(Division division);
+  List<LeagueLeaderboardEntry> getLeagueLeaderboard(Division division);
 
-  DivisionLeaderboardEntry getLeagueEntryForPlayer(int playerId, String league);
+  LeagueLeaderboardEntry getLeagueEntryForPlayer(int playerId, String league);
 
   List<LeaderboardRatingJournal> getRatingJournal(int playerId, int leaderboardId);
 

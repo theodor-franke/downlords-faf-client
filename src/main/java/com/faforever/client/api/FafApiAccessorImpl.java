@@ -216,14 +216,14 @@ public class FafApiAccessorImpl implements FafApiAccessor, InitializingBean {
   }
 
   @Override
-  @Cacheable(value = CacheNames.LEAGUE, sync = true)
   public List<League> getLeagues() {
     return getAll(LEAGUE_ENDPOINT);
   }
 
   @Override
-  public LeagueSeason getLatestSeason(int leagueId) {
-    return null;
+  public LeagueSeason getLatestSeason(Integer leagueId) {
+    List<LeagueSeason> seasons = getAll("/data/seasons",  java.util.Map.of(FILTER, leagueId.toString()));
+    return seasons.get(0);
   }
 
   @Override
@@ -235,8 +235,10 @@ public class FafApiAccessorImpl implements FafApiAccessor, InitializingBean {
   }
 
   @Override
-  public List<LeagueEntry> getLeagueLeaderboard(Division division) {
-    return List.of();
+  public List<LeagueEntry> getDivisionLeaderboard(Division division) {
+    return getAll("/data/divisionScore", java.util.Map.of(
+        FILTER, rsql(qBuilder().string("division.technicalName").eq(division.toString())),
+        SORT, "-score"));
   }
 
   @Override
@@ -260,8 +262,12 @@ public class FafApiAccessorImpl implements FafApiAccessor, InitializingBean {
 
   @Override
   public LeagueEntry getLeagueEntryForPlayer(int playerId, int leagueSeasonId) {
-    //return getOne("/leaderboards/"+ league + "/" + playerId, LeagueEntry.class);
-    return null;
+    List<LeagueEntry> entries = getAll("/data/leagueLeaderboard", java.util.Map.of(
+        FILTER, rsql(qBuilder()
+            .intNum("player.id").eq(playerId)
+            .and()
+            .intNum("leagueSeasonId").eq(leagueSeasonId))));
+    return entries.get(0);
   }
 
   @Override
@@ -452,8 +458,9 @@ public class FafApiAccessorImpl implements FafApiAccessor, InitializingBean {
   }
 
   @Override
-  public List<Division> getDivisions(int leagueSeasonId) {
-    return getAll("/" + leagueSeasonId);
+  @Cacheable(value = CacheNames.DIVISIONS, sync = true)
+  public List<Division> getDivisions(Integer leagueSeasonId) {
+    return getAll("/data/divisions", java.util.Map.of(FILTER, leagueSeasonId.toString()));
   }
 
   @Override

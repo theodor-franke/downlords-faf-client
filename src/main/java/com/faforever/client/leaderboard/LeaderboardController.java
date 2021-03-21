@@ -9,6 +9,7 @@ import com.faforever.client.player.Player;
 import com.faforever.client.player.PlayerService;
 import com.faforever.client.theme.UiService;
 import com.faforever.client.util.Validator;
+import com.google.common.annotations.VisibleForTesting;
 import javafx.application.Platform;
 import javafx.beans.InvalidationListener;
 import javafx.beans.WeakInvalidationListener;
@@ -33,12 +34,16 @@ import javafx.scene.text.Text;
 import javafx.util.StringConverter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.controlsfx.control.textfield.AutoCompletionBinding;
+import org.controlsfx.control.textfield.TextFields;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 
@@ -71,6 +76,9 @@ public class LeaderboardController implements Controller<Tab> {
   public ImageView playerDivisionImageView;
   public CategoryAxis xAxis;
   private LeagueSeason season;
+
+  @VisibleForTesting
+  protected AutoCompletionBinding<String> usernamesAutoCompletion;
 
   @Override
   public void initialize() {
@@ -142,10 +150,26 @@ public class LeaderboardController implements Controller<Tab> {
 
     seasonLabel.setText(i18n.get("leaderboard.seasonName", season.getTechnicalName()).toUpperCase());
     contentPane.setVisible(false);
+    searchTextField.clear();
+    if (usernamesAutoCompletion != null) {
+      usernamesAutoCompletion.dispose();
+    }
     leaderboardService.getDivisions(season.getId()).thenAccept(divisions -> Platform.runLater(() -> {
       majorDivisionPicker.getItems().clear();
       majorDivisionPicker.getItems().addAll(
           divisions.stream().filter(division -> division.getSubDivisionIndex() == 1).collect(Collectors.toList()));
+
+      List<LeagueEntry> leagueEntries = new ArrayList<>();
+      List<CompletableFuture<?>> futures = new ArrayList<>();
+      divisions.forEach(division -> {
+        CompletableFuture<List<LeagueEntry>> future = leaderboardService.getEntries(division);
+        futures.add(future.thenAccept(leagueEntries::addAll));
+      });
+      CompletableFuture.allOf(futures.toArray(new CompletableFuture<?>[0])).thenRun(() -> {
+        usernamesAutoCompletion = TextFields.bindAutoCompletion(searchTextField,
+            leagueEntries.stream().map(LeagueEntry::getUsername).collect(Collectors.toList()));
+        usernamesAutoCompletion.setDelay(0);
+      });
       contentPane.setVisible(true);
     })).exceptionally(throwable -> {
       contentPane.setVisible(false);
